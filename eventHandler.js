@@ -35,6 +35,12 @@
       case 75:
         that.cube.rPrime();
         break;
+      case 76:
+        that.cube.dPrime();
+        break;
+      case 83:
+        that.cube.d();
+        break;
       default:
         console.log('key pressed');
         break;
