@@ -2,11 +2,14 @@
  <head>
   <meta charset="utf-8"/>
   <script type="application/javascript" src="./cube.js"></script>
+  <script type="application/javascript" src="./eventHandler.js"></script>
 
   <script type="application/javascript">
+    var cube = new Game.Cube();
+    var eventHandler = new Game.EventHandler(cube);
     function draw() {
       var canvas = document.getElementById("canvas");
-      var cube = new Game.Cube();
+
       if (canvas.getContext) {
         var ctx = canvas.getContext("2d");
 
@@ -15,7 +18,7 @@
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.fillRect (100 + 100 * i, 100 + 100 * j, 99, 99);
 
-            ctx.fillStyle = cube.colors[cube.front[i][j]];
+            ctx.fillStyle = cube.colors[cube.front[j][i]];
             ctx.fillRect (103 + 100 * i, 103 + 100 * j, 93, 93);
           }
         }
