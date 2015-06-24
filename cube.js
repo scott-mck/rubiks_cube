@@ -42,15 +42,15 @@
     var up = this.up[2];
     this.up[2] = [ this.left[2][2], this.left[1][2], this.left[0][2] ];
 
-    this.left[0][2] = this.down[0][0];
-    this.left[1][2] = this.down[0][1];
     this.left[2][2] = this.down[0][2];
+    this.left[1][2] = this.down[0][1];
+    this.left[0][2] = this.down[0][0];
 
     this.down[0] = [ this.right[2][0], this.right[1][0], this.right[0][0] ];
 
-    this.right[0][2] = up[0];
-    this.right[1][2] = up[1];
-    this.right[2][2] = up[2];
+    this.right[0][0] = up[0];
+    this.right[1][0] = up[1];
+    this.right[2][0] = up[2];
 
     this.rotateClockwise(this.front);
   };
@@ -73,7 +73,7 @@
   };
 
   Cube.prototype.r = function() {
-    var rightRow = [this.front[0][2], this.front[1][2], this.front[2][2]];
+    var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
     this.front[0][2] = this.down[0][2];
     this.front[1][2] = this.down[1][2];
     this.front[2][2] = this.down[2][2];
@@ -111,8 +111,8 @@
     var topMid = face[0][1];
     face[0][1] = face[1][2];
     face[1][2] = face[2][1];
-    face[2][1] = face[0][1];
-    face[0][1] = topMid;
+    face[2][1] = face[1][0];
+    face[1][0] = topMid;
 
     var topRight = face[0][2];
     face[0][2] = face[2][2];
@@ -122,7 +122,7 @@
   };
 
   Cube.prototype.rPrime = function () {
-    var rightRow = [this.front[0][2], this.front[1][2], this.front[2][2]];
+    var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
     this.front[0][2] = this.up[0][2];
     this.front[1][2] = this.up[1][2];
     this.front[2][2] = this.up[2][2];

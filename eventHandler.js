@@ -35,6 +35,14 @@
         break;
     }
     draw();
+    console.log(this.cube.up[0]);
+    console.log(this.cube.up[1]);
+    console.log(this.cube.up[2]);
+    console.log('');
+    console.log(this.cube.right[0]);
+    console.log(this.cube.right[1]);
+    console.log(this.cube.right[2]);
+    console.log('');
   };
 
 })();
