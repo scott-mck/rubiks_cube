@@ -41,9 +41,6 @@
       case 83:
         that.cube.d();
         break;
-      default:
-        console.log('key pressed');
-        break;
     }
     draw();
   };
