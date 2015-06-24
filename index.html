@@ -6,15 +6,16 @@
   <script type="application/javascript">
     function draw() {
       var canvas = document.getElementById("canvas");
+      var cube = new Game.Cube();
       if (canvas.getContext) {
         var ctx = canvas.getContext("2d");
 
         for (var i = 0; i < 3 ; i++) {
           for (var j = 0; j < 3 ; j++) {
-            ctx.fillStyle = "rgb(0, 0, 0)"
+            ctx.fillStyle = "rgb(0,0,0)";
             ctx.fillRect (100 + 100 * i, 100 + 100 * j, 99, 99);
 
-            ctx.fillStyle = Cube.Cube.colors.Y;
+            ctx.fillStyle = cube.colors[cube.front[i][j]];
             ctx.fillRect (103 + 100 * i, 103 + 100 * j, 93, 93);
           }
         }
