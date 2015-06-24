@@ -18,7 +18,7 @@
             //SHOW FRONT FACE
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.fillRect (500 + 100 * i, 300 + 100 * j, 99, 99);
-            ctx.fillStyle = cube.colors[cube.currentFront[j][i]];
+            ctx.fillStyle = cube.colors[cube.front[j][i]];
             ctx.fillRect (503 + 100 * i, 303 + 100 * j, 93, 93);
 
             //SHOW TOP FACE
@@ -31,7 +31,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = cube.colors[cube.currentUp[2 - j][i]];
+            ctx.fillStyle = cube.colors[cube.up[2 - j][i]];
             ctx.beginPath();
             ctx.moveTo(508 + 100 * i + 50 * j, 295 - 41 * j);
             ctx.lineTo(553 + 100 * i + 50 * j, 260 - 41 * j);
@@ -50,7 +50,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = cube.colors[cube.currentRight[i][j]];
+            ctx.fillStyle = cube.colors[cube.right[i][j]];
             ctx.beginPath();
             ctx.moveTo(805 + 50 * j, 302 + 100 * i - 41 * j);
             ctx.lineTo(844 + 50 * j, 270 + 100 * i - 41 * j);

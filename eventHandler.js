@@ -11,6 +11,9 @@
   EventHandler.prototype.handleEvents = function (key) {
     var that = this;
     switch (key.keyCode) {
+      case 65:
+        that.cube.seeLeft();
+        break;
       case 68:
         that.cube.l();
         break;
@@ -40,6 +43,9 @@
         break;
       case 83:
         that.cube.d();
+        break;
+      case 186:
+        that.cube.seeRight();
         break;
     }
     draw();
