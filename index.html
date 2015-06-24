@@ -15,6 +15,7 @@
 
         for (var i = 0; i < 3 ; i++) {
           for (var j = 0; j < 3 ; j++) {
+            debugger
             //SHOW FRONT FACE
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.fillRect (500 + 100 * i, 300 + 100 * j, 99, 99);
@@ -31,7 +32,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = cube.colors[cube.up[j][i]];
+            ctx.fillStyle = cube.colors[cube.up[2 - j][i]];
             ctx.beginPath();
             ctx.moveTo(508 + 100 * i + 50 * j, 295 - 41 * j);
             ctx.lineTo(553 + 100 * i + 50 * j, 260 - 41 * j);
@@ -39,14 +40,31 @@
             ctx.lineTo(596 + 100 * i + 50 * j, 295 - 41 * j);
             ctx.closePath();
             ctx.fill();
+
+            //SHOW RIGHT FACE
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.beginPath();
+            ctx.moveTo(801 + 48 * j, 300 + 100 * i - 40 * j);
+            ctx.lineTo(847 + 48 * j, 262 + 100 * i - 40 * j);
+            ctx.lineTo(847 + 48 * j, 360 + 100 * i - 40 * j);
+            ctx.lineTo(801 + 48 * j, 398 + 100 * i - 40 * j);
+            ctx.closePath();
+            ctx.fill();
+
+            // ctx.beginPath();
+            // ctx.moveTo(800 + 100 * i + 50 * j, 295 + 41 * j);
+            // ctx.lineTo(841 + 100 * i + 50 * j, 260 + 41 * j);
+            // ctx.lineTo(841 + 100 * i + 50 * j, 260 + 41 * j);
+            // ctx.lineTo(800 + 100 * i + 50 * j, 295 + 41 * j);
+            // ctx.closePath();
+            // ctx.fill();
           }
         }
-
       }
     }
   </script>
  </head>
  <body onload="draw();">
-   <canvas id="canvas" width="1000" height="800"></canvas>
+   <canvas id="canvas" width="1400" height="1200"></canvas>
  </body>
 </html>
