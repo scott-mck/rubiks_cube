@@ -36,6 +36,10 @@
     this.down = [['W', 'W', 'W'],
            ['W', 'W', 'W'],
            ['W', 'W', 'W']];
+
+    this.currentFront = this.front;
+    this.currentUp = this.up;
+    this.currentRight = this.right;
   };
 
   Cube.prototype.d = function () {
@@ -202,6 +206,10 @@
     this.down[2][2] = rightRow[2];
 
     this.rotateCounterClockwise(this.right);
+  };
+
+  Cube.prototype.seeRight = function () {
+
   };
 
   Cube.prototype.u = function() {
