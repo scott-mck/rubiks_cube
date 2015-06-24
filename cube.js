@@ -72,6 +72,48 @@
     this.rotateCounterClockwise(this.front);
   };
 
+  Cube.prototype.l = function () {
+    var leftRow = [ this.front[0][0], this.front[1][0], this.front[2][0] ];
+    this.front[0][0] = this.up[0][0];
+    this.front[1][0] = this.up[1][0];
+    this.front[2][0] = this.up[2][0];
+
+    this.up[0][2] = this.back[2][2];
+    this.up[1][2] = this.back[1][2];
+    this.up[2][2] = this.back[0][2];
+
+    this.back[0][2] = this.down[2][0];
+    this.back[1][2] = this.down[1][0];
+    this.back[2][2] = this.down[0][0];
+
+    this.down[0][0] = leftRow[0];
+    this.down[1][0] = leftRow[1];
+    this.down[2][0] = leftRow[2];
+
+    this.rotateClockwise(this.left);
+  };
+
+  Cube.prototype.lPrime = function () {
+    var leftRow = [ this.front[0][0], this.front[1][0], this.front[2][0] ];
+    this.front[0][0] = this.down[0][0];
+    this.front[1][0] = this.down[1][0];
+    this.front[2][0] = this.down[2][0];
+
+    this.down[0][0] = this.back[2][2];
+    this.down[1][0] = this.back[1][2];
+    this.down[2][0] = this.back[0][2];
+
+    this.back[0][2] = this.up[2][0];
+    this.back[1][2] = this.up[1][0];
+    this.back[2][2] = this.up[0][0];
+
+    this.up[0][0] = leftRow[0];
+    this.up[1][0] = leftRow[1];
+    this.up[2][0] = leftRow[2];
+
+    this.rotateCounterClockwise(this.left);
+  };
+
   Cube.prototype.r = function() {
     var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
     this.front[0][2] = this.down[0][2];

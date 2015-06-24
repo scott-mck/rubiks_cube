@@ -9,9 +9,14 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-    // debugger
     var that = this;
     switch (key.keyCode) {
+      case 68:
+        that.cube.l();
+        break;
+      case 69:
+        that.cube.lPrime();
+        break;
       case 70:
         that.cube.uPrime();
         break;
@@ -35,14 +40,6 @@
         break;
     }
     draw();
-    console.log(this.cube.up[0]);
-    console.log(this.cube.up[1]);
-    console.log(this.cube.up[2]);
-    console.log('');
-    console.log(this.cube.right[0]);
-    console.log(this.cube.right[1]);
-    console.log(this.cube.right[2]);
-    console.log('');
   };
 
 })();
