@@ -1,41 +1,28 @@
 <html>
-  <head>
-    <title>Asteroids</title>
-  </head>
+ <head>
+  <meta charset="utf-8"/>
+  <script type="application/javascript" src="./cube.js"></script>
 
-  <body onload="start()">
-    <canvas id="glcanvas" width="640" height="480">
-      Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
-    </canvas>
+  <script type="application/javascript">
+    function draw() {
+      var canvas = document.getElementById("canvas");
+      if (canvas.getContext) {
+        var ctx = canvas.getContext("2d");
 
-    <script type="application/javascript"></script>
+        for (var i = 0; i < 3 ; i++) {
+          for (var j = 0; j < 3 ; j++) {
+            ctx.fillStyle = "rgb(0, 0, 0)"
+            ctx.fillRect (100 + 100 * i, 100 + 100 * j, 99, 99);
 
-    <script id="VertexShader" type="x-shader/x-vertex">
-
-      attribute highp vec3 VertexPosition;
-      attribute highp vec2 TextureCoord;
-
-
-      uniform highp mat4 TransformationMatrix;
-      uniform highp mat4 PerspectiveMatrix;
-
-      varying highp vec2 vTextureCoord;
-
-      void main(void) {
-          gl_Position = PerspectiveMatrix * TransformationMatrix * vec4(VertexPosition, 1.0);
-          vTextureCoord = TextureCoord;
+            ctx.fillStyle = Cube.Cube.colors.Y;
+            ctx.fillRect (103 + 100 * i, 103 + 100 * j, 93, 93);
+          }
+        }
       }
-    </script>
-
-    <script id="FragmentShader" type="x-shader/x-fragment">
-      varying highp vec2 vTextureCoord;
-
-      uniform sampler2D uSampler;
-
-      void main(void) {
-          highp vec4 texelColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-          gl_FragColor = texelColor;
-      }
-    </script>
-  </body>
+    }
+  </script>
+ </head>
+ <body onload="draw();">
+   <canvas id="canvas" width="1000" height="800"></canvas>
+ </body>
 </html>
