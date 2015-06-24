@@ -38,6 +38,23 @@
            ['W', 'W', 'W']];
   };
 
+  Cube.prototype.fPrime = function () {
+    var up = this.up[2];
+    this.up[2] = [ this.right[0][0], this.right[1][0], this.right[2][0] ];
+
+    this.right[0][0] = this.down[0][2];
+    this.right[1][0] = this.down[0][1];
+    this.right[2][0] = this.down[0][0];
+
+    this.down[0] = [ this.left[0][2], this.left[1][2], this.left[2][2] ];
+
+    this.left[0][2] = up[2];
+    this.left[1][2] = up[1];
+    this.left[2][2] = up[0];
+
+    this.rotateCounterClockwise(this.front);
+  };
+
   Cube.prototype.r = function() {
     var rightRow = [this.front[0][2], this.front[1][2], this.front[2][2]];
     this.front[0][2] = this.down[0][2];

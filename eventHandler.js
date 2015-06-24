@@ -14,6 +14,9 @@
       case 70:
         that.cube.uPrime();
         break;
+      case 71:
+        that.cube.fPrime();
+        break;
       case 73:
         that.cube.r();
         break;
