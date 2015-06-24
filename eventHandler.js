@@ -9,6 +9,7 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
+    // debugger
     var that = this;
     switch (key.keyCode) {
       case 70:
@@ -16,6 +17,9 @@
         break;
       case 71:
         that.cube.fPrime();
+        break;
+      case 72:
+        that.cube.f();
         break;
       case 73:
         that.cube.r();
