@@ -215,15 +215,37 @@
     this.right = oldFront;
   };
 
+  Cube.prototype.seeDown = function () {
+    this.rotateClockwise(this.right);
+    this.rotateCounterClockwise(this.left);
+
+    var oldFront = this.front;
+    this.front = this.down;
+    this.down = this.back;
+    this.back = this.up;
+    this.up = oldFront;
+  };
+
   Cube.prototype.seeRight = function () {
-    this.rotateClockwise(this.up);
-    this.rotateCounterClockwise(this.down);
 
     var oldFront = this.front;
     this.front = this.right;
     this.right = this.back;
     this.back = this.left;
     this.left = oldFront;
+    this.rotateClockwise(this.up);
+    this.rotateCounterClockwise(this.down);
+  };
+
+  Cube.prototype.seeUp = function () {
+    this.rotateClockwise(this.left);
+    this.rotateCounterClockwise(this.right);
+
+    var oldFront = this.front;
+    this.front = this.up;
+    this.up = this.back;
+    this.back = this.down;
+    this.down = oldFront;
   };
 
   Cube.prototype.u = function() {
