@@ -25,19 +25,19 @@
             //SHOW TOP FACE
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.beginPath();
-            ctx.moveTo(500 + 100 * j + 50 * i, 298 - 41 * i);
-            ctx.lineTo(550 + 100 * j + 50 * i, 258 - 41 * i);
-            ctx.lineTo(647 + 100 * j + 50 * i, 258 - 41 * i);
-            ctx.lineTo(598 + 100 * j + 50 * i, 298 - 41 * i);
+            ctx.moveTo(500 + 100 * j + 50 * (2 - i), 298 - 41 * (2 - i));
+            ctx.lineTo(550 + 100 * j + 50 * (2 - i), 258 - 41 * (2 - i));
+            ctx.lineTo(647 + 100 * j + 50 * (2 - i), 258 - 41 * (2 - i));
+            ctx.lineTo(598 + 100 * j + 50 * (2 - i), 298 - 41 * (2 - i));
             ctx.closePath();
             ctx.fill();
 
             ctx.fillStyle = cube.colors[cube.up[2 - j][i]];
             ctx.beginPath();
-            ctx.moveTo(508 + 100 * i + 50 * j, 295 - 41 * j);
-            ctx.lineTo(553 + 100 * i + 50 * j, 260 - 41 * j);
-            ctx.lineTo(640 + 100 * i + 50 * j, 260 - 41 * j);
-            ctx.lineTo(596 + 100 * i + 50 * j, 295 - 41 * j);
+            ctx.moveTo(508 + 100 * j + 50 * (2 - i), 295 - 41 * (2 - i));
+            ctx.lineTo(553 + 100 * j + 50 * (2 - i), 260 - 41 * (2 - i));
+            ctx.lineTo(640 + 100 * j + 50 * (2 - i), 260 - 41 * (2 - i));
+            ctx.lineTo(596 + 100 * j + 50 * (2 - i), 295 - 41 * (2 - i));
             ctx.closePath();
             ctx.fill();
 
