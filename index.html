@@ -15,19 +15,20 @@
 
         for (var i = 0; i < 3 ; i++) {
           for (var j = 0; j < 3 ; j++) {
+            debugger
             //SHOW FRONT FACE
             ctx.fillStyle = "rgb(0,0,0)";
-            ctx.fillRect (500 + 100 * i, 300 + 100 * j, 99, 99);
-            ctx.fillStyle = cube.colors[cube.front[j][i]];
-            ctx.fillRect (503 + 100 * i, 303 + 100 * j, 93, 93);
+            ctx.fillRect (500 + 100 * j, 300 + 100 * i, 99, 99);
+            ctx.fillStyle = cube.colors[cube.front[i][j]];
+            ctx.fillRect (503 + 100 * j, 303 + 100 * i, 93, 93);
 
             //SHOW TOP FACE
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.beginPath();
-            ctx.moveTo(500 + 100 * i + 50 * j, 298 - 41 * j);
-            ctx.lineTo(550 + 100 * i + 50 * j, 258 - 41 * j);
-            ctx.lineTo(647 + 100 * i + 50 * j, 258 - 41 * j);
-            ctx.lineTo(598 + 100 * i + 50 * j, 298 - 41 * j);
+            ctx.moveTo(500 + 100 * j + 50 * i, 298 - 41 * i);
+            ctx.lineTo(550 + 100 * j + 50 * i, 258 - 41 * i);
+            ctx.lineTo(647 + 100 * j + 50 * i, 258 - 41 * i);
+            ctx.lineTo(598 + 100 * j + 50 * i, 298 - 41 * i);
             ctx.closePath();
             ctx.fill();
 
