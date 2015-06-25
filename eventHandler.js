@@ -14,6 +14,9 @@
       case 65:
         that.cube.seeLeft();
         break;
+      case 67:
+        that.cube.doubleL();
+        break;
       case 68:
         that.cube.l();
         break;
@@ -41,11 +44,20 @@
       case 76:
         that.cube.dPrime();
         break;
+      case 77:
+        that.cube.doubleRPrime();
+        break;
       case 78:
         that.cube.seeUp();
         break;
+      case 82:
+        that.cube.doubleLPrime();
+        break;
       case 83:
         that.cube.d();
+        break;
+      case 85:
+        that.cube.doubleR();
         break;
       case 89:
         that.cube.seeDown();

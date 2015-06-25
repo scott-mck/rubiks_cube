@@ -48,6 +48,26 @@
     this.rotateClockwise(this.down);
   };
 
+  Cube.prototype.doubleL = function () {
+    this.r();
+    this.seeUp();
+  };
+
+  Cube.prototype.doubleLPrime = function () {
+    this.rPrime();
+    this.seeDown();
+  };
+
+  Cube.prototype.doubleR = function () {
+    this.l();
+    this.seeDown();
+  };
+
+  Cube.prototype.doubleRPrime = function () {
+    this.lPrime();
+    this.seeUp();
+  };
+
   Cube.prototype.dPrime = function () {
     var bottomRow = this.front[2];
     this.front[2] = this.right[2];
