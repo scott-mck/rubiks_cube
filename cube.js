@@ -98,9 +98,9 @@
     this.front[1][0] = this.up[1][0];
     this.front[2][0] = this.up[2][0];
 
-    this.up[0][2] = this.back[2][2];
-    this.up[1][2] = this.back[1][2];
-    this.up[2][2] = this.back[0][2];
+    this.up[0][0] = this.back[2][2];
+    this.up[1][0] = this.back[1][2];
+    this.up[2][0] = this.back[0][2];
 
     this.back[0][2] = this.down[2][0];
     this.back[1][2] = this.down[1][0];
@@ -218,6 +218,10 @@
   Cube.prototype.seeDown = function () {
     this.rotateClockwise(this.right);
     this.rotateCounterClockwise(this.left);
+    this.rotateClockwise(this.up);
+    this.rotateClockwise(this.up);
+    this.rotateClockwise(this.back);
+    this.rotateClockwise(this.back);
 
     var oldFront = this.front;
     this.front = this.down;
@@ -240,6 +244,10 @@
   Cube.prototype.seeUp = function () {
     this.rotateClockwise(this.left);
     this.rotateCounterClockwise(this.right);
+    this.rotateClockwise(this.back);
+    this.rotateClockwise(this.back);
+    this.rotateClockwise(this.down);
+    this.rotateClockwise(this.down);
 
     var oldFront = this.front;
     this.front = this.up;

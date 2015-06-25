@@ -15,7 +15,6 @@
 
         for (var i = 0; i < 3 ; i++) {
           for (var j = 0; j < 3 ; j++) {
-            debugger
             //SHOW FRONT FACE
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.fillRect (500 + 100 * j, 300 + 100 * i, 99, 99);
@@ -32,7 +31,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = cube.colors[cube.up[2 - j][i]];
+            ctx.fillStyle = cube.colors[cube.up[i][j]];
             ctx.beginPath();
             ctx.moveTo(508 + 100 * j + 50 * (2 - i), 295 - 41 * (2 - i));
             ctx.lineTo(553 + 100 * j + 50 * (2 - i), 260 - 41 * (2 - i));
