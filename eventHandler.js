@@ -11,7 +11,6 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-      debugger
     var that = this;
     if (this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
@@ -81,6 +80,10 @@
       case 186:
         that.cube.seeRight();
         break;
+    }
+
+    if (this.cube.solved()) {
+      this.game.endTimer();
     }
     this.game.draw();
   };

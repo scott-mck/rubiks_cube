@@ -92,7 +92,7 @@
     clearInterval(this.timer);
     this.drawStaticTimer();
   };
-
+  
   Game.prototype.startTimer = function () {
     this.timing = true;
     this.startTime = new Date();

@@ -37,6 +37,8 @@
            ['W', 'W', 'W'],
            ['W', 'W', 'W']];
 
+    this.faces = [this.up, this.right, this.front, this.left, this.back, this.down];
+
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
       this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.doubleR,
       this.doubleRPrime, this.doubleL, this.doubleLPrime];
@@ -284,6 +286,21 @@
     this.up = this.back;
     this.back = this.down;
     this.down = oldFront;
+  };
+
+  Cube.prototype.solved = function () {
+    var solved = true
+    this.faces.forEach(function (face) {
+      var color = face[0][0];
+      for (var i = 0; i <= 2; i++) {
+        for (var j = 0; j <= 2; j++) {
+          if (face[i][j] != color) {
+            solved = false;
+          }
+        }
+      }
+    });
+    return solved;
   };
 
   Cube.prototype.u = function() {
