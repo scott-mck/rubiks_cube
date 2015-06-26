@@ -5,6 +5,18 @@
   <script type="application/javascript" src="./eventHandler.js"></script>
 
   <script type="application/javascript">
+    function drawElapsedTime(ctx) {
+      ctx.clearRect(600, 600, canvas.width, canvas.height);
+      var time = Math.round(parseInt(new Date() - startTime) / 10) / 100;
+
+      ctx.font = "50px Arial";
+      ctx.fillStyle = "black";
+      ctx.textAlign = "left";
+      ctx.fillText(time, canvas.width/2, 700);
+    }
+
+    startTime = new Date();
+
     var cube = new Game.Cube();
     var eventHandler = new Game.EventHandler(cube);
     function draw() {
@@ -66,8 +78,12 @@
             ctx.fill();
           }
         }
+
+        // drawElapsedTime();
+        var startTimer = setInterval(drawElapsedTime.bind(this, ctx), 60/1000);
       }
     }
+
   </script>
  </head>
  <body onload="draw();">
