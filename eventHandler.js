@@ -13,7 +13,11 @@
     var that = this;
     switch (key.keyCode) {
       case 32:
-        this.game.startTimer();
+        if (this.game.timing) {
+          this.game.endTimer();
+        } else {
+          this.game.startTimer();
+        }
         break;
       case 65:
         that.cube.seeLeft();

@@ -7,6 +7,7 @@
     this.canvas = canvas;
     this.cube = cube;
     this.ctx = this.canvas.getContext("2d");
+    this.timing = false;
   };
 
   Game.prototype.draw = function() {
@@ -64,17 +65,39 @@
         this.ctx.fill();
       }
     }
+
+    // if (!this.startTime) {
+      this.drawStaticTimer();
+    // }
   };
 
-  Game.prototype.drawElapsedTime = function (ctx) {
+  Game.prototype.drawElapsedTime = function () {
     this.ctx.clearRect(600, 600, this.canvas.width, this.canvas.height);
-    var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
+    this.time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
 
     this.ctx.font = "50px Arial";
     this.ctx.fillStyle = "black";
     this.ctx.textAlign = "left";
-    this.ctx.fillText(time, canvas.width/2, 700);
+    this.ctx.fillText(this.time, this.canvas.width/2, 700);
   };
 
+  Game.prototype.drawStaticTimer = function () {
+    this.time = this.time || "0:00";
+    this.ctx.font = "50px Arial";
+    this.ctx.fillStyle = "black";
+    this.ctx.textAlign = "left";
+    this.ctx.fillText(this.time, this.canvas.width/2, 700);
+  };
 
+  Game.prototype.endTimer = function () {
+    this.timing = false;
+    clearInterval(this.timer);
+    this.drawStaticTimer();
+  };
+
+  Game.prototype.startTimer = function () {
+    this.timing = true;
+    this.startTime = new Date();
+    this.timer = setInterval(this.drawElapsedTime.bind(this), 60/1000);
+  };
 })();
