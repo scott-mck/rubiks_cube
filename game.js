@@ -66,9 +66,7 @@
       }
     }
 
-    // if (!this.startTime) {
-      this.drawStaticTimer();
-    // }
+    this.drawStaticTimer();
   };
 
   Game.prototype.drawElapsedTime = function () {

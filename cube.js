@@ -36,6 +36,10 @@
     this.down = [['W', 'W', 'W'],
            ['W', 'W', 'W'],
            ['W', 'W', 'W']];
+
+    this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
+      this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.doubleR,
+      this.doubleRPrime, this.doubleL, this.doubleLPrime];
   };
 
   Cube.prototype.d = function () {
@@ -222,6 +226,12 @@
     this.down[2][2] = rightRow[2];
 
     this.rotateCounterClockwise(this.right);
+  };
+
+  Cube.prototype.scramble = function () {
+    for (var i = 0; i < 25; i++) {
+      this.possibleMoves[~~(Math.random() * this.possibleMoves.length)].call(this);
+    }
   };
 
   Cube.prototype.seeLeft = function () {

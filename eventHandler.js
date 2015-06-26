@@ -16,6 +16,7 @@
         if (this.game.timing) {
           this.game.endTimer();
         } else {
+          this.cube.scramble();
           this.game.startTimer();
         }
         break;
