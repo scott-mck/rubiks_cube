@@ -6,18 +6,25 @@
   var EventHandler = window.Game.EventHandler = function (cube, game) {
     this.cube = cube;
     this.game = game;
+    this.started = false;
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
+      debugger
     var that = this;
+    if (this.started &&
+      ((key.keyCode >= 67 && key.keyCode <= 77) ||
+      (key.keyCode >= 82 && key.keyCode <= 85))) {
+        this.game.startTimer();
+        this.started = false;
+    }
+
     switch (key.keyCode) {
       case 32:
-        if (this.game.timing) {
-          this.game.endTimer();
-        } else {
+        if (!this.game.timing) {
           this.cube.scramble();
-          this.game.startTimer();
+          this.started = true;
         }
         break;
       case 65:
