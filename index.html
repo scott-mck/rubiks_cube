@@ -1,92 +1,22 @@
 <html>
  <head>
   <meta charset="utf-8"/>
-  <script type="application/javascript" src="./cube.js"></script>
-  <script type="application/javascript" src="./eventHandler.js"></script>
+  <script type="application/javascript" src="cube.js"></script>
+  <script type="application/javascript" src="game.js"></script>
+  <script type="application/javascript" src="eventHandler.js"></script>
 
   <script type="application/javascript">
-    function drawElapsedTime(ctx) {
-      ctx.clearRect(600, 600, canvas.width, canvas.height);
-      var time = Math.round(parseInt(new Date() - startTime) / 10) / 100;
-
-      ctx.font = "50px Arial";
-      ctx.fillStyle = "black";
-      ctx.textAlign = "left";
-      ctx.fillText(time, canvas.width/2, 700);
-    }
-
-    startTime = new Date();
-
-    var cube = new Game.Cube();
-    var eventHandler = new Game.EventHandler(cube);
-    function draw() {
+    function init () {
       var canvas = document.getElementById("canvas");
+      var cube = new Game.Cube();
+      var game = new Game.Game(canvas, cube);
+      var eventHandler = new Game.EventHandler(cube, game);
 
-      if (canvas.getContext) {
-        var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        ctx.font = "50px Arial";
-        ctx.fillStyle = "black";
-        ctx.textAlign = "center";
-        ctx.fillText("Rubik's Cube", canvas.width/2, 100);
-
-        for (var i = 0; i < 3 ; i++) {
-          for (var j = 0; j < 3 ; j++) {
-            //SHOW FRONT FACE
-            ctx.fillStyle = "rgb(0,0,0)";
-            ctx.fillRect (500 + 100 * j, 300 + 100 * i, 99, 99);
-            ctx.fillStyle = cube.colors[cube.front[i][j]];
-            ctx.fillRect (503 + 100 * j, 303 + 100 * i, 93, 93);
-
-            //SHOW TOP FACE
-            ctx.fillStyle = "rgb(0,0,0)";
-            ctx.beginPath();
-            ctx.moveTo(500 + 100 * j + 50 * (2 - i), 298 - 41 * (2 - i));
-            ctx.lineTo(550 + 100 * j + 50 * (2 - i), 258 - 41 * (2 - i));
-            ctx.lineTo(647 + 100 * j + 50 * (2 - i), 258 - 41 * (2 - i));
-            ctx.lineTo(598 + 100 * j + 50 * (2 - i), 298 - 41 * (2 - i));
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = cube.colors[cube.up[i][j]];
-            ctx.beginPath();
-            ctx.moveTo(508 + 100 * j + 50 * (2 - i), 295 - 41 * (2 - i));
-            ctx.lineTo(553 + 100 * j + 50 * (2 - i), 260 - 41 * (2 - i));
-            ctx.lineTo(640 + 100 * j + 50 * (2 - i), 260 - 41 * (2 - i));
-            ctx.lineTo(596 + 100 * j + 50 * (2 - i), 295 - 41 * (2 - i));
-            ctx.closePath();
-            ctx.fill();
-
-            //SHOW RIGHT FACE
-            ctx.fillStyle = "rgb(0,0,0)";
-            ctx.beginPath();
-            ctx.moveTo(801 + 50 * j, 300 + 100 * i - 41 * j);
-            ctx.lineTo(847 + 50 * j, 262 + 100 * i - 41 * j);
-            ctx.lineTo(847 + 50 * j, 360 + 100 * i - 41 * j);
-            ctx.lineTo(801 + 50 * j, 398 + 100 * i - 41 * j);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = cube.colors[cube.right[i][j]];
-            ctx.beginPath();
-            ctx.moveTo(805 + 50 * j, 302 + 100 * i - 41 * j);
-            ctx.lineTo(844 + 50 * j, 270 + 100 * i - 41 * j);
-            ctx.lineTo(844 + 50 * j, 357 + 100 * i - 41 * j);
-            ctx.lineTo(805 + 50 * j, 390 + 100 * i - 41 * j);
-            ctx.closePath();
-            ctx.fill();
-          }
-        }
-
-        // drawElapsedTime();
-        var startTimer = setInterval(drawElapsedTime.bind(this, ctx), 60/1000);
-      }
+      game.draw();
     }
-
   </script>
  </head>
- <body onload="draw();">
+ <body onload="init();">
    <canvas id="canvas" width="1400" height="1200"></canvas>
  </body>
 </html>

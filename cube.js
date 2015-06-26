@@ -1,9 +1,9 @@
 (function () {
-  if (typeof Game === "undefined") {
+  if (typeof window.Game === "undefined") {
     window.Game = {};
   }
 
-  var Cube = Game.Cube = function () {
+  var Cube = window.Game.Cube = function () {
     this.colors = {
       Y: 'rgb(255,255,0)',
       W: 'rgb(255,255,255)',
@@ -295,5 +295,4 @@
 
     this.rotateCounterClockwise(this.up);
   };
-
 })();

@@ -1,16 +1,20 @@
 (function () {
-  if (typeof Game === "undefined") {
+  if (typeof window.Game === "undefined") {
     window.Game = {};
   }
 
-  var EventHandler = Game.EventHandler = function (cube) {
+  var EventHandler = window.Game.EventHandler = function (cube, game) {
     this.cube = cube;
+    this.game = game;
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
     var that = this;
     switch (key.keyCode) {
+      case 32:
+        this.game.startTimer();
+        break;
       case 65:
         that.cube.seeLeft();
         break;
@@ -66,6 +70,6 @@
         that.cube.seeRight();
         break;
     }
-    draw();
+    this.game.draw();
   };
 })();
