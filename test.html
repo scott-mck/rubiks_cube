@@ -80,7 +80,7 @@
 	          var material = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: THREE.FaceColors } );
 
 	  				mesh = new THREE.Mesh( geometry, material );
-	          mesh.position.set(-103 * ~~(j / 3), 100 -100 * (j % 3), 100 - 100 * k);
+	          mesh.position.set(-103 * ~~(j / 3), 100 -103 * (j % 3), 100 - 103 * k);
 						// mesh.rotation.x = .4;
 						// mesh.rotation.y = -.4;
 						// mesh.rotation.z = -.1;
@@ -109,6 +109,7 @@
 
 
 				window.addEventListener( 'resize', onWindowResize, false );
+				window.addEventListener( 'mouseup', doThings, false );
 				window.addEventListener( 'keyup', doThings, false );
 			}
 
@@ -126,16 +127,39 @@
 					THREE.SceneUtils.attach(cubes[i], scene, rotatingFace);
 				}
 
+				rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-0,-5,0) );
+				scene.add(rotatingFace);
+				rotatingFace.rotation.x += Math.PI / 2;
+
 				setTimeout(function () {
 					for (var i = 0; i < 9; i++) {
 						THREE.SceneUtils.detach(cubes[i], rotatingFace, scene);
-						scene.remove(rotatingFace);
 					}
+					scene.remove(rotatingFace);
+					rotatingFace = new THREE.Object3D();
 				}, 30);
-
-				scene.add(rotatingFace);
-				rotatingFace.rotation.x += Math.PI / 2;
 			}
+
+			function doOtherThings() {
+				for (var i = 0; i < 9; i++) {
+					var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
+					THREE.SceneUtils.attach(cubes[index], scene, rotatingFace);
+				}
+
+				rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-107,100,0) );
+				scene.add(rotatingFace);
+				rotatingFace.rotation.z += Math.PI / 2;
+
+				setTimeout(function () {
+					for (var i = 0; i < 9; i++) {
+						var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
+						THREE.SceneUtils.detach(cubes[index], rotatingFace, scene);
+					}
+					scene.remove(rotatingFace);
+					rotatingFace = new THREE.Object3D();
+				}, 30);
+			}
+
 
 			function animate() {
 
