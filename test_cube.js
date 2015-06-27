@@ -3,19 +3,22 @@
     window.Game = {};
   }
 
-  var Cube = window.Game.Cube = function () {
-    this.colors = {
-      Y: 'rgb(255,255,0)',
-      W: 'rgb(255,255,255)',
-      B: 'rgb(0,0,255)',
-      G: 'rgb(0,255,0)',
-      R: 'rgb(255,0,0)',
-      O: 'rgb(255,165,0)'
-    };
+  var Cube = window.Game.Cube = function (cubes) {
+    // this.colors = {
+    //   Y: [255/255,255/255,0/255],
+    //   W: [255/255,255/255,255/255],
+    //   B: [0/255,0/255,255/255],
+    //   G: [0/255,255/255,0/255],
+    //   R: [255/255,0/255,0/255],
+    //   O: [255/255,101/255,0/255]
+    // };
 
-    this.up = [['Y', 'Y', 'Y'],
-         ['Y', 'Y', 'Y'],
-         ['Y', 'Y', 'Y']];
+    this.up = [];
+    for (var i = 0; i < 9; i++) {
+      var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
+      this.up.push(cubes[index]);
+    }
+
 
     this.right = [['R', 'R', 'R'],
             ['R', 'R', 'R'],
