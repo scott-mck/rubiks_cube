@@ -4,48 +4,40 @@
   }
 
   var Cube = window.Game.Cube = function (cubes) {
-    var selected;
-    selected = [];
-
+    this.back = [];
     for (var i = 0; i < 9; i++) {
       var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
-      selected.push(cubes[index]);
+      this.back.push(cubes[index]);
     }
-    this.back = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    selected = [];
+    this.front = [];
     for (var i = 0; i < 9; i++) {
       var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
-      selected.push(cubes[index]);
+      this.front.push(cubes[index]);
     }
-    this.front = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    selected = [];
+    this.right = [];
     for (var i = 0; i < 9; i++) {
-      selected.push(cubes[i]);
+      this.right.push(cubes[i]);
     }
-    this.right = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    selected = [];
+    this.up = [];
     for (var i = 0; i < 9; i++) {
       var index = 20 - 9 * (i % 3) - ~~(i / 3);
-      selected.push(cubes[index]);
+      this.up.push(cubes[index]);
     }
-    this.up = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    selected = [];
+    this.left = [];
     for (var i = 0; i < 9; i++) {
       var index = 20 - (i % 3) + ~~(i / 3) * 3;
-      selected.push(cubes[index]);
+      this.left.push(cubes[index]);
     }
-    this.left = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    selected = [];
+    this.down = [];
     for (var i = 0; i < 9; i++) {
       var index = 24 - 9 * (i % 3) + ~~(i / 3);
-      selected.push(cubes[index]);
+      this.down.push(cubes[index]);
     }
-    this.down = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
       this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.doubleR,
