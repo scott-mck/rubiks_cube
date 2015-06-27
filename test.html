@@ -23,8 +23,7 @@
 			// var game = new Game.Game(canvas, cube);
 			// var eventHandler = new Game.EventHandler(cube, game);
 
-
-			var camera, scene, group, renderer;
+			var camera, scene, renderer;
 			var rotatingFace;
 			var mesh;
 			var cubes = [];
@@ -32,152 +31,116 @@
 			init();
 			animate();
 
-			function init() {
-
+			function init () {
+				//setup
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
-
-				//
-
 				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
 				camera.position.z = 600;
-
 				scene = new THREE.Scene();
 				group = new THREE.Object3D();
 				rotatingFace = new THREE.Object3D();
 
+				//Make individual cube geometry
         for (var j = 0; j < 9; j++) {
   				var geometry = new THREE.BoxGeometry( 100, 100, 100 );
 
-          for ( var i = 0; i < geometry.faces.length; i ++ ) {
-            geometry.faces[ i ].color.setHex( Math.random() * 0xffffff );
-          }
+					//Color each individual cube:
+					//Color right face RED
 					geometry.faces[0].color.setRGB(255/255,0/255,0/255);
 					geometry.faces[1].color.setRGB(255/255,0/255,0/255);
-
+					//Color left face ORANGE
 					geometry.faces[2].color.setRGB(255/255,101/255,0/255);
 					geometry.faces[3].color.setRGB(255/255,101/255,0/255);
-
+					//Color top face YELLOW
 					geometry.faces[4].color.setRGB(255/255,255/255,0/255);
 					geometry.faces[5].color.setRGB(255/255,255/255,0/255);
-
+					//Color down face WHITE
 					geometry.faces[6].color.setRGB(255/255,255/255,255/255);
 					geometry.faces[7].color.setRGB(255/255,255/255,255/255);
-
+					//Color front face BLUE
 					geometry.faces[8].color.setRGB(0/255,0/255,255/255);
 					geometry.faces[9].color.setRGB(0/255,0/255,255/255);
-
+					//Color back face GREEN
 					geometry.faces[10].color.setRGB(0/255,255/255,0/255);
 					geometry.faces[11].color.setRGB(0/255,255/255,0/255);
-  				// var texture = THREE.ImageUtils.loadTexture( 'textures/crate.gif' );
-  				// texture.anisotropy = renderer.getMaxAnisotropy();
-  				// var material = new THREE.MeshBasicMaterial();
 
-
+					//Create 3 cubes and position along z-axis
 					for (var k = 0; k < 3; k++) {
 	          var material = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: THREE.FaceColors } );
-
 	  				mesh = new THREE.Mesh( geometry, material );
 	          mesh.position.set(-103 * ~~(j / 3), 100 -103 * (j % 3), 100 - 103 * k);
-						// mesh.rotation.x = .4;
-						// mesh.rotation.y = -.4;
-						// mesh.rotation.z = -.1;
 
+						//Create cube border
 						var helper = new THREE.EdgesHelper( mesh, 0x000000 );
 						helper.material.linewidth = 10;
+
 						cubes.push(mesh);
 						scene.add(mesh);
 						scene.add(helper);
-
-	  				// group.add( mesh );
 					}
         }
 
-				// group.rotation.x = .4;
-				// group.rotation.y = -.4;
-				// group.rotation.z = -.1;
-
-				// cube = new Game.Cube(group.children);
-				// scene.add(group);
-				// scene.add(rotatingFace);
 				camera.position.x += 200;
 				camera.position.y += 300;
 				camera.position.z -= 100;
-				camera.lookAt(cubes[13].position);
-
+				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
 
 				window.addEventListener( 'resize', onWindowResize, false );
-				window.addEventListener( 'mouseup', doThings, false );
-				window.addEventListener( 'keyup', doThings, false );
+				// window.addEventListener( 'mouseup', doThings, false );
+				// window.addEventListener( 'keyup', doOtherThings, false );
 			}
 
 			function onWindowResize() {
-
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
-
 				renderer.setSize( window.innerWidth, window.innerHeight );
-
 			}
 
-			function doThings() {
-				for (var i = 0; i < 9; i++) {
-					THREE.SceneUtils.attach(cubes[i], scene, rotatingFace);
-				}
-
-				rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-0,-5,0) );
-				scene.add(rotatingFace);
-				rotatingFace.rotation.x += Math.PI / 2;
-
-				setTimeout(function () {
-					for (var i = 0; i < 9; i++) {
-						THREE.SceneUtils.detach(cubes[i], rotatingFace, scene);
-					}
-					scene.remove(rotatingFace);
-					rotatingFace = new THREE.Object3D();
-				}, 30);
-			}
-
-			function doOtherThings() {
-				for (var i = 0; i < 9; i++) {
-					var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
-					THREE.SceneUtils.attach(cubes[index], scene, rotatingFace);
-				}
-
-				rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-107,100,0) );
-				scene.add(rotatingFace);
-				rotatingFace.rotation.z += Math.PI / 2;
-
-				setTimeout(function () {
-					for (var i = 0; i < 9; i++) {
-						var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
-						THREE.SceneUtils.detach(cubes[index], rotatingFace, scene);
-					}
-					scene.remove(rotatingFace);
-					rotatingFace = new THREE.Object3D();
-				}, 30);
-			}
-
+			// function doThings() {
+			// 	for (var i = 0; i < 9; i++) {
+			// 		THREE.SceneUtils.attach(cubes[i], scene, rotatingFace);
+			// 	}
+			//
+			// 	rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-0,-5,0) );
+			// 	scene.add(rotatingFace);
+			// 	rotatingFace.rotation.x += Math.PI / 2;
+			//
+			// 	setTimeout(function () {
+			// 		for (var i = 0; i < 9; i++) {
+			// 			THREE.SceneUtils.detach(cubes[i], rotatingFace, scene);
+			// 		}
+			// 		scene.remove(rotatingFace);
+			// 		rotatingFace = new THREE.Object3D();
+			// 	}, 30);
+			// }
+			//
+			// function doOtherThings() {
+			// 	for (var i = 0; i < 9; i++) {
+			// 		var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
+			// 		THREE.SceneUtils.attach(cubes[index], scene, rotatingFace);
+			// 	}
+			//
+			// 	rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-107,100,0) );
+			// 	scene.add(rotatingFace);
+			// 	rotatingFace.rotation.z += Math.PI / 2;
+			//
+			// 	setTimeout(function () {
+			// 		for (var i = 0; i < 9; i++) {
+			// 			var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
+			// 			THREE.SceneUtils.detach(cubes[index], rotatingFace, scene);
+			// 		}
+			// 		scene.remove(rotatingFace);
+			// 		rotatingFace = new THREE.Object3D();
+			// 	}, 30);
+			// }
 
 			function animate() {
-
 				requestAnimationFrame( animate );
-
-				// for (var a = 0; a < cubes.length; a++) {
-				// 	cubes[a].rotation.y += .01;
-				// }
-
-				// camera.position.x += 10;
-				// group.rotation.y -= 0.01;
-				// group.rotation.x += .01;
-
 				renderer.render( scene, camera );
-
 			}
-
 		</script>
-
 	</body>
 </html>
