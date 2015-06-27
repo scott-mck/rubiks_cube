@@ -19,12 +19,8 @@
 		<script type="application/javascript" src="test_event_handler.js"></script>
 
 		<script>
-			var cube;
-			// var game = new Game.Game(canvas, cube);
-			// var eventHandler = new Game.EventHandler(cube, game);
-
 			var camera, scene, renderer;
-			var rotatingFace;
+			// var rotatingFace;
 			var mesh;
 			var cubes = [];
 
@@ -41,7 +37,7 @@
 				camera.position.z = 600;
 				scene = new THREE.Scene();
 				group = new THREE.Object3D();
-				rotatingFace = new THREE.Object3D();
+				// rotatingFace = new THREE.Object3D();
 
 				//Make individual cube geometry
         for (var j = 0; j < 9; j++) {
@@ -67,13 +63,13 @@
 					geometry.faces[10].color.setRGB(0/255,255/255,0/255);
 					geometry.faces[11].color.setRGB(0/255,255/255,0/255);
 
-					//Create 3 cubes and position along z-axis
+					//Create 3 mini-cubes and position along z-axis
 					for (var k = 0; k < 3; k++) {
 	          var material = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: THREE.FaceColors } );
 	  				mesh = new THREE.Mesh( geometry, material );
 	          mesh.position.set(-103 * ~~(j / 3), 100 -103 * (j % 3), 100 - 103 * k);
 
-						//Create cube border
+						//Create mini-cube border
 						var helper = new THREE.EdgesHelper( mesh, 0x000000 );
 						helper.material.linewidth = 10;
 
@@ -88,9 +84,13 @@
 				camera.position.z -= 100;
 				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
 
+				var rubiksCube = new Game.Cube(cubes);
+				// var game = new Game.Game(rubiksCube);
+				// var eventHandler = new Game.EventHandler(rubiksCube, game);
+
 				window.addEventListener( 'resize', onWindowResize, false );
 				// window.addEventListener( 'mouseup', doThings, false );
-				// window.addEventListener( 'keyup', doOtherThings, false );
+				window.addEventListener( 'keyup', rubiksCube.rPrime.bind(this, scene), false );
 			}
 
 			function onWindowResize() {

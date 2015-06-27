@@ -6,7 +6,7 @@
   var Cube = window.Game.Cube = function (cubes) {
     var selected;
     selected = [];
-    
+
     for (var i = 0; i < 9; i++) {
       var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
       selected.push(cubes[index]);
@@ -217,25 +217,44 @@
     face[0][0] = topRight;
   };
 
-  Cube.prototype.rPrime = function () {
-    var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
-    this.front[0][2] = this.up[0][2];
-    this.front[1][2] = this.up[1][2];
-    this.front[2][2] = this.up[2][2];
+  Cube.prototype.rPrime = function (scene) {
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.right[i], scene, rotatingFace);
+    }
 
-    this.up[0][2] = this.back[2][0];
-    this.up[1][2] = this.back[1][0];
-    this.up[2][2] = this.back[0][0];
+    rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-0,-5,0) );
+    scene.add(rotatingFace);
+    rotatingFace.rotation.x += Math.PI / 2;
 
-    this.back[0][0] = this.down[2][2];
-    this.back[1][0] = this.down[1][2];
-    this.back[2][0] = this.down[0][2];
+    setTimeout(function () {
+      for (var i = 0; i < 9; i++) {
+        THREE.SceneUtils.detach(this.right[i], rotatingFace, scene);
+      }
+      scene.remove(rotatingFace);
+      rotatingFace = new THREE.Object3D();
+    }, 30);
+  };
 
-    this.down[0][2] = rightRow[0];
-    this.down[1][2] = rightRow[1];
-    this.down[2][2] = rightRow[2];
 
-    this.rotateCounterClockwise(this.right);
+    // var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
+    // this.front[0][2] = this.up[0][2];
+    // this.front[1][2] = this.up[1][2];
+    // this.front[2][2] = this.up[2][2];
+    //
+    // this.up[0][2] = this.back[2][0];
+    // this.up[1][2] = this.back[1][0];
+    // this.up[2][2] = this.back[0][0];
+    //
+    // this.back[0][0] = this.down[2][2];
+    // this.back[1][0] = this.down[1][2];
+    // this.back[2][0] = this.down[0][2];
+    //
+    // this.down[0][2] = rightRow[0];
+    // this.down[1][2] = rightRow[1];
+    // this.down[2][2] = rightRow[2];
+    //
+    // this.rotateCounterClockwise(this.right);
   };
 
   Cube.prototype.scramble = function () {
