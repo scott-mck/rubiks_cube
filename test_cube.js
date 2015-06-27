@@ -47,6 +47,28 @@
       this.doubleRPrime, this.doubleL, this.doubleLPrime];
   };
 
+  Cube.prototype.animate = function (rotatingFace, face) {
+    var id = requestAnimationFrame(function () {
+      this.animate(rotatingFace,  face);
+    }.bind(this));
+
+    rotatingFace.rotation.x += Math.PI / 24;
+    renderer.render( this.scene, this.camera );
+
+    function resetRotatingFace(face) {
+      for (var i = 0; i < 9; i++) {
+        THREE.SceneUtils.detach(face[i], rotatingFace, this.scene);
+      }
+      scene.remove(rotatingFace);
+      rotatingFace = new THREE.Object3D();
+    }
+
+    if (rotatingFace.rotation.x >= Math.PI / 2) {
+      cancelAnimationFrame(id);
+      resetRotatingFace(face);
+    }
+  };
+
   Cube.prototype.d = function () {
     var bottomRow = this.front[2];
     this.front[2] = this.left[2];
@@ -221,45 +243,7 @@
     rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(0,-5,0) );
     this.scene.add(rotatingFace);
 
-    function animate (faces) {
-      var id = requestAnimationFrame(function () {
-        animate(faces);
-      });
-      if (rotatingFace.rotation.x >= Math.PI / 2) {
-        cancelAnimationFrame(id);
-        doThing(faces);
-      }
-      rotatingFace.rotation.x += Math.PI / 24;
-      renderer.render( this.scene, this.camera );
-    };
-    animate(this.right);
-
-    function doThing(faces) {
-      for (var i = 0; i < 9; i++) {
-        THREE.SceneUtils.detach(faces[i], rotatingFace, this.scene);
-      }
-      scene.remove(rotatingFace);
-      rotatingFace = new THREE.Object3D();
-    }
-
-    // var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
-    // this.front[0][2] = this.up[0][2];
-    // this.front[1][2] = this.up[1][2];
-    // this.front[2][2] = this.up[2][2];
-    //
-    // this.up[0][2] = this.back[2][0];
-    // this.up[1][2] = this.back[1][0];
-    // this.up[2][2] = this.back[0][0];
-    //
-    // this.back[0][0] = this.down[2][2];
-    // this.back[1][0] = this.down[1][2];
-    // this.back[2][0] = this.down[0][2];
-    //
-    // this.down[0][2] = rightRow[0];
-    // this.down[1][2] = rightRow[1];
-    // this.down[2][2] = rightRow[2];
-    //
-    // this.rotateCounterClockwise(this.right);
+    this.animate(rotatingFace, this.right);
   };
 
   Cube.prototype.scramble = function () {
