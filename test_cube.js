@@ -4,17 +4,9 @@
   }
 
   var Cube = window.Game.Cube = function (cubes) {
-    // this.colors = {
-    //   Y: [255/255,255/255,0/255],
-    //   W: [255/255,255/255,255/255],
-    //   B: [0/255,0/255,255/255],
-    //   G: [0/255,255/255,0/255],
-    //   R: [255/255,0/255,0/255],
-    //   O: [255/255,101/255,0/255]
-    // };
-
     var selected;
     selected = [];
+    
     for (var i = 0; i < 9; i++) {
       var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
       selected.push(cubes[index]);
