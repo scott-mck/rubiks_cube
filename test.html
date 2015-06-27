@@ -27,6 +27,7 @@
 			var camera, scene, group, renderer;
 			var rotatingFace;
 			var mesh;
+			var stuff = [];
 
 			init();
 			animate();
@@ -80,22 +81,32 @@
 
 	  				mesh = new THREE.Mesh( geometry, material );
 	          mesh.position.set(-103 * ~~(j / 3), 100 -100 * (j % 3), 100 - 100 * k);
+						// mesh.rotation.x = .4;
+						// mesh.rotation.y = -.4;
+						// mesh.rotation.z = -.1;
 
 						var helper = new THREE.EdgesHelper( mesh, 0x000000 );
 						helper.material.linewidth = 10;
+						stuff.push(mesh);
+						scene.add(mesh);
 						scene.add(helper);
 
-	  				group.add( mesh );
+	  				// group.add( mesh );
 					}
         }
 
-				group.rotation.x = .4;
-				group.rotation.y = -.4;
-				group.rotation.z = -.1;
+				// group.rotation.x = .4;
+				// group.rotation.y = -.4;
+				// group.rotation.z = -.1;
 
-				cube = new Game.Cube(group.children);
-				scene.add(group);
+				// cube = new Game.Cube(group.children);
+				// scene.add(group);
 				// scene.add(rotatingFace);
+				camera.position.x += 200;
+				camera.position.y += 300;
+				camera.position.z -= 100;
+				camera.lookAt(stuff[13].position);
+
 
 				window.addEventListener( 'resize', onWindowResize, false );
 			}
@@ -113,11 +124,11 @@
 
 				requestAnimationFrame( animate );
 
-				// for (var a = 0; a < 9; a++) {
-				// 	group.children[a].rotation.x += .01;
+				// for (var a = 0; a < stuff.length; a++) {
+				// 	stuff[a].rotation.y += .01;
 				// }
 
-				// mesh.rotation.x += 0.005;
+				// camera.position.x += 10;
 				// group.rotation.y -= 0.01;
 				// group.rotation.x += .01;
 
