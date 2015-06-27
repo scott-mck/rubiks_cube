@@ -82,9 +82,9 @@
         break;
     }
 
-    if (this.cube.solved()) {
-      this.game.endTimer();
-    }
-    this.game.draw();
+    // if (this.cube.solved()) {
+    //   this.game.endTimer();
+    // }
+    // this.game.draw();
   };
 })();
