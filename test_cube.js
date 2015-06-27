@@ -19,26 +19,34 @@
       this.up.push(cubes[index]);
     }
 
+    this.front = [];
+    for (var i = 0; i < 9; i++) {
+      var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
+      this.up.push(cubes[index]);
+    }
 
-    this.right = [['R', 'R', 'R'],
-            ['R', 'R', 'R'],
-            ['R', 'R', 'R']];
+    this.right = [];
+    for (var i = 0; i < 9; i++) {
+      this.up.push(cubes[i]);
+    }
 
-    this.front = [['B', 'B', 'B'],
-            ['B', 'B', 'B'],
-            ['B', 'B', 'B']];
+    this.back = [];
+    for (var i = 0; i < 9; i++) {
+      var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
+      this.up.push(cubes[index]);
+    }
 
-    this.left = [['O', 'O', 'O'],
-           ['O', 'O', 'O'],
-           ['O', 'O', 'O']];
+    this.left = [];
+    for (var i = 0; i < 9; i++) {
+      var index = 20 - (i % 3) + ~~(i / 3) * 3;
+      this.up.push(cubes[index]);
+    }
 
-    this.back = [['G', 'G', 'G'],
-           ['G', 'G', 'G'],
-           ['G', 'G', 'G']];
-
-    this.down = [['W', 'W', 'W'],
-           ['W', 'W', 'W'],
-           ['W', 'W', 'W']];
+    this.down = [];
+    for (var i = 0; i < 9; i++) {
+      var index = 24 - 9 * (i % 3) + ~~(i / 3);
+      this.up.push(cubes[index]);
+    }
 
     this.faces = [this.up, this.right, this.front, this.left, this.back, this.down];
 
