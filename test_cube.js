@@ -3,8 +3,10 @@
     window.Game = {};
   }
 
-  var Cube = window.Game.Cube = function (scene, cubes) {
+  var Cube = window.Game.Cube = function (scene, camera, cubes) {
     this.scene = scene;
+    this.camera = camera;
+
     this.back = [];
     for (var i = 0; i < 9; i++) {
       var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
@@ -216,17 +218,29 @@
       THREE.SceneUtils.attach(this.right[i], this.scene, rotatingFace);
     }
 
-    rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-0,-5,0) );
+    rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(0,-5,0) );
     this.scene.add(rotatingFace);
-    rotatingFace.rotation.x += Math.PI / 2;
 
-    setTimeout(function () {
+    function animate (faces) {
+      var id = requestAnimationFrame(function () {
+        animate(faces);
+      });
+      if (rotatingFace.rotation.x >= Math.PI / 2) {
+        cancelAnimationFrame(id);
+        doThing(faces);
+      }
+      rotatingFace.rotation.x += Math.PI / 24;
+      renderer.render( this.scene, this.camera );
+    };
+    animate(this.right);
+
+    function doThing(faces) {
       for (var i = 0; i < 9; i++) {
-        THREE.SceneUtils.detach(this.right[i], rotatingFace, this.scene);
+        THREE.SceneUtils.detach(faces[i], rotatingFace, this.scene);
       }
       scene.remove(rotatingFace);
       rotatingFace = new THREE.Object3D();
-    }.bind(this), 30);
+    }
 
     // var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
     // this.front[0][2] = this.up[0][2];

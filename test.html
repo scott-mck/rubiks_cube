@@ -84,7 +84,7 @@
 				camera.position.z -= 100;
 				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
 
-				var rubiksCube = new Game.Cube(scene, cubes);
+				var rubiksCube = new Game.Cube(scene, camera, cubes);
 				// var game = new Game.Game(rubiksCube);
 				var eventHandler = new Game.EventHandler(rubiksCube, 'game');
 
