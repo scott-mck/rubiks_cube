@@ -13,42 +13,47 @@
     //   O: [255/255,101/255,0/255]
     // };
 
-    this.up = [];
+    var selected;
+    selected = [];
     for (var i = 0; i < 9; i++) {
       var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
-      this.up.push(cubes[index]);
+      selected.push(cubes[index]);
     }
+    this.back = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    this.front = [];
+    selected = [];
     for (var i = 0; i < 9; i++) {
       var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
-      this.up.push(cubes[index]);
+      selected.push(cubes[index]);
     }
+    this.front = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    this.right = [];
+    selected = [];
     for (var i = 0; i < 9; i++) {
-      this.up.push(cubes[i]);
+      selected.push(cubes[i]);
     }
+    this.right = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    this.back = [];
+    selected = [];
     for (var i = 0; i < 9; i++) {
-      var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
-      this.up.push(cubes[index]);
+      var index = 20 - 9 * (i % 3) - ~~(i / 3);
+      selected.push(cubes[index]);
     }
+    this.up = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    this.left = [];
+    selected = [];
     for (var i = 0; i < 9; i++) {
       var index = 20 - (i % 3) + ~~(i / 3) * 3;
-      this.up.push(cubes[index]);
+      selected.push(cubes[index]);
     }
+    this.left = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
-    this.down = [];
+    selected = [];
     for (var i = 0; i < 9; i++) {
       var index = 24 - 9 * (i % 3) + ~~(i / 3);
-      this.up.push(cubes[index]);
+      selected.push(cubes[index]);
     }
-
-    this.faces = [this.up, this.right, this.front, this.left, this.back, this.down];
+    this.down = [selected.slice(0, 3), selected.slice(3, 6), selected.slice(6, 9)];
 
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
       this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.doubleR,
