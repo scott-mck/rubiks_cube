@@ -77,11 +77,15 @@
 
 
 					for (var k = 0; k < 3; k++) {
-	          var material = new THREE.MeshBasicMaterial( { color: 0xffffff, vertexColors: THREE.FaceColors } );
+	          var material = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: THREE.FaceColors } );
 
 	  				mesh = new THREE.Mesh( geometry, material );
-	          mesh.position.set(-105 * ~~(j / 3), 100 -105 * (j % 3), 100 - 105 * k);
+	          mesh.position.set(-100 * ~~(j / 3), 100 -100 * (j % 3), 100 - 100 * k);
 	          cubes.push(mesh);
+
+						var helper = new THREE.EdgesHelper( mesh, 0x000000 );
+						helper.material.linewidth = 5;
+						scene.add(helper);
 
 
 	  				group.add( mesh );
