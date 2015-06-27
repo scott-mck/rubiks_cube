@@ -27,7 +27,7 @@
 			var camera, scene, group, renderer;
 			var rotatingFace;
 			var mesh;
-			var stuff = [];
+			var cubes = [];
 
 			init();
 			animate();
@@ -87,7 +87,7 @@
 
 						var helper = new THREE.EdgesHelper( mesh, 0x000000 );
 						helper.material.linewidth = 10;
-						stuff.push(mesh);
+						cubes.push(mesh);
 						scene.add(mesh);
 						scene.add(helper);
 
@@ -105,10 +105,11 @@
 				camera.position.x += 200;
 				camera.position.y += 300;
 				camera.position.z -= 100;
-				camera.lookAt(stuff[13].position);
+				camera.lookAt(cubes[13].position);
 
 
 				window.addEventListener( 'resize', onWindowResize, false );
+				window.addEventListener( 'keyup', doThings, false );
 			}
 
 			function onWindowResize() {
@@ -120,12 +121,28 @@
 
 			}
 
+			function doThings() {
+				for (var i = 0; i < 9; i++) {
+					THREE.SceneUtils.attach(cubes[i], scene, rotatingFace);
+				}
+
+				setTimeout(function () {
+					for (var i = 0; i < 9; i++) {
+						THREE.SceneUtils.detach(cubes[i], rotatingFace, scene);
+						scene.remove(rotatingFace);
+					}
+				}, 30);
+
+				scene.add(rotatingFace);
+				rotatingFace.rotation.x += Math.PI / 2;
+			}
+
 			function animate() {
 
 				requestAnimationFrame( animate );
 
-				// for (var a = 0; a < stuff.length; a++) {
-				// 	stuff[a].rotation.y += .01;
+				// for (var a = 0; a < cubes.length; a++) {
+				// 	cubes[a].rotation.y += .01;
 				// }
 
 				// camera.position.x += 10;
