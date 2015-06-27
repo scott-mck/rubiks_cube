@@ -28,7 +28,7 @@
 			animate();
 
 			function init () {
-				//setup
+				//setup scene
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
@@ -84,13 +84,11 @@
 				camera.position.z -= 100;
 				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
 
-				var rubiksCube = new Game.Cube(cubes);
+				var rubiksCube = new Game.Cube(scene, cubes);
 				// var game = new Game.Game(rubiksCube);
-				// var eventHandler = new Game.EventHandler(rubiksCube, game);
+				var eventHandler = new Game.EventHandler(rubiksCube, 'game');
 
 				window.addEventListener( 'resize', onWindowResize, false );
-				// window.addEventListener( 'mouseup', doThings, false );
-				window.addEventListener( 'keyup', rubiksCube.rPrime.bind(this, scene), false );
 			}
 
 			function onWindowResize() {
@@ -98,44 +96,6 @@
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
-
-			// function doThings() {
-			// 	for (var i = 0; i < 9; i++) {
-			// 		THREE.SceneUtils.attach(cubes[i], scene, rotatingFace);
-			// 	}
-			//
-			// 	rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-0,-5,0) );
-			// 	scene.add(rotatingFace);
-			// 	rotatingFace.rotation.x += Math.PI / 2;
-			//
-			// 	setTimeout(function () {
-			// 		for (var i = 0; i < 9; i++) {
-			// 			THREE.SceneUtils.detach(cubes[i], rotatingFace, scene);
-			// 		}
-			// 		scene.remove(rotatingFace);
-			// 		rotatingFace = new THREE.Object3D();
-			// 	}, 30);
-			// }
-			//
-			// function doOtherThings() {
-			// 	for (var i = 0; i < 9; i++) {
-			// 		var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
-			// 		THREE.SceneUtils.attach(cubes[index], scene, rotatingFace);
-			// 	}
-			//
-			// 	rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-107,100,0) );
-			// 	scene.add(rotatingFace);
-			// 	rotatingFace.rotation.z += Math.PI / 2;
-			//
-			// 	setTimeout(function () {
-			// 		for (var i = 0; i < 9; i++) {
-			// 			var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
-			// 			THREE.SceneUtils.detach(cubes[index], rotatingFace, scene);
-			// 		}
-			// 		scene.remove(rotatingFace);
-			// 		rotatingFace = new THREE.Object3D();
-			// 	}, 30);
-			// }
 
 			function animate() {
 				requestAnimationFrame( animate );
