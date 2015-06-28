@@ -67,7 +67,7 @@
 					for (var k = 0; k < 3; k++) {
 	          var material = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: THREE.FaceColors } );
 	  				mesh = new THREE.Mesh( geometry, material );
-	          mesh.position.set(-103 * ~~(j / 3), 100 -103 * (j % 3), 100 - 103 * k);
+	          mesh.position.set(103 -103 * ~~(j / 3), 103 -103 * (j % 3), 103 - 103 * k);
 
 						//Create mini-cube border
 						var helper = new THREE.EdgesHelper( mesh, 0x000000 );

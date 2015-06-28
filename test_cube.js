@@ -52,21 +52,10 @@
   Cube.prototype.animate = function (rotatingFace, face, axis) {
     // rotatingFace is an Object3D parent containg all cubes on a given face
     var id = requestAnimationFrame(function () {
-      this.animate(rotatingFace, face);
+      this.animate(rotatingFace, face, axis);
     }.bind(this));
 
-    switch (axis) {
-      case 'x':
-        rotatingFace.rotation.x += Math.PI / 24;
-        break;
-      case 'y':
-        rotatingFace.rotation.y += Math.PI / 24;
-        break;
-      case 'z':
-        rotatingFace.rotation.z += Math.PI / 24;
-        break;
-    }
-
+    rotatingFace.rotation[axis] += Math.PI / 24;
     renderer.render( this.scene, this.camera );
 
     function resetRotatingFace(face) {
@@ -78,7 +67,7 @@
     }
 
     // when rotatingFace is done rotating, detach cubes and delete from memory
-    if (rotatingFace.rotation.x >= Math.PI / 2) {
+    if (rotatingFace.rotation[axis] >= Math.PI / 2) {
       cancelAnimationFrame(id);
       resetRotatingFace(face);
     }
@@ -255,7 +244,12 @@
       THREE.SceneUtils.attach(this.right[i], this.scene, rotatingFace);
     }
 
-    rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(0,-5,0) );
+    rotatingFace.position.x = rotatingFace.children[4].position.x;
+    rotatingFace.position.y = rotatingFace.children[4].position.y;
+    rotatingFace.position.z = rotatingFace.children[4].position.z;
+
+
+    rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,0) );
     this.scene.add(rotatingFace);
     this.animate(rotatingFace, this.right, 'x');
   };
@@ -335,11 +329,11 @@
 
   Cube.prototype.u = function() {
     var rotatingFace = new THREE.Object3D();
+    // rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-100,0,-100) );
     for (var i = 0; i < 9; i++) {
       THREE.SceneUtils.attach(this.up[i], this.scene, rotatingFace);
     }
 
-    rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,0) );
     this.scene.add(rotatingFace);
     this.animate(rotatingFace, this.up, 'y');
 
