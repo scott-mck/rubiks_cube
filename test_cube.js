@@ -51,8 +51,6 @@
 
   Cube.prototype.animate = function (rotatingFace, face, axis, dir) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
-
-    dir = dir || -1; // default dir to clockwise
     var id = requestAnimationFrame(function () {
       this.animate(rotatingFace, face, axis, dir);
     }.bind(this));
@@ -77,13 +75,13 @@
   };
 
   Cube.prototype.d = function () {
-    var bottomRow = this.front[2];
-    this.front[2] = this.left[2];
-    this.left[2] = this.back[2];
-    this.back[2] = this.right[2];
-    this.right[2] = bottomRow;
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.down[i], this.scene, rotatingFace);
+    }
 
-    this.rotateClockwise(this.down);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.down, 'y', 1);
   };
 
   Cube.prototype.doubleL = function () {
@@ -107,110 +105,63 @@
   };
 
   Cube.prototype.dPrime = function () {
-    var bottomRow = this.front[2];
-    this.front[2] = this.right[2];
-    this.right[2] = this.back[2];
-    this.back[2] = this.left[2];
-    this.left[2] = bottomRow;
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.down[i], this.scene, rotatingFace);
+    }
 
-    this.rotateCounterClockwise(this.down);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.down, 'y', -1);
   };
 
   Cube.prototype.f = function () {
-    var up = this.up[2];
-    this.up[2] = [ this.left[2][2], this.left[1][2], this.left[0][2] ];
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.front[i], this.scene, rotatingFace);
+    }
 
-    this.left[2][2] = this.down[0][2];
-    this.left[1][2] = this.down[0][1];
-    this.left[0][2] = this.down[0][0];
-
-    this.down[0] = [ this.right[2][0], this.right[1][0], this.right[0][0] ];
-
-    this.right[0][0] = up[0];
-    this.right[1][0] = up[1];
-    this.right[2][0] = up[2];
-
-    this.rotateClockwise(this.front);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.front, 'z', -1);
   };
 
   Cube.prototype.fPrime = function () {
-    var up = this.up[2];
-    this.up[2] = [ this.right[0][0], this.right[1][0], this.right[2][0] ];
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.front[i], this.scene, rotatingFace);
+    }
 
-    this.right[0][0] = this.down[0][2];
-    this.right[1][0] = this.down[0][1];
-    this.right[2][0] = this.down[0][0];
-
-    this.down[0] = [ this.left[0][2], this.left[1][2], this.left[2][2] ];
-
-    this.left[0][2] = up[2];
-    this.left[1][2] = up[1];
-    this.left[2][2] = up[0];
-
-    this.rotateCounterClockwise(this.front);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.front, 'z', 1);
   };
 
   Cube.prototype.l = function () {
-    var leftRow = [ this.front[0][0], this.front[1][0], this.front[2][0] ];
-    this.front[0][0] = this.up[0][0];
-    this.front[1][0] = this.up[1][0];
-    this.front[2][0] = this.up[2][0];
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.left[i], this.scene, rotatingFace);
+    }
 
-    this.up[0][0] = this.back[2][2];
-    this.up[1][0] = this.back[1][2];
-    this.up[2][0] = this.back[0][2];
-
-    this.back[0][2] = this.down[2][0];
-    this.back[1][2] = this.down[1][0];
-    this.back[2][2] = this.down[0][0];
-
-    this.down[0][0] = leftRow[0];
-    this.down[1][0] = leftRow[1];
-    this.down[2][0] = leftRow[2];
-
-    this.rotateClockwise(this.left);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.left, 'x', 1);
   };
 
   Cube.prototype.lPrime = function () {
-    var leftRow = [ this.front[0][0], this.front[1][0], this.front[2][0] ];
-    this.front[0][0] = this.down[0][0];
-    this.front[1][0] = this.down[1][0];
-    this.front[2][0] = this.down[2][0];
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.left[i], this.scene, rotatingFace);
+    }
 
-    this.down[0][0] = this.back[2][2];
-    this.down[1][0] = this.back[1][2];
-    this.down[2][0] = this.back[0][2];
-
-    this.back[0][2] = this.up[2][0];
-    this.back[1][2] = this.up[1][0];
-    this.back[2][2] = this.up[0][0];
-
-    this.up[0][0] = leftRow[0];
-    this.up[1][0] = leftRow[1];
-    this.up[2][0] = leftRow[2];
-
-    this.rotateCounterClockwise(this.left);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.left, 'x', -1);
   };
 
   Cube.prototype.r = function() {
-    var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
-    this.front[0][2] = this.down[0][2];
-    this.front[1][2] = this.down[1][2];
-    this.front[2][2] = this.down[2][2];
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.right[i], this.scene, rotatingFace);
+    }
 
-    this.down[0][2] = this.back[2][0];
-    this.down[1][2] = this.back[1][0];
-    this.down[2][2] = this.back[0][0];
-
-    this.back[0][0] = this.up[2][2];
-    this.back[1][0] = this.up[1][2];
-    this.back[2][0] = this.up[0][2];
-
-    this.up[0][2] = rightRow[0];
-    this.up[1][2] = rightRow[1];
-    this.up[2][2] = rightRow[2];
-
-    this.rotateClockwise(this.right);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.right, 'x', -1);
   };
 
   Cube.prototype.rotateClockwise = function(face) {
@@ -247,12 +198,6 @@
       THREE.SceneUtils.attach(this.right[i], this.scene, rotatingFace);
     }
 
-    rotatingFace.position.x = rotatingFace.children[4].position.x;
-    rotatingFace.position.y = rotatingFace.children[4].position.y;
-    rotatingFace.position.z = rotatingFace.children[4].position.z;
-
-
-    rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,0) );
     this.scene.add(rotatingFace);
     this.animate(rotatingFace, this.right, 'x', 1);
   };
@@ -332,32 +277,21 @@
 
   Cube.prototype.u = function() {
     var rotatingFace = new THREE.Object3D();
-    // rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(-100,0,-100) );
     for (var i = 0; i < 9; i++) {
       THREE.SceneUtils.attach(this.up[i], this.scene, rotatingFace);
     }
 
     this.scene.add(rotatingFace);
-    this.animate(rotatingFace, this.up, 'y');
-
-
-
-    // var topRow = this.front[0];
-    // this.front[0] = this.right[0];
-    // this.right[0] = this.back[0];
-    // this.back[0] = this.left[0];
-    // this.left[0] = topRow;
-    //
-    // this.rotateClockwise(this.up);
+    this.animate(rotatingFace, this.up, 'y', -1);
   };
 
   Cube.prototype.uPrime = function() {
-    var topRow = this.front[0];
-    this.front[0] = this.left[0];
-    this.left[0] = this.back[0];
-    this.back[0] = this.right[0];
-    this.right[0] = topRow;
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.up[i], this.scene, rotatingFace);
+    }
 
-    this.rotateCounterClockwise(this.up);
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.up, 'y', 1);
   };
 })();
