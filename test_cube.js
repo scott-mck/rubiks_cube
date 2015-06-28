@@ -3,43 +3,44 @@
     window.Game = {};
   }
 
+  RightIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  FrontIndices = [18, 9, 0, 21, 12, 3, 24, 15, 6];
+  UpIndices    = [20, 11, 2, 19, 10, 1, 18, 9, 0];
+  LeftIndices  = [20, 19, 18, 23, 22, 21, 26, 25, 24];
+  DownIndices  = [24, 15, 6, 25, 16, 7, 26, 17, 8];
+  BackIndices  = [2, 11, 20, 5, 14, 23, 8 ,17, 26];
+
   var Cube = window.Game.Cube = function (scene, camera, cubes) {
     this.scene = scene;
     this.camera = camera;
 
-    this.back = [];
+    this.right = [];
     for (var i = 0; i < 9; i++) {
-      var index = 2 + 9 * (i % 3) + ~~(i / 3) * 3;
-      this.back.push(cubes[index]);
+      this.right.push(cubes[RightIndices[i]]);
     }
 
     this.front = [];
     for (var i = 0; i < 9; i++) {
-      var index = 18 - 9 * (i % 3) + ~~(i / 3) * 3;
-      this.front.push(cubes[index]);
-    }
-
-    this.right = [];
-    for (var i = 0; i < 9; i++) {
-      this.right.push(cubes[i]);
+      this.front.push(cubes[FrontIndices[i]]);
     }
 
     this.up = [];
-    for (var i = 0; i < 9; i++) {
-      var index = 20 - 9 * (i % 3) - ~~(i / 3);
-      this.up.push(cubes[index]);
+      this.up.push(cubes[UpIndices[i]]);
     }
 
     this.left = [];
     for (var i = 0; i < 9; i++) {
-      var index = 20 - (i % 3) + ~~(i / 3) * 3;
-      this.left.push(cubes[index]);
+      this.left.push(cubes[LeftIndices[i]]);
     }
 
     this.down = [];
     for (var i = 0; i < 9; i++) {
-      var index = 24 - 9 * (i % 3) + ~~(i / 3);
-      this.down.push(cubes[index]);
+      this.down.push(cubes[DownIndices[i]]);
+    }
+
+    this.back = [];
+    for (var i = 0; i < 9; i++) {
+      this.back.push(cubes[BackIndices[i]]);
     }
 
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
