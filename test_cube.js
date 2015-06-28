@@ -49,14 +49,16 @@
       this.doubleRPrime, this.doubleL, this.doubleLPrime];
   };
 
-  Cube.prototype.animate = function (rotatingFace, face, axis) {
-    // rotatingFace is an Object3D parent containg all cubes on a given face
+  Cube.prototype.animate = function (rotatingFace, face, axis, dir) {
+    // rotatingFace is an Object3D parent containing all cubes on a given face
+
+    dir = dir || -1; // default dir to clockwise
     var id = requestAnimationFrame(function () {
-      this.animate(rotatingFace, face, axis);
+      this.animate(rotatingFace, face, axis, dir);
     }.bind(this));
 
-    rotatingFace.rotation[axis] += Math.PI / 24;
-    renderer.render( this.scene, this.camera );
+    rotatingFace.rotation[axis] += dir * Math.PI / 24;
+    renderer.render(this.scene, this.camera);
 
     function resetRotatingFace(face) {
       for (var i = 0; i < 9; i++) {
@@ -67,7 +69,8 @@
     }
 
     // when rotatingFace is done rotating, detach cubes and delete from memory
-    if (rotatingFace.rotation[axis] >= Math.PI / 2) {
+    if (rotatingFace.rotation[axis] >= Math.PI / 2 ||
+        rotatingFace.rotation[axis] <= -Math.PI / 2) {
       cancelAnimationFrame(id);
       resetRotatingFace(face);
     }
@@ -251,7 +254,7 @@
 
     rotatingFace.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,0) );
     this.scene.add(rotatingFace);
-    this.animate(rotatingFace, this.right, 'x');
+    this.animate(rotatingFace, this.right, 'x', 1);
   };
 
   Cube.prototype.scramble = function () {
