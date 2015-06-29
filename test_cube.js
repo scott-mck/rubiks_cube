@@ -82,7 +82,7 @@
     }
 
     this.scene.add(rotatingFace);
-    this.animate(rotatingFace, this.down, 'y', 1);
+    this.animate(rotatingFace, this.down, 'y', 1, this.resetDown.bind(this, 1));
   };
 
   Cube.prototype.doubleL = function () {
@@ -112,7 +112,7 @@
     }
 
     this.scene.add(rotatingFace);
-    this.animate(rotatingFace, this.down, 'y', -1);
+    this.animate(rotatingFace, this.down, 'y', -1, this.resetDown.bind(this, -1));
   };
 
   Cube.prototype.f = function () {
@@ -122,7 +122,7 @@
     }
 
     this.scene.add(rotatingFace);
-    this.animate(rotatingFace, this.front, 'z', -1);
+    this.animate(rotatingFace, this.front, 'z', -1, this.resetFront.bind(this, 1));
   };
 
   Cube.prototype.fPrime = function () {
@@ -132,7 +132,7 @@
     }
 
     this.scene.add(rotatingFace);
-    this.animate(rotatingFace, this.front, 'z', 1);
+    this.animate(rotatingFace, this.front, 'z', 1, this.resetFront.bind(this, -1));
   };
 
   Cube.prototype.l = function () {
@@ -163,6 +163,60 @@
 
     this.scene.add(rotatingFace);
     this.animate(rotatingFace, this.right, 'x', -1, this.resetRight.bind(this, 1));
+  };
+
+  Cube.prototype.resetDown = function (dir) {
+    var temp = this.down;
+    if (dir == 1) { // clockwise rotation
+      this.down = [temp[6], temp[3], temp[0],
+                    temp[7], temp[4], temp[1],
+                    temp[8], temp[5], temp[2]];
+    } else if (dir == -1) { // counter-clockwise rotation
+      this.down = [temp[2], temp[5], temp[8],
+                    temp[1], temp[4], temp[7],
+                    temp[0], temp[3], temp[6]];
+    }
+
+    this.front[6] = this.down[0], this.front[7] = this.down[1], this.front[8] = this.down[2];
+    this.right[6] = this.down[2], this.right[7] = this.down[5], this.right[8] = this.down[8];
+    this.back[6] = this.down[8], this.back[7] = this.down[7], this.back[8] = this.down[6];
+    this.left[6] = this.down[6], this.left[7] = this.down[3], this.left[8] = this.down[0];
+  };
+
+  Cube.prototype.resetFront = function (dir) {
+    var temp = this.front;
+    if (dir == 1) { // clockwise rotation
+      this.front = [temp[6], temp[3], temp[0],
+                    temp[7], temp[4], temp[1],
+                    temp[8], temp[5], temp[2]];
+    } else if (dir == -1) { // counter-clockwise rotation
+      this.front = [temp[2], temp[5], temp[8],
+                    temp[1], temp[4], temp[7],
+                    temp[0], temp[3], temp[6]];
+    }
+
+    this.up[6] = this.front[0], this.up[7] = this.front[1], this.up[8] = this.front[2];
+    this.right[0] = this.front[2], this.right[3] = this.front[5], this.right[6] = this.front[8];
+    this.down[0] = this.front[6], this.down[1] = this.front[7], this.down[2] = this.front[8];
+    this.left[2] = this.front[0], this.left[5] = this.front[3], this.left[8] = this.front[6];
+  };
+
+  Cube.prototype.resetLeft = function (dir) {
+    var temp = this.left;
+    if (dir == 1) { // clockwise rotation
+      this.left = [temp[6], temp[3], temp[0],
+                    temp[7], temp[4], temp[1],
+                    temp[8], temp[5], temp[2]];
+    } else if (dir == -1) { // counter-clockwise rotation
+      this.left = [temp[2], temp[5], temp[8],
+                    temp[1], temp[4], temp[7],
+                    temp[0], temp[3], temp[6]];
+    }
+
+    this.up[0] = this.left[0], this.up[3] = this.left[1], this.up[6] = this.left[2];
+    this.front[0] = this.left[2], this.front[3] = this.left[5], this.front[6] = this.left[8];
+    this.down[0] = this.left[8], this.down[3] = this.left[7], this.down[6] = this.left[6];
+    this.back[2] = this.left[0], this.back[5] = this.left[3], this.back[8] = this.left[6];
   };
 
   Cube.prototype.resetRight = function (dir) {
@@ -200,25 +254,6 @@
     this.front[0] = this.up[6], this.front[1] = this.up[7], this.front[2] = this.up[8];
     this.left[0] = this.up[0], this.left[1] = this.up[3], this.left[2] = this.up[6];
   };
-
-  Cube.prototype.resetLeft = function (dir) {
-    var temp = this.left;
-    if (dir == 1) { // clockwise rotation
-      this.left = [temp[6], temp[3], temp[0],
-                    temp[7], temp[4], temp[1],
-                    temp[8], temp[5], temp[2]];
-    } else if (dir == -1) { // counter-clockwise rotation
-      this.left = [temp[2], temp[5], temp[8],
-                    temp[1], temp[4], temp[7],
-                    temp[0], temp[3], temp[6]];
-    }
-
-    this.up[0] = this.left[0], this.up[3] = this.left[1], this.up[6] = this.left[2];
-    this.front[0] = this.left[2], this.front[3] = this.left[5], this.front[6] = this.left[8];
-    this.down[0] = this.left[8], this.down[3] = this.left[7], this.down[6] = this.left[6];
-    this.back[2] = this.left[0], this.back[5] = this.left[3], this.back[8] = this.left[6];
-  };
-
 
   Cube.prototype.rotateClockwise = function(face) {
     var topMid = face[0][1];
