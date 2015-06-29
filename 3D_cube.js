@@ -58,7 +58,7 @@
       this.animate(rotatingFace, face, axis, dir, callback);
     }.bind(this));
 
-    rotatingFace.rotation[axis] += dir * Math.PI / 24;
+    rotatingFace.rotation[axis] += dir * Math.PI / 16;
     renderer.render(this.scene, this.camera);
 
     function resetRotatingFace(face) {
@@ -110,26 +110,6 @@
 
     this.scene.add(rotatingFace);
     this.animate(rotatingFace, this.down, 'y', 1, this.resetDown.bind(this, 1));
-  };
-
-  Cube.prototype.doubleL = function () {
-    this.r();
-    this.seeUp();
-  };
-
-  Cube.prototype.doubleLPrime = function () {
-    this.rPrime();
-    this.seeDown();
-  };
-
-  Cube.prototype.doubleR = function () {
-    this.l();
-    this.seeDown();
-  };
-
-  Cube.prototype.doubleRPrime = function () {
-    this.lPrime();
-    this.seeUp();
   };
 
   Cube.prototype.dPrime = function () {

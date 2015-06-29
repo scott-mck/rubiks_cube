@@ -9,7 +9,7 @@
     this.eventLoop = [];
     // this.started = false;
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
-    setInterval(this.triggerEvent.bind(this), 100);
+    setInterval(this.triggerEvent.bind(this), 0);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
@@ -27,64 +27,68 @@
           this.eventLoop.push(this.cube.possibleMoves[randIndex]);
         }
         break;
-      case 65:
+      case 65: // a
         this.eventLoop.push(this.cube.seeLeft);
         break;
-      case 67:
-        this.eventLoop.push(this.cube.doubleL);
-        break;
-      case 68:
-        this.eventLoop.push(this.cube.l);
-        break;
-      case 69:
-        this.eventLoop.push(this.cube.lPrime);
-        break;
-      case 70:
-        this.eventLoop.push(this.cube.uPrime);
-        break;
-      case 71:
-        this.eventLoop.push(this.cube.fPrime);
-        break;
-      case 72:
-        this.eventLoop.push(this.cube.f);
-        break;
-      case 73:
+      case 67: // c
+        this.eventLoop.push(this.cube.seeUp);
         this.eventLoop.push(this.cube.r);
         break;
-      case 74:
+      case 68: // d
+        this.eventLoop.push(this.cube.l);
+        break;
+      case 69: // e
+        this.eventLoop.push(this.cube.lPrime);
+        break;
+      case 70: // f
+        this.eventLoop.push(this.cube.uPrime);
+        break;
+      case 71: // g
+        this.eventLoop.push(this.cube.fPrime);
+        break;
+      case 72: // h
+        this.eventLoop.push(this.cube.f);
+        break;
+      case 73: // i
+        this.eventLoop.push(this.cube.r);
+        break;
+      case 74: // j
         this.eventLoop.push(this.cube.u);
         break;
-      case 75:
+      case 75: // k
         this.eventLoop.push(this.cube.rPrime);
         break;
-      case 76:
+      case 76: // l
         this.eventLoop.push(this.cube.dPrime);
         break;
-      case 77:
-        this.eventLoop.push(this.cube.doubleRPrime);
+      case 77: // m
+        this.eventLoop.push(this.cube.seeUp);
+        this.eventLoop.push(this.cube.lPrime);
         break;
-      case 78:
+      case 78: // n
         this.eventLoop.push(this.cube.seeUp);
         break;
-      case 80:
+      case 80: // q
         this.eventLoop.push(this.cube.bPrime);
         break;
-      case 81:
+      case 81: // p
         this.eventLoop.push(this.cube.b);
         break;
-      case 82:
-        this.eventLoop.push(this.cube.doubleLPrime);
+      case 82: // r
+        this.eventLoop.push(this.cube.seeDown);
+        this.eventLoop.push(this.cube.rPrime);
         break;
-      case 83:
+      case 83: // s
         this.eventLoop.push(this.cube.d);
         break;
-      case 85:
-        this.eventLoop.push(this.cube.doubleR);
+      case 85: // u
+        this.eventLoop.push(this.cube.seeDown);
+        this.eventLoop.push(this.cube.l);
         break;
-      case 89:
+      case 89: // y
         this.eventLoop.push(this.cube.seeDown);
         break;
-      case 186:
+      case 186: // semi-colon
         this.eventLoop.push(this.cube.seeRight);
         break;
     }
