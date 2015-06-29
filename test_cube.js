@@ -11,6 +11,7 @@
   BackIndices  = [2,  11, 20, 5,  14, 23, 8,  17, 26];
 
   var Cube = window.Game.Cube = function (scene, camera, cubes) {
+    this.cubes = cubes;
     this.scene = scene;
     this.camera = camera;
 
@@ -51,6 +52,7 @@
 
   Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
+    callback = callback || function () {};
     var id = requestAnimationFrame(function () {
       this.animate(rotatingFace, face, axis, dir, callback);
     }.bind(this));
@@ -59,7 +61,7 @@
     renderer.render(this.scene, this.camera);
 
     function resetRotatingFace(face) {
-      for (var i = 0; i < 9; i++) {
+      for (var i = 0; i < face.length; i++) {
         THREE.SceneUtils.detach(face[i], rotatingFace, this.scene);
       }
       scene.remove(rotatingFace);
@@ -167,14 +169,10 @@
 
   Cube.prototype.resetDown = function (dir) {
     var temp = this.down;
-    if (dir == 1) { // clockwise rotation
-      this.down = [temp[6], temp[3], temp[0],
-                    temp[7], temp[4], temp[1],
-                    temp[8], temp[5], temp[2]];
-    } else if (dir == -1) { // counter-clockwise rotation
-      this.down = [temp[2], temp[5], temp[8],
-                    temp[1], temp[4], temp[7],
-                    temp[0], temp[3], temp[6]];
+    if (dir == 1) {
+      this.down = this.rotateClockwise(this.down);
+    } else if (dir == -1) {
+      this.down = this.rotateCounterClockwise(this.down);
     }
 
     this.front[6] = this.down[0], this.front[7] = this.down[1], this.front[8] = this.down[2];
@@ -185,14 +183,10 @@
 
   Cube.prototype.resetFront = function (dir) {
     var temp = this.front;
-    if (dir == 1) { // clockwise rotation
-      this.front = [temp[6], temp[3], temp[0],
-                    temp[7], temp[4], temp[1],
-                    temp[8], temp[5], temp[2]];
-    } else if (dir == -1) { // counter-clockwise rotation
-      this.front = [temp[2], temp[5], temp[8],
-                    temp[1], temp[4], temp[7],
-                    temp[0], temp[3], temp[6]];
+    if (dir == 1) {
+      this.front = this.rotateClockwise(this.front);
+    } else if (dir == -1) {
+      this.front = this.rotateCounterClockwise(this.front);
     }
 
     this.up[6] = this.front[0], this.up[7] = this.front[1], this.up[8] = this.front[2];
@@ -203,14 +197,10 @@
 
   Cube.prototype.resetLeft = function (dir) {
     var temp = this.left;
-    if (dir == 1) { // clockwise rotation
-      this.left = [temp[6], temp[3], temp[0],
-                    temp[7], temp[4], temp[1],
-                    temp[8], temp[5], temp[2]];
-    } else if (dir == -1) { // counter-clockwise rotation
-      this.left = [temp[2], temp[5], temp[8],
-                    temp[1], temp[4], temp[7],
-                    temp[0], temp[3], temp[6]];
+    if (dir == 1) {
+      this.left = this.rotateClockwise(this.left);
+    } else if (dir == -1) {
+      this.left = this.rotateCounterClockwise(this.left);
     }
 
     this.up[0] = this.left[0], this.up[3] = this.left[1], this.up[6] = this.left[2];
@@ -220,15 +210,10 @@
   };
 
   Cube.prototype.resetRight = function (dir) {
-    var temp = this.right;
-    if (dir == 1) { // clockwise rotation
-      this.right = [temp[6], temp[3], temp[0],
-                    temp[7], temp[4], temp[1],
-                    temp[8], temp[5], temp[2]];
-    } else if (dir == -1) { // counter-clockwise rotation
-      this.right = [temp[2], temp[5], temp[8],
-                    temp[1], temp[4], temp[7],
-                    temp[0], temp[3], temp[6]];
+    if (dir == 1) {
+      this.right = this.rotateClockwise(this.right);
+    } else if (dir == -1) {
+      this.right = this.rotateCounterClockwise(this.right);
     }
 
     this.up[2] = this.right[2], this.up[5] = this.right[1], this.up[8] = this.right[0];
@@ -238,15 +223,10 @@
   };
 
   Cube.prototype.resetUp = function (dir) {
-    var temp = this.up;
-    if (dir == 1) { // clockwise rotation
-      this.up = [temp[6], temp[3], temp[0],
-                    temp[7], temp[4], temp[1],
-                    temp[8], temp[5], temp[2]];
-    } else if (dir == -1) { // counter-clockwise rotation
-      this.up = [temp[2], temp[5], temp[8],
-                    temp[1], temp[4], temp[7],
-                    temp[0], temp[3], temp[6]];
+    if (dir == 1) {
+      this.up = this.rotateClockwise(this.up);
+    } else if (dir == -1) {
+      this.up = this.rotateCounterClockwise(this.up);
     }
 
     this.back[0] = this.up[2], this.back[1] = this.up[1], this.back[2] = this.up[0];
@@ -256,31 +236,19 @@
   };
 
   Cube.prototype.rotateClockwise = function(face) {
-    var topMid = face[0][1];
-    face[0][1] = face[1][0];
-    face[1][0] = face[2][1];
-    face[2][1] = face[1][2];
-    face[1][2] = topMid;
-
-    var topRight = face[0][2];
-    face[0][2] = face[0][0];
-    face[0][0] = face[2][0];
-    face[2][0] = face[2][2];
-    face[2][2] = topRight;
+    var temp = face;
+    face = [temp[6], temp[3], temp[0],
+                  temp[7], temp[4], temp[1],
+                  temp[8], temp[5], temp[2]];
+    return face;
   };
 
   Cube.prototype.rotateCounterClockwise = function(face) {
-    var topMid = face[0][1];
-    face[0][1] = face[1][2];
-    face[1][2] = face[2][1];
-    face[2][1] = face[1][0];
-    face[1][0] = topMid;
-
-    var topRight = face[0][2];
-    face[0][2] = face[2][2];
-    face[2][2] = face[2][0];
-    face[2][0] = face[0][0];
-    face[0][0] = topRight;
+    var temp = face;
+    face = [temp[2], temp[5], temp[8],
+                  temp[1], temp[4], temp[7],
+                  temp[0], temp[3], temp[6]];
+    return face;
   };
 
   Cube.prototype.rPrime = function () {
@@ -300,14 +268,21 @@
   };
 
   Cube.prototype.seeLeft = function () {
-    this.rotateCounterClockwise(this.up);
-    this.rotateClockwise(this.down);
+    var rubiksCube = new THREE.Object3D();
+    for (var i = 0; i < this.cubes.length; i++) {
+      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+    }
+    this.scene.add(rubiksCube);
+    this.animate(rubiksCube, this.cubes, 'y', 1, function () {
+      var temp = this.front;
+      this.front = this.left;
+      this.left = this.back;
+      this.back = this.right;
+      this.right = temp;
 
-    var oldFront = this.front;
-    this.front = this.left;
-    this.left = this.back;
-    this.back = this.right;
-    this.right = oldFront;
+      this.up = this.rotateCounterClockwise(this.up);
+      this.down = this.rotateClockwise(this.down);
+    }.bind(this));
   };
 
   Cube.prototype.seeDown = function () {
@@ -326,14 +301,21 @@
   };
 
   Cube.prototype.seeRight = function () {
+    var rubiksCube = new THREE.Object3D();
+    for (var i = 0; i < this.cubes.length; i++) {
+      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+    }
+    this.scene.add(rubiksCube);
+    this.animate(rubiksCube, this.cubes, 'y', -1, function () {
+      var temp = this.front;
+      this.front = this.right;
+      this.right = this.back;
+      this.back = this.left;
+      this.left = temp;
 
-    var oldFront = this.front;
-    this.front = this.right;
-    this.right = this.back;
-    this.back = this.left;
-    this.left = oldFront;
-    this.rotateClockwise(this.up);
-    this.rotateCounterClockwise(this.down);
+      this.up = this.rotateClockwise(this.up);
+      this.down = this.rotateCounterClockwise(this.down);
+    }.bind(this));
   };
 
   Cube.prototype.seeUp = function () {
