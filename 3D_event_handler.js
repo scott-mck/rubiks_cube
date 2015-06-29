@@ -13,7 +13,6 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-    var that = this;
     if ( this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 82 && key.keyCode <= 85)) ) {
@@ -29,60 +28,60 @@
         }
         break;
       case 65:
-        that.cube.seeLeft();
+        this.eventLoop.push(this.cube.seeLeft);
         break;
       case 67:
-        that.cube.doubleL();
+        this.eventLoop.push(this.cube.doubleL);
         break;
       case 68:
-        that.cube.l();
+        this.eventLoop.push(this.cube.l);
         break;
       case 69:
-        that.cube.lPrime();
+        this.eventLoop.push(this.cube.lPrime);
         break;
       case 70:
-        that.cube.uPrime();
+        this.eventLoop.push(this.cube.uPrime);
         break;
       case 71:
-        that.cube.fPrime();
+        this.eventLoop.push(this.cube.fPrime);
         break;
       case 72:
-        that.cube.f();
+        this.eventLoop.push(this.cube.f);
         break;
       case 73:
-        // that.cube.r();
-        this.eventLoop.push(that.cube.r);
+        // this.cube.r();
+        this.eventLoop.push(this.cube.r);
         break;
       case 74:
-        // that.cube.u();
-        this.eventLoop.push(that.cube.u);
+        // this.cube.u();
+        this.eventLoop.push(this.cube.u);
         break;
       case 75:
-        that.cube.rPrime();
+        this.eventLoop.push(this.cube.rPrime);
         break;
       case 76:
-        that.cube.dPrime();
+        this.eventLoop.push(this.cube.dPrim);
         break;
       case 77:
-        that.cube.doubleRPrime();
+        this.eventLoop.push(this.cube.doubleRPrime);
         break;
       case 78:
-        that.cube.seeUp();
+        this.eventLoop.push(this.cube.seeUp);
         break;
       case 82:
-        that.cube.doubleLPrime();
+        this.eventLoop.push(this.cube.doubleLPrime);
         break;
       case 83:
-        that.cube.d();
+        this.eventLoop.push(this.cube.d);
         break;
       case 85:
-        that.cube.doubleR();
+        this.eventLoop.push(this.cube.doubleR);
         break;
       case 89:
-        that.cube.seeDown();
+        this.eventLoop.push(this.cube.seeDown);
         break;
       case 186:
-        that.cube.seeRight();
+        this.eventLoop.push(this.cube.seeRight);
         break;
     }
   };
