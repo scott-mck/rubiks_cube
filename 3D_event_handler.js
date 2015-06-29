@@ -7,9 +7,10 @@
     this.cube = cube;
     this.game = game;
     this.eventLoop = [];
+    this.scrambleMoves = [];
     // this.started = false;
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
-    setInterval(this.triggerEvent.bind(this), 0);
+    setInterval(this.triggerEvent.bind(this), 10);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
@@ -21,10 +22,22 @@
     }
 
     switch (key.keyCode) {
+      case 13:
+        this.solve();
+        break;
       case 32: // space
         for (var i = 0; i < 50; i++) {
           var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
-          this.eventLoop.push(this.cube.possibleMoves[randIndex]);
+          var fn = this.cube.possibleMoves[randIndex];
+          this.eventLoop.push(fn);
+
+          var fnName = fn.name;
+          if (fnName.indexOf('Prime') > -1) {
+            fnName = fnName.slice(0, fnName.indexOf('Prime'));
+          } else {
+            fnName += 'Prime';
+          }
+          this.scrambleMoves.push(fnName);
         }
         break;
       case 65: // a
@@ -91,6 +104,13 @@
       case 186: // semi-colon
         this.eventLoop.push(this.cube.seeRight);
         break;
+    }
+  };
+
+  EventHandler.prototype.solve = function () {
+    for (var i = 0; i < this.scrambleMoves.length; i++) {
+      var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
+      this.eventLoop.push(this.cube[fn]);
     }
   };
 
