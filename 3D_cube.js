@@ -236,18 +236,18 @@
   };
 
   Cube.prototype.rotateClockwise = function(face) {
-    var temp = face;
-    face = [temp[6], temp[3], temp[0],
-                  temp[7], temp[4], temp[1],
-                  temp[8], temp[5], temp[2]];
+    // var temp = face;
+    face = [face[6], face[3], face[0],
+                  face[7], face[4], face[1],
+                  face[8], face[5], face[2]];
     return face;
   };
 
   Cube.prototype.rotateCounterClockwise = function(face) {
-    var temp = face;
-    face = [temp[2], temp[5], temp[8],
-                  temp[1], temp[4], temp[7],
-                  temp[0], temp[3], temp[6]];
+    // var face = face;
+    face = [face[2], face[5], face[8],
+                  face[1], face[4], face[7],
+                  face[0], face[3], face[6]];
     return face;
   };
 
@@ -322,7 +322,6 @@
   };
 
   Cube.prototype.seeUp = function () {
-    debugger
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
       THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);

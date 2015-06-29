@@ -12,9 +12,9 @@
 
   EventHandler.prototype.handleEvents = function (key) {
     var that = this;
-    if (this.started &&
+    if ( this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
-      (key.keyCode >= 82 && key.keyCode <= 85))) {
+      (key.keyCode >= 82 && key.keyCode <= 85)) ) {
         this.game.startTimer();
         this.started = false;
     }
