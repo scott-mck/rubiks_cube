@@ -286,18 +286,21 @@
   };
 
   Cube.prototype.seeDown = function () {
-    this.rotateClockwise(this.right);
-    this.rotateCounterClockwise(this.left);
-    this.rotateClockwise(this.up);
-    this.rotateClockwise(this.up);
-    this.rotateClockwise(this.back);
-    this.rotateClockwise(this.back);
+    var rubiksCube = new THREE.Object3D();
+    for (var i = 0; i < this.cubes.length; i++) {
+      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+    }
+    this.scene.add(rubiksCube);
+    this.animate(rubiksCube, this.cubes, 'x', -1, function () {
+      var temp = this.up;
+      this.up = this.front;
+      this.front = this.down;
+      this.down = this.back.reverse();
+      this.back = temp.reverse();
 
-    var oldFront = this.front;
-    this.front = this.down;
-    this.down = this.back;
-    this.back = this.up;
-    this.up = oldFront;
+      this.right = this.rotateClockwise(this.right);
+      this.left = this.rotateCounterClockwise(this.left);
+    }.bind(this));
   };
 
   Cube.prototype.seeRight = function () {
@@ -319,18 +322,22 @@
   };
 
   Cube.prototype.seeUp = function () {
-    this.rotateClockwise(this.left);
-    this.rotateCounterClockwise(this.right);
-    this.rotateClockwise(this.back);
-    this.rotateClockwise(this.back);
-    this.rotateClockwise(this.down);
-    this.rotateClockwise(this.down);
+    debugger
+    var rubiksCube = new THREE.Object3D();
+    for (var i = 0; i < this.cubes.length; i++) {
+      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+    }
+    this.scene.add(rubiksCube);
+    this.animate(rubiksCube, this.cubes, 'x', 1, function () {
+      var temp = this.up;
+      this.up = this.back.reverse();
+      this.back = this.down.reverse();
+      this.down = this.front;
+      this.front = temp;
 
-    var oldFront = this.front;
-    this.front = this.up;
-    this.up = this.back;
-    this.back = this.down;
-    this.down = oldFront;
+      this.right = this.rotateCounterClockwise(this.right);
+      this.left = this.rotateClockwise(this.left);
+    }.bind(this));
   };
 
   Cube.prototype.solved = function () {
