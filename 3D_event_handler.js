@@ -6,8 +6,10 @@
   var EventHandler = window.Game.EventHandler = function (cube, game) {
     this.cube = cube;
     this.game = game;
-    this.started = false;
+    this.eventLoop = [];
+    // this.started = false;
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
+    setInterval(this.triggerEvent.bind(this), 100);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
@@ -48,10 +50,12 @@
         that.cube.f();
         break;
       case 73:
-        that.cube.r();
+        // that.cube.r();
+        this.eventLoop.push(that.cube.r);
         break;
       case 74:
-        that.cube.u();
+        // that.cube.u();
+        this.eventLoop.push(that.cube.u);
         break;
       case 75:
         that.cube.rPrime();
@@ -81,10 +85,11 @@
         that.cube.seeRight();
         break;
     }
+  };
 
-    // if (this.cube.solved()) {
-    //   this.game.endTimer();
-    // }
-    // this.game.draw();
+  EventHandler.prototype.triggerEvent = function () {
+    if (!this.cube.animating && this.eventLoop.length > 0) {
+      this.eventLoop.shift().call(this.cube);
+    }
   };
 })();
