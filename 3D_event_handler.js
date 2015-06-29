@@ -21,10 +21,10 @@
     }
 
     switch (key.keyCode) {
-      case 32:
-        if (!this.game.timing) {
-          this.cube.scramble();
-          this.started = true;
+      case 32: // space
+        for (var i = 0; i < 50; i++) {
+          var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
+          this.eventLoop.push(this.cube.possibleMoves[randIndex]);
         }
         break;
       case 65:
@@ -49,24 +49,28 @@
         this.eventLoop.push(this.cube.f);
         break;
       case 73:
-        // this.cube.r();
         this.eventLoop.push(this.cube.r);
         break;
       case 74:
-        // this.cube.u();
         this.eventLoop.push(this.cube.u);
         break;
       case 75:
         this.eventLoop.push(this.cube.rPrime);
         break;
       case 76:
-        this.eventLoop.push(this.cube.dPrim);
+        this.eventLoop.push(this.cube.dPrime);
         break;
       case 77:
         this.eventLoop.push(this.cube.doubleRPrime);
         break;
       case 78:
         this.eventLoop.push(this.cube.seeUp);
+        break;
+      case 80:
+        this.eventLoop.push(this.cube.bPrime);
+        break;
+      case 81:
+        this.eventLoop.push(this.cube.b);
         break;
       case 82:
         this.eventLoop.push(this.cube.doubleLPrime);
