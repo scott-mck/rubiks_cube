@@ -47,8 +47,8 @@
     }
 
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
-      this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.doubleR,
-      this.doubleRPrime, this.doubleL, this.doubleLPrime];
+      this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.b,
+      this.bPrime];
   };
 
   Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
@@ -77,6 +77,28 @@
       callback();
       this.animating = false;
     }
+  };
+
+  Cube.prototype.b = function () {
+    this.animating = true;
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.back[i], this.scene, rotatingFace);
+    }
+
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.back, 'z', 1, this.resetBack.bind(this, 1));
+  };
+
+  Cube.prototype.bPrime = function () {
+    this.animating = true;
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this.back[i], this.scene, rotatingFace);
+    }
+
+    this.scene.add(rotatingFace);
+    this.animate(rotatingFace, this.back, 'z', -1, this.resetBack.bind(this, -1));
   };
 
   Cube.prototype.d = function () {
@@ -174,6 +196,20 @@
 
     this.scene.add(rotatingFace);
     this.animate(rotatingFace, this.right, 'x', -1, this.resetRight.bind(this, 1));
+  };
+
+  Cube.prototype.resetBack = function (dir) {
+    var temp = this.back;
+    if (dir == 1) {
+      this.back = this.rotateClockwise(this.back);
+    } else if (dir == -1) {
+      this.back = this.rotateCounterClockwise(this.back);
+    }
+
+    this.up[0] = this.back[2], this.up[1] = this.back[1], this.up[2] = this.back[0];
+    this.left[0] = this.back[2], this.left[3] = this.back[5], this.left[6] = this.back[8];
+    this.down[6] = this.back[8], this.down[7] = this.back[7], this.down[8] = this.back[6];
+    this.right[2] = this.back[0], this.right[5] = this.back[3], this.right[8] = this.back[6];
   };
 
   Cube.prototype.resetDown = function (dir) {
