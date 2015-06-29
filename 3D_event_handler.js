@@ -112,6 +112,7 @@
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
       this.eventLoop.push(this.cube[fn]);
     }
+    this.scrambleMoves = [];
   };
 
   EventHandler.prototype.triggerEvent = function () {
