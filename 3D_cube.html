@@ -16,6 +16,12 @@
 			RUBIK'S CUBE
 		</h1>
 
+		<h2 style="color: white; margin: 30px; font-size: 48px; position: absolute; margin-top: 400px;">
+			TIMER
+			<small class="timer"></small>
+		</h2>
+
+		<script src="./jquery-2.1.4.min.js"></script>
 		<script src="./three.min.js"></script>
 		<script type="application/javascript" src="3D_cube.js"></script>
 		<script type="application/javascript" src="3D_game.js"></script>
@@ -25,6 +31,7 @@
 			var camera, scene, renderer;
 			var mesh;
 			var cubes = [];
+			var startTime = new Date();
 
 			init();
 			animate();
@@ -81,7 +88,7 @@
 					}
         }
 
-				camera.position.x += 300;
+				camera.position.x += 250;
 				camera.position.y += 300;
 				camera.position.z -= 100;
 				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
@@ -103,6 +110,7 @@
 				requestAnimationFrame( animate );
 				renderer.render( scene, camera );
 			}
+
 		</script>
 	</body>
 </html>

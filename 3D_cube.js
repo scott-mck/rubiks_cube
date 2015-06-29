@@ -1,3 +1,5 @@
+// TODO: Refactor reset methods
+
 (function () {
   if (typeof window.Game === "undefined") {
     window.Game = {};

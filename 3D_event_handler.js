@@ -3,21 +3,28 @@
     window.Game = {};
   }
 
-  var EventHandler = window.Game.EventHandler = function (cube, game) {
+  var EventHandler = window.Game.EventHandler = function (cube) {
     this.cube = cube;
-    this.game = game;
     this.eventLoop = [];
     this.scrambleMoves = [];
-    // this.started = false;
+    this.started = false;
+
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
     setInterval(this.triggerEvent.bind(this), 10);
+  };
+
+  EventHandler.prototype.displayElapsedTime = function () {
+    this.startTime = this.startTime || new Date();
+    var time = (new Date() - this.startTime) / 1000;
+    $('.timer').text(time);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
     if ( this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 82 && key.keyCode <= 85)) ) {
-        this.game.startTimer();
+        // this.eventLoop.push(this.displayElapsedTime.bind(this));
+        setInterval(this.displayElapsedTime.bind(this), 60/1000);
         this.started = false;
     }
 
@@ -26,7 +33,7 @@
         this.solve();
         break;
       case 32: // space
-        for (var i = 0; i < 50; i++) {
+        for (var i = 0; i < 20; i++) {
           var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
           var fn = this.cube.possibleMoves[randIndex];
           this.eventLoop.push(fn);
@@ -38,6 +45,8 @@
             fnName += 'Prime';
           }
           this.scrambleMoves.push(fnName);
+
+          this.started = true;
         }
         break;
       case 65: // a
@@ -113,6 +122,11 @@
       this.eventLoop.push(this.cube[fn]);
     }
     this.scrambleMoves = [];
+  };
+
+  EventHandler.prototype.startTimer = function () {
+    // setInterval(this.displayElapsedTime, 60/1000);
+    this.displayElapsedTime();
   };
 
   EventHandler.prototype.triggerEvent = function () {
