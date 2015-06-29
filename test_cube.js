@@ -49,10 +49,10 @@
       this.doubleRPrime, this.doubleL, this.doubleLPrime];
   };
 
-  Cube.prototype.animate = function (rotatingFace, face, axis, dir) {
+  Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
     var id = requestAnimationFrame(function () {
-      this.animate(rotatingFace, face, axis, dir);
+      this.animate(rotatingFace, face, axis, dir, callback);
     }.bind(this));
 
     rotatingFace.rotation[axis] += dir * Math.PI / 24;
@@ -68,9 +68,10 @@
 
     // when rotatingFace is done rotating, detach cubes and delete from memory
     if (rotatingFace.rotation[axis] >= Math.PI / 2 ||
-        rotatingFace.rotation[axis] <= -Math.PI / 2) {
+          rotatingFace.rotation[axis] <= -Math.PI / 2) {
       cancelAnimationFrame(id);
       resetRotatingFace(face);
+      callback();
     }
   };
 
@@ -161,7 +162,25 @@
     }
 
     this.scene.add(rotatingFace);
-    this.animate(rotatingFace, this.right, 'x', -1);
+    this.animate(rotatingFace, this.right, 'x', -1, this.resetRight.bind(this, 1));
+  };
+
+  Cube.prototype.resetRight = function (dir) {
+    var temp = this.right;
+    if (dir == 1) {
+      this.right = [temp[6], temp[3], temp[0],
+                    temp[7], temp[4], temp[1],
+                    temp[8], temp[5], temp[2]];
+    } else {
+      this.right = [temp[2], temp[5], temp[8],
+                    temp[1], temp[4], temp[7],
+                    temp[0], temp[3], temp[6]];
+    }
+
+    this.up[2] = this.right[2], this.up[5] = this.right[1], this.up[8] = this.right[0];
+    this.front[2] = this.right[0], this.front[5] = this.right[3], this.front[8] = this.right[6];
+    this.down[1] = this.right[6], this.down[2] = this.right[7], this.down[3] = this.right[8];
+    this.back[0] = this.right[2], this.back[3] = this.right[5], this.back[6] = this.right[8];
   };
 
   Cube.prototype.rotateClockwise = function(face) {
