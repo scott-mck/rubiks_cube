@@ -10,20 +10,19 @@
     this.started = false;
 
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
-    setInterval(this.triggerEvent.bind(this), 10);
+    this.intervalId = setInterval(this.triggerEvent.bind(this), 10);
   };
 
   EventHandler.prototype.displayElapsedTime = function () {
     this.startTime = this.startTime || new Date();
-    var time = (new Date() - this.startTime) / 1000;
+    var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
     if ( this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
-      (key.keyCode >= 82 && key.keyCode <= 85)) ) {
-        // this.eventLoop.push(this.displayElapsedTime.bind(this));
+      (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         setInterval(this.displayElapsedTime.bind(this), 60/1000);
         this.started = false;
     }
@@ -130,6 +129,11 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
+    console.log('triggering...');
+    if (this.cube.isSolved) {
+      this.eventLoop = [];
+      clearInterval(this.intervalId);
+    }
     if (!this.cube.animating && this.eventLoop.length > 0) {
       this.eventLoop.shift().call(this.cube);
     }

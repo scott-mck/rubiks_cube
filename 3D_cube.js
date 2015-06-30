@@ -1,4 +1,5 @@
 // TODO: Refactor reset methods
+// TODO: Find a different way to check if solved
 
 (function () {
   if (typeof window.Game === "undefined") {
@@ -16,6 +17,10 @@
     this.cubes = cubes;
     this.scene = scene;
     this.camera = camera;
+
+    // Create an internal cube to check if solved
+    this.virtualCube = new Game.VirtualCube();
+    this.isSolved = false;
     this.animating = false; // No simultaneous moves
 
     this.right = [];
@@ -77,10 +82,14 @@
       resetRotatingFace(face);
       callback && callback();
       this.animating = false;
+      if (this.solved()) {
+        this.isSolved = true;
+      }
     }
   };
 
   Cube.prototype.b = function b () {
+    this.virtualCube.b();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -92,6 +101,7 @@
   };
 
   Cube.prototype.bPrime = function bPrime () {
+    this.virtualCube.bPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -103,6 +113,7 @@
   };
 
   Cube.prototype.d = function d () {
+    this.virtualCube.d();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -114,6 +125,7 @@
   };
 
   Cube.prototype.dPrime = function dPrime () {
+    this.virtualCube.dPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -125,6 +137,7 @@
   };
 
   Cube.prototype.f = function f () {
+    this.virtualCube.f();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -136,6 +149,7 @@
   };
 
   Cube.prototype.fPrime = function fPrime () {
+    this.virtualCube.fPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -147,6 +161,7 @@
   };
 
   Cube.prototype.l = function l () {
+    this.virtualCube.l();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -158,6 +173,7 @@
   };
 
   Cube.prototype.lPrime = function lPrime () {
+    this.virtualCube.lPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -169,6 +185,7 @@
   };
 
   Cube.prototype.r = function r () {
+    this.virtualCube.r();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -180,6 +197,7 @@
   };
 
   Cube.prototype.resetBack = function (dir) {
+    this.virtualCube.rPrime();
     var temp = this.back;
     if (dir == 1) {
       this.back = this.rotateClockwise(this.back);
@@ -278,6 +296,7 @@
   };
 
   Cube.prototype.rPrime = function rPrime () {
+    this.virtualCube.rPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -295,6 +314,7 @@
   };
 
   Cube.prototype.seeLeft = function () {
+    this.virtualCube.seeLeft();
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
@@ -314,6 +334,7 @@
   };
 
   Cube.prototype.seeDown = function () {
+    this.virtualCube.seeDown();
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
@@ -352,6 +373,7 @@
   };
 
   Cube.prototype.seeUp = function () {
+    this.virtualCube.seeUp();
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
@@ -371,21 +393,11 @@
   };
 
   Cube.prototype.solved = function () {
-    var solved = true
-    this.faces.forEach(function (face) {
-      var color = face[0][0];
-      for (var i = 0; i <= 2; i++) {
-        for (var j = 0; j <= 2; j++) {
-          if (face[i][j] != color) {
-            solved = false;
-          }
-        }
-      }
-    });
-    return solved;
+    return this.virtualCube.solved();
   };
 
   Cube.prototype.u = function u () {
+    this.virtualCube.u();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -397,6 +409,7 @@
   };
 
   Cube.prototype.uPrime = function uPrime () {
+    this.virtualCube.uPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
