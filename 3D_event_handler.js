@@ -40,12 +40,35 @@
   };
 
   EventHandler.prototype.clickRelease = function click( event ) {
-    if (this.normal && this.normal.z == 1) {
+    if (!this.normal) {
+      return;
+    }
+    if (this.normal.z == 1) {
       if (this.cube.right.indexOf(this.object.object) > -1) {
-        if (event.clientY < this.mousey - 50) {
+        if (event.clientY < this.mousey - 25) {
           this.cube.r();
-        } else if (event.clientY > this.mousey + 50) {
+        } else if (event.clientY > this.mousey + 25) {
           this.cube.rPrime();
+        }
+      } else if (this.cube.left.indexOf(this.object.object) > -1) {
+        if (event.clientY < this.mousey - 25) {
+          this.cube.lPrime();
+        } else if (event.clientY > this.mousey + 25) {
+          this.cube.l();
+        }
+      }
+
+      if (this.cube.up.indexOf(this.object.object) > -1) {
+        if (event.clientX < this.mousex - 25) {
+          this.cube.u();
+        } else if (event.clientX > this.mousex + 25) {
+          this.cube.uPrime();
+        }
+      } else if (this.cube.down.indexOf(this.object.object) > -1) {
+        if (event.clientX < this.mousex - 25) {
+          this.cube.dPrime();
+        } else if (event.clientX > this.mousex + 25) {
+          this.cube.d();
         }
       }
     }
