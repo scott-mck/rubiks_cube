@@ -45,7 +45,6 @@
   };
 
   Cube.prototype.b = function () {
-    console.log('b');
     var row = this.up[0];
     this.up[0] = [ this.right[0][2], this.right[1][2], this.right[2][2] ];
 

@@ -58,6 +58,21 @@
       this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.b, this.bPrime];
   };
 
+  Cube.prototype.moveMap = {
+    'r': 'i',
+    'rPrime': 'k',
+    'u': 'j',
+    'uPrime': 'f',
+    'l': 'd',
+    'lPrime': 'e',
+    'f': 'h',
+    'fPrime': 'g',
+    'd': 's',
+    'dPrime': 'l',
+    'b': 'q',
+    'bPrime': 'p'
+  };
+
   Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
     var id = requestAnimationFrame(function () {

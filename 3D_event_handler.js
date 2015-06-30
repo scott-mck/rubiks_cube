@@ -9,7 +9,7 @@
     this.cube = cube;
     this.eventLoop = [];
     this.scrambleMoves = [];
-    this.started = false;
+    this.scrambled = false;
     this.timing = false;
 
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
@@ -19,6 +19,7 @@
   };
 
   EventHandler.prototype.click = function click( event ) {
+    this.normal = undefined;
     this.mousex = event.clientX;
     this.mousey = event.clientY;
 
@@ -50,6 +51,13 @@
       }
       return;
     }
+
+    if (this.scrambled) {
+      this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
+      this.scrambled = false;
+      this.timing = true;
+    }
+
     if (this.normal.z == 1) { // front face
       if (this.cube.right.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
@@ -171,8 +179,6 @@
         }
       }
     }
-
-    this.normal = undefined; // Allows for rotation of cube
   };
 
   EventHandler.prototype.displayElapsedTime = function () {
@@ -181,22 +187,29 @@
     $('.timer').text(time);
   };
 
+  EventHandler.prototype.displaySolveMoves = function () {
+    for (var i = 0; i < this.scrambleMoves.length; i++) {
+      var letter = this.cube.moveMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
+      $('.solve-moves').append(letter).css('position', 'absolute');
+    }
+  };
+
   EventHandler.prototype.handleEvents = function (key) {
-    if ( this.started &&
+    if ( this.scrambled &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
-        this.started = false;
+        this.scrambled = false;
         this.timing = true;
     }
 
     switch (key.keyCode) {
-      case 13:
+      case 13: // return
         this.solve();
         break;
       case 32: // space
         this.cube.isSolved = false;
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 30; i++) {
           var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
           var fn = this.cube.possibleMoves[randIndex];
           this.eventLoop.push(fn);
@@ -209,7 +222,7 @@
           }
           this.scrambleMoves.push(fnName);
         }
-        this.started = true;
+        this.scrambled = true;
         break;
       case 65: // a
         this.eventLoop.push(this.cube.seeLeft);
@@ -274,6 +287,9 @@
         break;
       case 186: // semi-colon
         this.eventLoop.push(this.cube.seeRight);
+        break;
+      case 191: // '/'
+        this.displaySolveMoves();
         break;
     }
   };
