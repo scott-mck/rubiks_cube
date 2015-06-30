@@ -138,6 +138,47 @@
           return;
         }
       }
+    } else if (this.normal.x == 1) { // right face
+      if (this.cube.up.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 20 &&
+            event.clientX > this.mousex + 20) {
+          this.cube.uPrime();
+          return;
+        } else if (event.clientY > this.mousey + 20 &&
+                   event.clientX < this.mousex - 20) {
+          this.cube.u();
+          return;
+        }
+      } else if (this.cube.down.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 20 &&
+            event.clientX > this.mousex + 20) {
+          this.cube.d();
+          return;
+        } else if (event.clientY > this.mousey + 20 &&
+                   event.clientX < this.mousex - 20) {
+          this.cube.dPrime();
+          return;
+        }
+      }
+
+      if (this.cube.front.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 40) {
+          this.cube.fPrime();
+          return;
+        } else if (event.clientY > this.mousey + 40) {
+          this.cube.f();
+          return;
+        }
+      } else if (this.cube.back.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 40) {
+          this.cube.b();
+          return;
+        } else if (event.clientY > this.mousey + 40) {
+          this.cube.bPrime();
+          return;
+        }
+      }
+
     }
 
     this.normal = undefined;
