@@ -1,3 +1,5 @@
+// TODO: Refactor clickRelease
+
 (function () {
   if (typeof window.Game === "undefined") {
     window.Game = {};
@@ -31,34 +33,24 @@
     if ( intersects.length > 0 ) {
       var object = intersects[0];
       this.object = object.object;
-
-      // var vector = new THREE.Vector3(this.object.face.normal.clone())
-      // var test = vector.applyMatrix4(normalWorld);
-      // this.normal = this.object.face.normal;
       this.normal = new THREE.Matrix4().extractRotation( this.object.matrixWorld ).multiplyVector3( object.face.normal.clone() );
     }
   };
 
   EventHandler.prototype.clickRelease = function click( event ) {
     if (!this.normal) {
+      if (event.clientX < this.mousex - 50) {
+        this.cube.seeRight();
+      } else if (event.clientX > this.mousex + 50) {
+        this.cube.seeLeft();
+      } else if (event.clientY < this.mousey - 50) {
+        this.cube.seeDown();
+      } else if (event.clientY > this.mousey + 50) {
+        this.cube.seeUp();
+      }
       return;
     }
-    // if (this.normal.z == 1) { // front face
-    //   if (this.cube.right.indexOf(this.object) > -1 &&
-    //         this.cube.front.indexOf(this.object) > -1) { // get which edge it's on
-    //     if (event.clientY > this.mousey + 40) {
-    //       this.cube.rPrime();
-    //     } else if (event.clientY < this.mousey - 40) {
-    //       this.cube.r();
-    //     } else if (event.clientX < this.mousex - 40) {
-    //       this.cube.u();
-    //     } else if (event.clientX > this.mousex + 40) {
-    //       this.cube.uPrime();
-    //     }
-    //   }
-    // }
-
-    if (this.normal.z == 1) {
+    if (this.normal.z == 1) { // front face
       if (this.cube.right.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
           this.cube.r();
@@ -178,10 +170,9 @@
           return;
         }
       }
-
     }
 
-    this.normal = undefined;
+    this.normal = undefined; // Allows for rotation of cube
   };
 
   EventHandler.prototype.displayElapsedTime = function () {
