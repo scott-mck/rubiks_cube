@@ -9,6 +9,7 @@
     this.eventLoop = [];
     this.scrambleMoves = [];
     this.started = false;
+    this.timing = false;
 
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
     this.triggerId = setInterval(this.triggerEvent.bind(this), 10);
@@ -26,6 +27,7 @@
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
         this.started = false;
+        this.timing = true;
     }
 
     switch (key.keyCode) {
@@ -33,11 +35,10 @@
         this.solve();
         break;
       case 32: // space
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 25; i++) {
           var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
           var fn = this.cube.possibleMoves[randIndex];
           this.eventLoop.push(fn);
-          console.log(fn);
 
           var fnName = fn.name;
           if (fnName.indexOf('Prime') > -1) {
@@ -131,10 +132,11 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
-    if (this.cube.isSolved) {
+    if (this.cube.isSolved && this.timing) {
       this.eventLoop = [];
-      clearInterval(this.triggerId);
+      // clearInterval(this.triggerId);
       this.stopTimer();
+      this.timing = false;
     }
     if (!this.cube.animating && this.eventLoop.length > 0) {
       this.eventLoop.shift().call(this.cube);

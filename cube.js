@@ -244,7 +244,6 @@
   };
 
   Cube.prototype.rPrime = function () {
-    debugger
     var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
     this.front[0][2] = this.up[0][2];
     this.front[1][2] = this.up[1][2];
