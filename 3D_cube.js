@@ -196,7 +196,6 @@
   };
 
   Cube.prototype.resetBack = function (dir) {
-    var temp = this.back;
     if (dir == 1) {
       this.back = this.rotateClockwise(this.back);
     } else if (dir == -1) {
@@ -210,7 +209,6 @@
   };
 
   Cube.prototype.resetDown = function (dir) {
-    var temp = this.down;
     if (dir == 1) {
       this.down = this.rotateClockwise(this.down);
     } else if (dir == -1) {
@@ -224,7 +222,6 @@
   };
 
   Cube.prototype.resetFront = function (dir) {
-    var temp = this.front;
     if (dir == 1) {
       this.front = this.rotateClockwise(this.front);
     } else if (dir == -1) {
@@ -238,7 +235,6 @@
   };
 
   Cube.prototype.resetLeft = function (dir) {
-    var temp = this.left;
     if (dir == 1) {
       this.left = this.rotateClockwise(this.left);
     } else if (dir == -1) {
