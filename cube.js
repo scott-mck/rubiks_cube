@@ -41,7 +41,7 @@
 
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
       this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.doubleR,
-      this.doubleRPrime, this.doubleL, this.doubleLPrime];
+      this.doubleRPrime, this.doubleL, this.doubleLPrime, this.b, this.bPrime];
   };
 
   Cube.prototype.b = function () {
@@ -244,6 +244,7 @@
   };
 
   Cube.prototype.rPrime = function () {
+    debugger
     var rightRow = [ this.front[0][2], this.front[1][2], this.front[2][2] ];
     this.front[0][2] = this.up[0][2];
     this.front[1][2] = this.up[1][2];

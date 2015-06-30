@@ -54,8 +54,7 @@
     }
 
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
-      this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.b,
-      this.bPrime];
+      this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.b, this.bPrime];
   };
 
   Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
@@ -197,7 +196,6 @@
   };
 
   Cube.prototype.resetBack = function (dir) {
-    this.virtualCube.rPrime();
     var temp = this.back;
     if (dir == 1) {
       this.back = this.rotateClockwise(this.back);
@@ -280,7 +278,6 @@
   };
 
   Cube.prototype.rotateClockwise = function(face) {
-    // var temp = face;
     face = [face[6], face[3], face[0],
                   face[7], face[4], face[1],
                   face[8], face[5], face[2]];
@@ -288,7 +285,6 @@
   };
 
   Cube.prototype.rotateCounterClockwise = function(face) {
-    // var face = face;
     face = [face[2], face[5], face[8],
                   face[1], face[4], face[7],
                   face[0], face[3], face[6]];
@@ -354,6 +350,7 @@
   };
 
   Cube.prototype.seeRight = function () {
+    this.virtualCube.seeRight();
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {

@@ -5,12 +5,13 @@
 
   var EventHandler = window.Game.EventHandler = function (cube) {
     this.cube = cube;
+    what = this.cube.virtualCube;
     this.eventLoop = [];
     this.scrambleMoves = [];
     this.started = false;
 
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
-    this.intervalId = setInterval(this.triggerEvent.bind(this), 10);
+    this.triggerId = setInterval(this.triggerEvent.bind(this), 10);
   };
 
   EventHandler.prototype.displayElapsedTime = function () {
@@ -23,7 +24,7 @@
     if ( this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
-        setInterval(this.displayElapsedTime.bind(this), 60/1000);
+        this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
         this.started = false;
     }
 
@@ -32,10 +33,11 @@
         this.solve();
         break;
       case 32: // space
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 5; i++) {
           var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
           var fn = this.cube.possibleMoves[randIndex];
           this.eventLoop.push(fn);
+          console.log(fn);
 
           var fnName = fn.name;
           if (fnName.indexOf('Prime') > -1) {
@@ -44,9 +46,8 @@
             fnName += 'Prime';
           }
           this.scrambleMoves.push(fnName);
-
-          this.started = true;
         }
+        this.started = true;
         break;
       case 65: // a
         this.eventLoop.push(this.cube.seeLeft);
@@ -123,16 +124,17 @@
     this.scrambleMoves = [];
   };
 
-  EventHandler.prototype.startTimer = function () {
-    // setInterval(this.displayElapsedTime, 60/1000);
-    this.displayElapsedTime();
+  EventHandler.prototype.stopTimer = function () {
+    clearInterval(this.timeId);
+    var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
+    $('.timer').text(time);
   };
 
   EventHandler.prototype.triggerEvent = function () {
-    console.log('triggering...');
     if (this.cube.isSolved) {
       this.eventLoop = [];
-      clearInterval(this.intervalId);
+      clearInterval(this.triggerId);
+      this.stopTimer();
     }
     if (!this.cube.animating && this.eventLoop.length > 0) {
       this.eventLoop.shift().call(this.cube);

@@ -11,6 +11,7 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
+    what = this.cube;
     var that = this;
     if (this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
@@ -65,11 +66,11 @@
       case 78:
         that.cube.seeUp();
         break;
-      case 80: // q
-        that.cube.b();
-        break;
-      case 81: // p
+      case 80:
         that.cube.bPrime();
+        break;
+      case 81:
+        that.cube.b();
         break;
       case 82:
         that.cube.doubleLPrime();
