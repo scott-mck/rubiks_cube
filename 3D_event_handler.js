@@ -94,39 +94,47 @@
           return;
         }
       }
-    } else if (this.normal.y == 1) {
+    } else if (this.normal.y == 1) { // top face
       if (this.cube.front.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 40) {
+        if (event.clientX < this.mousex - 30 &&
+            event.clientY < this.mousey - 10) {
           this.cube.fPrime();
           return;
-        } else if (event.clientX > this.mousex + 40) {
+        } else if (event.clientX > this.mousex + 30 &&
+                   event.clientY > this.mousey + 10) {
           this.cube.f();
           return;
         }
       } else if (this.cube.back.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 40) {
+        if (event.clientX < this.mousex - 30 &&
+            event.clientY < this.mousey - 10) {
           this.cube.b();
           return;
-        } else if (event.clientX > this.mousex + 40) {
+        } else if (event.clientX > this.mousex + 30 &&
+                   event.clientY > this.mousey + 10) {
           this.cube.bPrime();
           return;
         }
       }
 
       if (this.cube.right.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 40) {
+        if (event.clientY < this.mousey - 20 &&
+            event.clientX > this.mousex + 20) {
           this.cube.r();
           return;
-        } else if (event.clientY > this.mousey + 40) {
+        } else if (event.clientY > this.mousey + 40 &&
+                   event.clientX < this.mousex - 20) {
           this.cube.rPrime();
           return;
         }
-      } else if (this.cube.down.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 40) {
-          this.cube.dPrime();
+      } else if (this.cube.left.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 20 &&
+            event.clientY > this.mousey + 20) {
+          this.cube.l();
           return;
-        } else if (event.clientX > this.mousex + 40) {
-          this.cube.d();
+        } else if (event.clientX > this.mousex + 20 &&
+                   event.clientY < this.mousey - 20) {
+          this.cube.lPrime();
           return;
         }
       }
