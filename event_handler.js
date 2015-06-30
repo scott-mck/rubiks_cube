@@ -11,7 +11,6 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-    what = this.cube;
     var that = this;
     if (this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||

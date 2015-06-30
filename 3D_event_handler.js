@@ -5,7 +5,6 @@
 
   var EventHandler = window.Game.EventHandler = function (cube) {
     this.cube = cube;
-    what = this.cube.virtualCube;
     this.eventLoop = [];
     this.scrambleMoves = [];
     this.started = false;
@@ -16,6 +15,7 @@
   };
 
   EventHandler.prototype.displayElapsedTime = function () {
+    console.log(this.startTime);
     this.startTime = this.startTime || new Date();
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time);
@@ -35,7 +35,8 @@
         this.solve();
         break;
       case 32: // space
-        for (var i = 0; i < 25; i++) {
+        this.cube.isSolved = false;
+        for (var i = 0; i < 5; i++) {
           var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
           var fn = this.cube.possibleMoves[randIndex];
           this.eventLoop.push(fn);
@@ -134,9 +135,9 @@
   EventHandler.prototype.triggerEvent = function () {
     if (this.cube.isSolved && this.timing) {
       this.eventLoop = [];
-      // clearInterval(this.triggerId);
       this.stopTimer();
       this.timing = false;
+      this.startTime = undefined;
     }
     if (!this.cube.animating && this.eventLoop.length > 0) {
       this.eventLoop.shift().call(this.cube);
