@@ -49,8 +49,8 @@
     this.up[0] = [ this.right[0][2], this.right[1][2], this.right[2][2] ];
 
     this.right[0][2] = this.down[2][2];
-    this.right[1][2] = this.down[1][2];
-    this.right[2][2] = this.down[0][2];
+    this.right[1][2] = this.down[2][1];
+    this.right[2][2] = this.down[2][0];
 
     this.down[2] = [ this.left[0][0], this.left[1][0], this.left[2][0] ];
 
@@ -63,11 +63,11 @@
 
   Cube.prototype.bPrime = function () {
     var row = this.up[0];
-    this.up[0] = [ this.left[0][0], this.left[0][1], this.left[0][2] ];
+    this.up[0] = [ this.left[2][0], this.left[1][0], this.left[0][0] ];
 
     this.left[0][0] = this.down[2][0];
-    this.left[1][0] = this.down[1][1];
-    this.left[2][0] = this.down[0][2];
+    this.left[1][0] = this.down[2][1];
+    this.left[2][0] = this.down[2][2];
 
     this.down[2] = [ this.right[2][2], this.right[1][2], this.right[0][2] ];
 
