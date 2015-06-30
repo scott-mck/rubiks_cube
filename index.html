@@ -8,7 +8,7 @@
   <script type="application/javascript">
     function init () {
       var canvas = document.getElementById("canvas");
-      var cube = new Game.Cube();
+      var cube = new Game.VirtualCube();
       var game = new Game.Game(canvas, cube);
       var eventHandler = new Game.EventHandler(cube, game);
       game.draw();
