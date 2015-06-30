@@ -29,13 +29,13 @@
     var intersects = raycaster.intersectObjects(scene.children);
 
     if ( intersects.length > 0 ) {
-      this.object = intersects[0];
+      var object = intersects[0];
+      this.object = object.object;
 
       // var vector = new THREE.Vector3(this.object.face.normal.clone())
       // var test = vector.applyMatrix4(normalWorld);
       // this.normal = this.object.face.normal;
-      var normalWorld = new THREE.Matrix4().extractRotation( this.object.object.matrixWorld ).multiplyVector3( this.object.face.normal.clone() );
-      this.normal = normalWorld;
+      this.normal = new THREE.Matrix4().extractRotation( this.object.matrixWorld ).multiplyVector3( object.face.normal.clone() );
     }
   };
 
@@ -43,35 +43,95 @@
     if (!this.normal) {
       return;
     }
+    // if (this.normal.z == 1) { // front face
+    //   if (this.cube.right.indexOf(this.object) > -1 &&
+    //         this.cube.front.indexOf(this.object) > -1) { // get which edge it's on
+    //     if (event.clientY > this.mousey + 40) {
+    //       this.cube.rPrime();
+    //     } else if (event.clientY < this.mousey - 40) {
+    //       this.cube.r();
+    //     } else if (event.clientX < this.mousex - 40) {
+    //       this.cube.u();
+    //     } else if (event.clientX > this.mousex + 40) {
+    //       this.cube.uPrime();
+    //     }
+    //   }
+    // }
+
     if (this.normal.z == 1) {
-      if (this.cube.right.indexOf(this.object.object) > -1) {
-        if (event.clientY < this.mousey - 25) {
+      if (this.cube.right.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 40) {
           this.cube.r();
-        } else if (event.clientY > this.mousey + 25) {
+          return;
+        } else if (event.clientY > this.mousey + 40) {
           this.cube.rPrime();
+          return;
         }
-      } else if (this.cube.left.indexOf(this.object.object) > -1) {
-        if (event.clientY < this.mousey - 25) {
+      } else if (this.cube.left.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 40) {
           this.cube.lPrime();
-        } else if (event.clientY > this.mousey + 25) {
+          return;
+        } else if (event.clientY > this.mousey + 40) {
           this.cube.l();
+          return;
         }
       }
 
-      if (this.cube.up.indexOf(this.object.object) > -1) {
-        if (event.clientX < this.mousex - 25) {
+      if (this.cube.up.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 40) {
           this.cube.u();
-        } else if (event.clientX > this.mousex + 25) {
+          return;
+        } else if (event.clientX > this.mousex + 40) {
           this.cube.uPrime();
+          return;
         }
-      } else if (this.cube.down.indexOf(this.object.object) > -1) {
-        if (event.clientX < this.mousex - 25) {
+      } else if (this.cube.down.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 40) {
           this.cube.dPrime();
-        } else if (event.clientX > this.mousex + 25) {
+          return;
+        } else if (event.clientX > this.mousex + 40) {
           this.cube.d();
+          return;
+        }
+      }
+    } else if (this.normal.y == 1) {
+      if (this.cube.front.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 40) {
+          this.cube.fPrime();
+          return;
+        } else if (event.clientX > this.mousex + 40) {
+          this.cube.f();
+          return;
+        }
+      } else if (this.cube.back.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 40) {
+          this.cube.b();
+          return;
+        } else if (event.clientX > this.mousex + 40) {
+          this.cube.bPrime();
+          return;
+        }
+      }
+
+      if (this.cube.right.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 40) {
+          this.cube.r();
+          return;
+        } else if (event.clientY > this.mousey + 40) {
+          this.cube.rPrime();
+          return;
+        }
+      } else if (this.cube.down.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 40) {
+          this.cube.dPrime();
+          return;
+        } else if (event.clientX > this.mousex + 40) {
+          this.cube.d();
+          return;
         }
       }
     }
+
     this.normal = undefined;
   };
 
