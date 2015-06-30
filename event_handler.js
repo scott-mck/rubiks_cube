@@ -14,7 +14,7 @@
     var that = this;
     if (this.started &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
-      (key.keyCode >= 82 && key.keyCode <= 85))) {
+      (key.keyCode >= 80 && key.keyCode <= 85))) {
         this.game.startTimer();
         this.started = false;
     }
@@ -64,6 +64,12 @@
         break;
       case 78:
         that.cube.seeUp();
+        break;
+      case 80: // q
+        that.cube.b();
+        break;
+      case 81: // p
+        that.cube.bPrime();
         break;
       case 82:
         that.cube.doubleLPrime();
