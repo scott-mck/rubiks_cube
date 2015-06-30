@@ -11,8 +11,37 @@
     this.timing = false;
 
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
+    window.addEventListener( 'mousedown', this.click.bind(this), false );
+    window.addEventListener( 'mouseup', this.click2.bind(this), false );
     this.triggerId = setInterval(this.triggerEvent.bind(this), 10);
   };
+
+  EventHandler.prototype.click = function click( event ) {
+    this.mousex = event.clientX;
+    this.mousey = event.clientY;
+
+    var mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children);
+
+    if ( intersects.length > 0 ) {
+      var cube = intersects[0];
+      this.normal = cube.face.normal;
+    }
+  };
+
+  EventHandler.prototype.click2 = function click( event ) {
+    if (event.clientY < this.mousey - 50 && this.normal) {
+      this.cube.r();
+    }
+
+    this.normal = undefined;
+  };
+
 
   EventHandler.prototype.displayElapsedTime = function () {
     console.log(this.startTime);

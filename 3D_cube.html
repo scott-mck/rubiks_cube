@@ -95,7 +95,6 @@
 				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
 
 				var rubiksCube = new Game.Cube(scene, camera, cubes);
-				// var game = new Game.Game(rubiksCube);
 				var eventHandler = new Game.EventHandler(rubiksCube, 'game');
 
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -111,7 +110,6 @@
 				requestAnimationFrame( animate );
 				renderer.render( scene, camera );
 			}
-
 		</script>
 	</body>
 </html>

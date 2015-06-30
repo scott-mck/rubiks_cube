@@ -1,5 +1,6 @@
 // TODO: Refactor reset methods
 // TODO: Find a different way to check if solved
+// TODO: No need to pass in scene and camera; they are in scope
 
 (function () {
   if (typeof window.Game === "undefined") {
