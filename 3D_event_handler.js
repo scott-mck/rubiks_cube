@@ -12,7 +12,7 @@
 
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
     window.addEventListener( 'mousedown', this.click.bind(this), false );
-    window.addEventListener( 'mouseup', this.click2.bind(this), false );
+    window.addEventListener( 'mouseup', this.clickRelease.bind(this), false );
     this.triggerId = setInterval(this.triggerEvent.bind(this), 10);
   };
 
@@ -29,22 +29,30 @@
     var intersects = raycaster.intersectObjects(scene.children);
 
     if ( intersects.length > 0 ) {
-      var cube = intersects[0];
-      this.normal = cube.face.normal;
+      this.object = intersects[0];
+
+      // var vector = new THREE.Vector3(this.object.face.normal.clone())
+      // var test = vector.applyMatrix4(normalWorld);
+      // this.normal = this.object.face.normal;
+      var normalWorld = new THREE.Matrix4().extractRotation( this.object.object.matrixWorld ).multiplyVector3( this.object.face.normal.clone() );
+      this.normal = normalWorld;
     }
   };
 
-  EventHandler.prototype.click2 = function click( event ) {
-    if (event.clientY < this.mousey - 50 && this.normal) {
-      this.cube.r();
+  EventHandler.prototype.clickRelease = function click( event ) {
+    if (this.normal && this.normal.z == 1) {
+      if (this.cube.right.indexOf(this.object.object) > -1) {
+        if (event.clientY < this.mousey - 50) {
+          this.cube.r();
+        } else if (event.clientY > this.mousey + 50) {
+          this.cube.rPrime();
+        }
+      }
     }
-
     this.normal = undefined;
   };
 
-
   EventHandler.prototype.displayElapsedTime = function () {
-    console.log(this.startTime);
     this.startTime = this.startTime || new Date();
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time);
