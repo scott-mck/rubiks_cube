@@ -42,140 +42,142 @@
   EventHandler.prototype.clickRelease = function click( event ) {
     if (!this.normal) {
       if (event.clientX < this.mousex - 50) {
-        this.cube.seeRight();
+        this.cube.rotateCube('right')();
       } else if (event.clientX > this.mousex + 50) {
-        this.cube.seeLeft();
+        this.cube.rotateCube('left')();
       } else if (event.clientY < this.mousey - 50) {
-        this.cube.seeDown();
+        this.cube.rotateCube('down')();
       } else if (event.clientY > this.mousey + 50) {
-        this.cube.seeUp();
+        this.cube.rotateCube('up')();
       }
       return;
     }
 
     if (this.scrambled) {
+      $('h2').css('color', 'red');
       this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
       this.scrambled = false;
       this.timing = true;
     }
 
     if (this.normal.z == 1) { // front face
-      if (this.cube.right.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 40) {
-          this.cube.r();
+      if (this.cube.up.cubes.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 40) {
+          this.cube.move('u');
           return;
-        } else if (event.clientY > this.mousey + 40) {
-          this.cube.rPrime();
+        } else if (event.clientX > this.mousex + 40) {
+          this.cube.move('uPrime');
           return;
         }
-      } else if (this.cube.left.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 40) {
-          this.cube.lPrime();
+      } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
+        if (event.clientX < this.mousex - 40) {
+          this.cube.move('dPrime');
           return;
-        } else if (event.clientY > this.mousey + 40) {
-          this.cube.l();
+        } else if (event.clientX > this.mousex + 40) {
+          this.cube.move('d');
           return;
         }
       }
 
-      if (this.cube.up.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 40) {
-          this.cube.u();
+      if (this.cube.right.cubes.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 40) {
+          this.cube.move('r');
           return;
-        } else if (event.clientX > this.mousex + 40) {
-          this.cube.uPrime();
+        } else if (event.clientY > this.mousey + 40) {
+          this.cube.move('rPrime');
           return;
         }
-      } else if (this.cube.down.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 40) {
-          this.cube.dPrime();
+      } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
+        if (event.clientY < this.mousey - 40) {
+          this.cube.move('lPrime');
           return;
-        } else if (event.clientX > this.mousex + 40) {
-          this.cube.d();
+        } else if (event.clientY > this.mousey + 40) {
+          this.cube.move('l');
           return;
         }
       }
+
     } else if (this.normal.y == 1) { // top face
-      if (this.cube.front.indexOf(this.object) > -1) {
+      if (this.cube.front.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 30 &&
             event.clientY < this.mousey - 10) {
-          this.cube.fPrime();
+          this.cube.move('fPrime');
           return;
         } else if (event.clientX > this.mousex + 30 &&
                    event.clientY > this.mousey + 10) {
-          this.cube.f();
+          this.cube.move('f');
           return;
         }
-      } else if (this.cube.back.indexOf(this.object) > -1) {
+      } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 30 &&
             event.clientY < this.mousey - 10) {
-          this.cube.b();
+          this.cube.move('b');
           return;
         } else if (event.clientX > this.mousex + 30 &&
                    event.clientY > this.mousey + 10) {
-          this.cube.bPrime();
+          this.cube.move('bPrime');
           return;
         }
       }
 
-      if (this.cube.right.indexOf(this.object) > -1) {
+      if (this.cube.right.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
-          this.cube.r();
+          this.cube.move('r');
           return;
         } else if (event.clientY > this.mousey + 40 &&
                    event.clientX < this.mousex - 20) {
-          this.cube.rPrime();
+          this.cube.move('rPrime');
           return;
         }
-      } else if (this.cube.left.indexOf(this.object) > -1) {
+      } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 20 &&
             event.clientY > this.mousey + 20) {
-          this.cube.l();
+          this.cube.move('l');
           return;
         } else if (event.clientX > this.mousex + 20 &&
                    event.clientY < this.mousey - 20) {
-          this.cube.lPrime();
+          this.cube.move('lPrime');
           return;
         }
       }
     } else if (this.normal.x == 1) { // right face
-      if (this.cube.up.indexOf(this.object) > -1) {
+      if (this.cube.up.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
-          this.cube.uPrime();
+          this.cube.move('uPrime');
           return;
         } else if (event.clientY > this.mousey + 20 &&
                    event.clientX < this.mousex - 20) {
-          this.cube.u();
+          this.cube.move('u');
           return;
         }
-      } else if (this.cube.down.indexOf(this.object) > -1) {
+      } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
-          this.cube.d();
+          this.cube.move('d');
           return;
         } else if (event.clientY > this.mousey + 20 &&
                    event.clientX < this.mousex - 20) {
-          this.cube.dPrime();
+          this.cube.move('dPrime');
           return;
         }
       }
 
-      if (this.cube.front.indexOf(this.object) > -1) {
+      if (this.cube.front.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
-          this.cube.fPrime();
+          this.cube.move('fPrime');
           return;
         } else if (event.clientY > this.mousey + 40) {
-          this.cube.f();
+          this.cube.move('f');
           return;
         }
-      } else if (this.cube.back.indexOf(this.object) > -1) {
+      } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
-          this.cube.b();
+          this.cube.move('b');
           return;
         } else if (event.clientY > this.mousey + 40) {
-          this.cube.bPrime();
+          this.cube.move('bPrime');
           return;
         }
       }
@@ -200,6 +202,7 @@
     if ( this.scrambled &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
+        $('h2').css('color', 'red');
         this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
         this.scrambled = false;
         this.timing = true;
@@ -216,10 +219,10 @@
         this.scramble();
         break;
       case 65: // a
-        this.eventLoop.push(this.cube.seeLeft);
+        this.eventLoop.push(this.cube.rotateCube.bind(this, 'left'));
         break;
       case 67: // c
-        this.eventLoop.push(this.cube.seeUp);
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
         break;
       case 68: // d
@@ -250,11 +253,11 @@
         this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
         break;
       case 77: // m
-        this.eventLoop.push(this.cube.seeUp);
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
         break;
       case 78: // n
-        this.eventLoop.push(this.cube.seeUp);
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
         break;
       case 80: // q
         this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
@@ -263,21 +266,21 @@
         this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
         break;
       case 82: // r
-        this.eventLoop.push(this.cube.seeDown);
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
         break;
       case 83: // s
         this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
         break;
       case 85: // u
-        this.eventLoop.push(this.cube.seeDown);
+        this.eventLoop.push(this.cube.rotateCube('down'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
         break;
       case 89: // y
-        this.eventLoop.push(this.cube.seeDown);
+        this.eventLoop.push(this.cube.rotateCube('down'));
         break;
       case 186: // semi-colon
-        this.eventLoop.push(this.cube.seeRight);
+        this.eventLoop.push(this.cube.rotateCube('right'));
         break;
       case 191: // '/'
         this.displaySolveMoves();
