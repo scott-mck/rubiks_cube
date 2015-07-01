@@ -40,6 +40,7 @@
 
   EventHandler.prototype.clickRelease = function click( event ) {
     if (!this.normal) {
+      debugger
       if (event.clientX < this.mousex - 50) {
         this.cube.seeRight();
       } else if (event.clientX > this.mousex + 50) {
