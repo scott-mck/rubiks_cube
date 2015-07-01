@@ -1,5 +1,5 @@
 // TODO: Refactor reset methods
-// TODO: Find a different way to check if solved
+// TODO: Do not store a virtual cube
 // TODO: Write moves to change middles
 
 (function () {
@@ -22,34 +22,49 @@
     this.isSolved = false;
     this.animating = false; // No simultaneous moves
 
-    this.right = [];
-    for (var i = 0; i < 9; i++) {
-      this.right.push(cubes[RightIndices[i]]);
-    }
+    this.right = {
+      cubes: [],
+      axis: 'x',
+      dir: -1
+    };
 
-    this.front = [];
-    for (var i = 0; i < 9; i++) {
-      this.front.push(cubes[FrontIndices[i]]);
-    }
+    this.left = {
+      cubes: [],
+      axis: 'x',
+      dir: 1
+    };
 
-    this.up = [];
-    for (var i = 0; i < 9; i++) {
-      this.up.push(cubes[UpIndices[i]]);
-    }
+    this.up = {
+      cubes: [],
+      axis: 'y',
+      dir: -1
+    };
 
-    this.left = [];
-    for (var i = 0; i < 9; i++) {
-      this.left.push(cubes[LeftIndices[i]]);
-    }
+    this.down = {
+      cubes: [],
+      axis: 'y',
+      dir: 1
+    };
 
-    this.down = [];
-    for (var i = 0; i < 9; i++) {
-      this.down.push(cubes[DownIndices[i]]);
-    }
+    this.back = {
+      cubes: [],
+      axis: 'z',
+      dir: 1
+    };
 
-    this.back = [];
+    this.front = {
+      cubes: [],
+      axis: 'z',
+      dir: -1
+    };
+
     for (var i = 0; i < 9; i++) {
-      this.back.push(cubes[BackIndices[i]]);
+      this.right.cubes.push(cubes[RightIndices[i]]);
+      this.left.cubes.push(cubes[LeftIndices[i]]);
+      this.up.cubes.push(cubes[UpIndices[i]]);
+      this.down.cubes.push(cubes[DownIndices[i]]);
+      this.back.cubes.push(cubes[BackIndices[i]]);
+      this.front.cubes.push(cubes[FrontIndices[i]]);
     }
 
     this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
@@ -69,6 +84,15 @@
     'dPrime': 'l',
     'b': 'q',
     'bPrime': 'p'
+  };
+
+  Cube.prototype.faceAxes = {
+    'front': 'z',
+    'back': 'z',
+    'right': 'x',
+    'left': 'x',
+    'up': 'y',
+    'down': 'y'
   };
 
   Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
@@ -101,7 +125,35 @@
     }
   };
 
+  Cube.prototype.move = function (name, face) {
+    // ex: 'rPrime', 'right'
+    this.virtualCube[name]();
+    this.animating = true;
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < 9; i++) {
+      THREE.SceneUtils.attach(this[face].cubes[i], scene, rotatingFace);
+    }
+    scene.add(rotatingFace);
+
+    // The name of the reset method for this face
+    var reset = 'reset' + face[0].toUpperCase() + face.slice(1, face.length);
+    var dir = this[face].dir;
+    if (name.indexOf('Prime') > -1) {
+      dir *= -1;
+    }
+
+    this.animate(
+      rotatingFace,
+      this[face].cubes,
+      this[face].axis,
+      dir,
+      this[reset].bind(this, 1)
+    );
+  };
+
   Cube.prototype.b = function b () {
+    this.move('b', 'back');
+    return;
     this.virtualCube.b();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -114,6 +166,8 @@
   };
 
   Cube.prototype.bPrime = function bPrime () {
+    this.move('bPrime', 'back');
+    return;
     this.virtualCube.bPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -126,6 +180,8 @@
   };
 
   Cube.prototype.d = function d () {
+    this.move('d', 'down');
+    return;
     this.virtualCube.d();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -138,6 +194,8 @@
   };
 
   Cube.prototype.dPrime = function dPrime () {
+    this.move('dPrime', 'down');
+    return;
     this.virtualCube.dPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -150,6 +208,8 @@
   };
 
   Cube.prototype.f = function f () {
+    this.move('f', 'front');
+    return;
     this.virtualCube.f();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -162,6 +222,8 @@
   };
 
   Cube.prototype.fPrime = function fPrime () {
+    this.move('fPrime', 'front');
+    return;
     this.virtualCube.fPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -174,6 +236,8 @@
   };
 
   Cube.prototype.l = function l () {
+    this.move('l', 'left');
+    return;
     this.virtualCube.l();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -186,6 +250,8 @@
   };
 
   Cube.prototype.lPrime = function lPrime () {
+    this.move('lPrime', 'left');
+    return;
     this.virtualCube.lPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -198,6 +264,8 @@
   };
 
   Cube.prototype.r = function r () {
+    this.move('r', 'right');
+    return;
     this.virtualCube.r();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -302,6 +370,8 @@
   };
 
   Cube.prototype.rPrime = function rPrime () {
+    this.move('rPrime', 'right');
+    return;
     this.virtualCube.rPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -404,6 +474,8 @@
   };
 
   Cube.prototype.u = function u () {
+    this.move('u', 'up');
+    return;
     this.virtualCube.u();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -416,6 +488,8 @@
   };
 
   Cube.prototype.uPrime = function uPrime () {
+    this.move('uPrime', 'up');
+    return;
     this.virtualCube.uPrime();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();

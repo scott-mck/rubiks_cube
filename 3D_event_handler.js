@@ -1,4 +1,5 @@
 // TODO: Refactor clickRelease
+// TODO: Move #scramble to this.cube
 
 (function () {
   if (typeof window.Game === "undefined") {
