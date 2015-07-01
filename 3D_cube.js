@@ -1,4 +1,4 @@
-// TODO: Refactor reset methods
+// TODO: Refactor see methods
 // TODO: Do not store a virtual cube
 // TODO: Write moves to change middles
 
@@ -249,84 +249,6 @@
         this[workingFace].cubes[workingIndices[j]] = this[face].cubes[faceIndices[i][j]];
       }
     }
-  };
-
-  Cube.prototype.resetBack = function (dir) {
-    if (dir == 1) {
-      this.back.cubes = this.rotateCounterClockwise(this.back.cubes);
-    } else if (dir == -1) {
-      this.back.cubes = this.rotateClockwise(this.back.cubes);
-    }
-
-    this.up.cubes[0] = this.back.cubes[2], this.up.cubes[1] = this.back.cubes[1], this.up.cubes[2] = this.back.cubes[0];
-    this.left.cubes[0] = this.back.cubes[2], this.left.cubes[3] = this.back.cubes[5], this.left.cubes[6] = this.back.cubes[8];
-    this.down.cubes[6] = this.back.cubes[8], this.down.cubes[7] = this.back.cubes[7], this.down.cubes[8] = this.back.cubes[6];
-    this.right.cubes[2] = this.back.cubes[0], this.right.cubes[5] = this.back.cubes[3], this.right.cubes[8] = this.back.cubes[6];
-  };
-
-  Cube.prototype.resetDown = function (dir) {
-    if (dir == 1) {
-      this.down.cubes = this.rotateCounterClockwise(this.down.cubes);
-    } else if (dir == -1) {
-      this.down.cubes = this.rotateClockwise(this.down.cubes);
-    }
-
-    this.front.cubes[6] = this.down.cubes[0], this.front.cubes[7] = this.down.cubes[1], this.front.cubes[8] = this.down.cubes[2];
-    this.right.cubes[6] = this.down.cubes[2], this.right.cubes[7] = this.down.cubes[5], this.right.cubes[8] = this.down.cubes[8];
-    this.back.cubes[6] = this.down.cubes[8], this.back.cubes[7] = this.down.cubes[7], this.back.cubes[8] = this.down.cubes[6];
-    this.left.cubes[6] = this.down.cubes[6], this.left.cubes[7] = this.down.cubes[3], this.left.cubes[8] = this.down.cubes[0];
-  };
-
-  Cube.prototype.resetFront = function (dir) {
-    if (dir == 1) {
-      this.front.cubes = this.rotateClockwise(this.front.cubes);
-    } else if (dir == -1) {
-      this.front.cubes = this.rotateCounterClockwise(this.front.cubes);
-    }
-
-    this.up.cubes[6] = this.front.cubes[0], this.up.cubes[7] = this.front.cubes[1], this.up.cubes[8] = this.front.cubes[2];
-    this.right.cubes[0] = this.front.cubes[2], this.right.cubes[3] = this.front.cubes[5], this.right.cubes[6] = this.front.cubes[8];
-    this.down.cubes[0] = this.front.cubes[6], this.down.cubes[1] = this.front.cubes[7], this.down.cubes[2] = this.front.cubes[8];
-    this.left.cubes[2] = this.front.cubes[0], this.left.cubes[5] = this.front.cubes[3], this.left.cubes[8] = this.front.cubes[6];
-  };
-
-  Cube.prototype.resetLeft = function (dir) {
-    if (dir == 1) {
-      this.left.cubes = this.rotateCounterClockwise(this.left.cubes);
-    } else if (dir == -1) {
-      this.left.cubes = this.rotateClockwise(this.left.cubes);
-    }
-
-    this.up.cubes[0] = this.left.cubes[0], this.up.cubes[3] = this.left.cubes[1], this.up.cubes[6] = this.left.cubes[2];
-    this.front.cubes[0] = this.left.cubes[2], this.front.cubes[3] = this.left.cubes[5], this.front.cubes[6] = this.left.cubes[8];
-    this.down.cubes[0] = this.left.cubes[8], this.down.cubes[3] = this.left.cubes[7], this.down.cubes[6] = this.left.cubes[6];
-    this.back.cubes[2] = this.left.cubes[0], this.back.cubes[5] = this.left.cubes[3], this.back.cubes[8] = this.left.cubes[6];
-  };
-
-  Cube.prototype.resetRight = function (dir) {
-    if (dir == 1) {
-      this.right.cubes = this.rotateClockwise(this.right.cubes);
-    } else if (dir == -1) {
-      this.right.cubes = this.rotateCounterClockwise(this.right.cubes);
-    }
-
-    this.up.cubes[2] = this.right.cubes[2], this.up.cubes[5] = this.right.cubes[1], this.up.cubes[8] = this.right.cubes[0];
-    this.back.cubes[0] = this.right.cubes[2], this.back.cubes[3] = this.right.cubes[5], this.back.cubes[6] = this.right.cubes[8];
-    this.down.cubes[2] = this.right.cubes[6], this.down.cubes[5] = this.right.cubes[7], this.down.cubes[8] = this.right.cubes[8];
-    this.front.cubes[2] = this.right.cubes[0], this.front.cubes[5] = this.right.cubes[3], this.front.cubes[8] = this.right.cubes[6];
-  };
-
-  Cube.prototype.resetUp = function (dir) {
-    if (dir == 1) {
-      this.up.cubes = this.rotateClockwise(this.up.cubes);
-    } else if (dir == -1) {
-      this.up.cubes = this.rotateCounterClockwise(this.up.cubes);
-    }
-
-    this.back.cubes[0] = this.up.cubes[2], this.back.cubes[1] = this.up.cubes[1], this.back.cubes[2] = this.up.cubes[0];
-    this.right.cubes[0] = this.up.cubes[8], this.right.cubes[1] = this.up.cubes[5], this.right.cubes[2] = this.up.cubes[2];
-    this.front.cubes[0] = this.up.cubes[6], this.front.cubes[1] = this.up.cubes[7], this.front.cubes[2] = this.up.cubes[8];
-    this.left.cubes[0] = this.up.cubes[0], this.left.cubes[1] = this.up.cubes[3], this.left.cubes[2] = this.up.cubes[6];
   };
 
   Cube.prototype.rotateClockwise = function(face) {
