@@ -183,7 +183,7 @@
       this[face].cubes,
       this[face].axis,
       dir,
-      this.reset.bind(this, face, dir * -1)
+      this.reset.bind(this, face, dir)
     );
   };
 
@@ -224,41 +224,31 @@
   };
 
   Cube.prototype.reset = function (face, dir) {
-    // face is a string e.g. 'right'
+    // face is a string e.g. 'right'; referred to as 'this face'
+
+    if (face === 'left' || face === 'down' || face === 'back') {
+      dir *= -1;
+    }
+
     if (dir == 1) {
       this[face].cubes = this.rotateCounterClockwise(this[face].cubes);
     } else if (dir == -1) {
       this[face].cubes = this.rotateClockwise(this[face].cubes);
     }
 
-    // for all faces, upFace, etc. reset those squares to the ones on current face
-    var upIndices = [0, 1, 2];
-    var rightIndices = [2, 5, 8];
-    var downIndices = [6, 7, 8];
-    var leftIndices = [0, 3, 6];
+    // indices of shared cubes on this face
+    var faceIndices = [ [0, 1, 2], [2, 5, 8], [6, 7, 8], [0, 3, 6] ];
 
-    debugger
-    var workingFace = Object.keys(this[face].upFace)[0];
-    for (var i = 0; i < 3; i++) {
-      this[workingFace].cubes[this[face].upFace[i]] = this[face].cubes[upIndices[i]];
+    // i represents each adjacent face for this face
+    for (var i = 0; i < 4; i++) {
+      var workingFace = this[face].relativeFaces[i].face;
+
+      // indices of shared cubes on adjacent face
+      var workingIndices = this[face].relativeFaces[i].indices;
+      for (var j = 0; j < 3; j++) {
+        this[workingFace].cubes[workingIndices[j]] = this[face].cubes[faceIndices[i][j]];
+      }
     }
-
-    workingFace = Object.keys(this[face].rightFace)[0];
-    for (var i = 0; i < 3; i++) {
-      this[workingFace].cubes[this[face].rightFace[i]] = this[face].cubes[rightIndices[i]];
-    }
-
-    workingFace = Object.keys(this[face].downFace)[0];
-    for (var i = 0; i < 3; i++) {
-      this[workingFace].cubes[this[face].downFace[i]] = this[face].cubes[downIndices[i]];
-    }
-
-    workingFace = Object.keys(this[face].leftFace)[0];
-    for (var i = 0; i < 3; i++) {
-      this[workingFace].cubes[this[face].leftFace[i]] = this[face].cubes[leftIndices[i]];
-    }
-
-
   };
 
   Cube.prototype.resetBack = function (dir) {
