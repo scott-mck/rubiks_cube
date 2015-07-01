@@ -153,135 +153,45 @@
 
   Cube.prototype.b = function b () {
     this.move('b', 'back');
-    // return;
-    // this.virtualCube.b();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.back[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.back, 'z', 1, this.resetBack.bind(this, 1));
   };
 
   Cube.prototype.bPrime = function bPrime () {
     this.move('bPrime', 'back');
-    // return;
-    // this.virtualCube.bPrime();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.back[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.back, 'z', -1, this.resetBack.bind(this, -1));
   };
 
   Cube.prototype.d = function d () {
     this.move('d', 'down');
-    // return;
-    // this.virtualCube.d();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.down[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.down, 'y', 1, this.resetDown.bind(this, 1));
   };
 
   Cube.prototype.dPrime = function dPrime () {
     this.move('dPrime', 'down');
-    // return;
-    // this.virtualCube.dPrime();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.down[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.down, 'y', -1, this.resetDown.bind(this, -1));
   };
 
   Cube.prototype.f = function f () {
     this.move('f', 'front');
-    // return;
-    // this.virtualCube.f();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.front[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.front, 'z', -1, this.resetFront.bind(this, 1));
   };
 
   Cube.prototype.fPrime = function fPrime () {
     this.move('fPrime', 'front');
-    // return;
-    // this.virtualCube.fPrime();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.front[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.front, 'z', 1, this.resetFront.bind(this, -1));
   };
 
   Cube.prototype.l = function l () {
     this.move('l', 'left');
-    // return;
-    // this.virtualCube.l();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.left[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.left, 'x', 1, this.resetLeft.bind(this, 1));
   };
 
   Cube.prototype.lPrime = function lPrime () {
     this.move('lPrime', 'left');
-    // return;
-    // this.virtualCube.lPrime();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.left[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.left, 'x', -1, this.resetLeft.bind(this, -1));
   };
 
   Cube.prototype.r = function r () {
     this.move('r', 'right');
-    // return;
-    // this.virtualCube.r();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.right[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.right, 'x', -1, this.resetRight.bind(this, 1));
   };
 
   Cube.prototype.resetBack = function (dir) {
     if (dir == 1) {
-      this.back.cubes = this.rotateClockwise(this.back.cubes);
-    } else if (dir == -1) {
       this.back.cubes = this.rotateCounterClockwise(this.back.cubes);
+    } else if (dir == -1) {
+      this.back.cubes = this.rotateClockwise(this.back.cubes);
     }
 
     this.up.cubes[0] = this.back.cubes[2], this.up.cubes[1] = this.back.cubes[1], this.up.cubes[2] = this.back.cubes[0];
@@ -292,9 +202,9 @@
 
   Cube.prototype.resetDown = function (dir) {
     if (dir == 1) {
-      this.down.cubes = this.rotateClockwise(this.down.cubes);
-    } else if (dir == -1) {
       this.down.cubes = this.rotateCounterClockwise(this.down.cubes);
+    } else if (dir == -1) {
+      this.down.cubes = this.rotateClockwise(this.down.cubes);
     }
 
     this.front.cubes[6] = this.down.cubes[0], this.front.cubes[7] = this.down.cubes[1], this.front.cubes[8] = this.down.cubes[2];
@@ -318,9 +228,9 @@
 
   Cube.prototype.resetLeft = function (dir) {
     if (dir == 1) {
-      this.left.cubes = this.rotateClockwise(this.left.cubes);
-    } else if (dir == -1) {
       this.left.cubes = this.rotateCounterClockwise(this.left.cubes);
+    } else if (dir == -1) {
+      this.left.cubes = this.rotateClockwise(this.left.cubes);
     }
 
     this.up.cubes[0] = this.left.cubes[0], this.up.cubes[3] = this.left.cubes[1], this.up.cubes[6] = this.left.cubes[2];
@@ -371,16 +281,6 @@
 
   Cube.prototype.rPrime = function rPrime () {
     this.move('rPrime', 'right');
-    // return;
-    // this.virtualCube.rPrime();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.right[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.right, 'x', 1, this.resetRight.bind(this, -1));
   };
 
   Cube.prototype.scramble = function () {
@@ -475,29 +375,9 @@
 
   Cube.prototype.u = function u () {
     this.move('u', 'up');
-    // return;
-    // this.virtualCube.u();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.up[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.up, 'y', -1, this.resetUp.bind(this, 1));
   };
 
   Cube.prototype.uPrime = function uPrime () {
     this.move('uPrime', 'up');
-    // return;
-    // this.virtualCube.uPrime();
-    // this.animating = true;
-    // var rotatingFace = new THREE.Object3D();
-    // for (var i = 0; i < 9; i++) {
-    //   THREE.SceneUtils.attach(this.up[i], scene, rotatingFace);
-    // }
-    //
-    // scene.add(rotatingFace);
-    // this.animate(rotatingFace, this.up, 'y', 1, this.resetUp.bind(this, -1));
   };
 })();
