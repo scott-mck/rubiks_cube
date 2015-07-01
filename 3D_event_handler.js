@@ -188,6 +188,7 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
+    $('.solve-moves').empty();
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var letter = this.cube.moveMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
       $('.solve-moves').append(letter).css('position', 'absolute');
@@ -208,21 +209,10 @@
         this.solve();
         break;
       case 32: // space
+        $('.solve-moves').empty();
+        this.scrambleMoves = [];
         this.cube.isSolved = false;
-        for (var i = 0; i < 30; i++) {
-          var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
-          var fn = this.cube.possibleMoves[randIndex];
-          this.eventLoop.push(fn);
-
-          var fnName = fn.name;
-          if (fnName.indexOf('Prime') > -1) {
-            fnName = fnName.slice(0, fnName.indexOf('Prime'));
-          } else {
-            fnName += 'Prime';
-          }
-          this.scrambleMoves.push(fnName);
-        }
-        this.scrambled = true;
+        this.scramble();
         break;
       case 65: // a
         this.eventLoop.push(this.cube.seeLeft);
@@ -292,6 +282,27 @@
         this.displaySolveMoves();
         break;
     }
+  };
+
+  EventHandler.prototype.scramble = function () {
+    for (var i = 0; i < 30; i++) {
+      var prevFn = prevFn || ''; // make sure new scramble move does not undo previous
+      var fn = fn || function () {};
+      while (fn.name === fnName) {
+        var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
+        fn = this.cube.possibleMoves[randIndex];
+      }
+      this.eventLoop.push(fn);
+
+      var fnName = fn.name;
+      if (fnName.indexOf('Prime') > -1) {
+        prevFn = fnName.slice(0, fnName.indexOf('Prime'));
+      } else {
+        prevFn += fnName + 'Prime';
+      }
+      this.scrambleMoves.push(prevFn);
+    }
+    this.scrambled = true;
   };
 
   EventHandler.prototype.solve = function () {
