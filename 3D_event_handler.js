@@ -286,13 +286,12 @@
   };
 
   EventHandler.prototype.scramble = function () {
+    var oppositeMove = '';
+    var prevRandIndex = -1;
     for (var i = 0; i < 30; i++) {
-      var oppositeMove = oppositeMove || '';
       var randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
       fn = this.cube.possibleMoves[randIndex];
-      while (fn === oppositeMove ||
-             (fn === this.eventLoop[this.eventLoop.length - 1] &&
-             fn === this.eventLoop[this.eventLoop.length - 2])) {
+      while (fn === oppositeMove || randIndex == prevRandIndex) {
         randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
         fn = this.cube.possibleMoves[randIndex];
       }
