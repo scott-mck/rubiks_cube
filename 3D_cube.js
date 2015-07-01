@@ -257,16 +257,6 @@
     return face;
   };
 
-  Cube.prototype.rPrime = function rPrime () {
-    this.move('rPrime', 'right');
-  };
-
-  // Cube.prototype.scramble = function () {
-  //   for (var i = 0; i < 25; i++) {
-  //     this.possibleMoves[~~(Math.random() * this.possibleMoves.length)].call(this);
-  //   }
-  // };
-
   Cube.prototype.rotateCube = function (dir) {
     // dir is either 'left', 'right', 'up', or 'down'
     var seeMethod = 'see' + dir[0].toUpperCase() + dir.slice(1, dir.length);
@@ -278,116 +268,105 @@
     }
     scene.add(rubiksCube);
 
+    var axis, dir, callback;
     if (dir === 'left') {
-      var axis = 'y';
-      var dir = 1;
-      var callback = this.seeLeftCallback();
+      axis = 'y';
+      dir = 1;
+      callback = this.seeLeftCallback();
     } else if (dir === 'right') {
-      var axis = 'y';
-      var callback = this.seeRightCallback();
+      axis = 'y';
+      dir = -1;
+      callback = this.seeRightCallback();
     } else if (dir === 'up') {
-      var axis = 'x';
-      var callback = this.seeUpCallback();
+      axis = 'x';
+      dir = 1;
+      callback = this.seeUpCallback();
     } else if (dir === 'down') {
-      var axis = 'x';
-      var callback = this.seeDownCallback();
+      axis = 'x';
+      dir = -1;
+      callback = this.seeDownCallback();
     }
 
     this.animate(rubiksCube, this.cubes, axis, dir, callback.bind(this));
   };
 
-  Cube.prototype.seeLeftCallback = function () {
+  Cube.prototype.rPrime = function rPrime () {
+    this.move('rPrime', 'right');
+  };
+
+  // Cube.prototype.scramble = function () {
+  //   for (var i = 0; i < 25; i++) {
+  //     this.possibleMoves[~~(Math.random() * this.possibleMoves.length)].call(this);
+  //   }
+  // };
+
+  Cube.prototype.seeDown = function () {
+    this.rotateCube('down');
+    return;
+  };
+
+  Cube.prototype.seeDownCallback = function () {
     return function () {
-      var temp = this.front.cubes;
-      this.front.cubes = this.left.cubes;
-      this.left.cubes = this.back.cubes;
-      this.back.cubes = this.right.cubes;
-      this.right.cubes = temp;
-      this.up.cubes = this.rotateCounterClockwise(this.up.cubes);
-      this.down.cubes = this.rotateClockwise(this.down.cubes);
+      var temp = this.up.cubes;
+      this.up.cubes = this.front.cubes;
+      this.front.cubes = this.down.cubes;
+      this.down.cubes = this.back.cubes.reverse();
+      this.back.cubes = temp.reverse();
+      this.right.cubes = this.rotateClockwise(this.right.cubes);
+      this.left.cubes = this.rotateCounterClockwise(this.left.cubes);
     }
   };
 
   Cube.prototype.seeLeft = function () {
     this.rotateCube('left');
     return;
-    this.virtualCube.seeLeft();
-    this.animating = true;
-    var rubiksCube = new THREE.Object3D();
-    for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
-    }
-    scene.add(rubiksCube);
-    this.animate(rubiksCube, this.cubes, 'y', 1, function () {
-      var temp = this.front.cubes;
+  };
+
+  Cube.prototype.seeLeftCallback = function () {
+    return function () {
+      var frontFace = this.front.cubes;
       this.front.cubes = this.left.cubes;
       this.left.cubes = this.back.cubes;
       this.back.cubes = this.right.cubes;
-      this.right.cubes = temp;
-
+      this.right.cubes = frontFace;
       this.up.cubes = this.rotateCounterClockwise(this.up.cubes);
       this.down.cubes = this.rotateClockwise(this.down.cubes);
-    }.bind(this));
-  };
-
-  Cube.prototype.seeDown = function () {
-    this.virtualCube.seeDown();
-    this.animating = true;
-    var rubiksCube = new THREE.Object3D();
-    for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
     }
-    scene.add(rubiksCube);
-    this.animate(rubiksCube, this.cubes, 'x', -1, function () {
-      var temp = this.up.cubes;
-      this.up.cubes = this.front.cubes;
-      this.front.cubes = this.down.cubes;
-      this.down.cubes = this.back.cubes.reverse();
-      this.back.cubes = temp.reverse();
-
-      this.right.cubes = this.rotateClockwise(this.right.cubes);
-      this.left.cubes = this.rotateCounterClockwise(this.left.cubes);
-    }.bind(this));
   };
 
   Cube.prototype.seeRight = function () {
-    this.virtualCube.seeRight();
-    this.animating = true;
-    var rubiksCube = new THREE.Object3D();
-    for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
-    }
-    scene.add(rubiksCube);
-    this.animate(rubiksCube, this.cubes, 'y', -1, function () {
-      var temp = this.front.cubes;
+    this.rotateCube('right');
+    return;
+  };
+
+  Cube.prototype.seeRightCallback = function () {
+    return function () {
+      var frontFace = this.front.cubes;
       this.front.cubes = this.right.cubes;
       this.right.cubes = this.back.cubes;
       this.back.cubes = this.left.cubes;
-      this.left.cubes = temp;
+      this.left.cubes = frontFace;
 
       this.up.cubes = this.rotateClockwise(this.up.cubes);
       this.down.cubes = this.rotateCounterClockwise(this.down.cubes);
-    }.bind(this));
+    }
   };
 
   Cube.prototype.seeUp = function () {
-    this.virtualCube.seeUp();
-    this.animating = true;
-    var rubiksCube = new THREE.Object3D();
-    for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
-    }
-    scene.add(rubiksCube);
-    this.animate(rubiksCube, this.cubes, 'x', 1, function () {
+    this.rotateCube('up');
+    return;
+  };
+
+  Cube.prototype.seeUpCallback = function () {
+    return function () {
       var temp = this.up.cubes;
       this.up.cubes = this.back.cubes.reverse();
       this.back.cubes = this.down.cubes.reverse();
       this.down.cubes = this.front.cubes;
       this.front.cubes = temp;
-
       this.right.cubes = this.rotateCounterClockwise(this.right.cubes);
       this.left.cubes = this.rotateClockwise(this.left.cubes);
-    }.bind(this));
+    }
   };
 
   Cube.prototype.solved = function () {
