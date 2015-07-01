@@ -1,4 +1,5 @@
 // TODO: Refactor see methods
+// TODO: Possibly refacter #animate
 // TODO: Do not store a virtual cube
 // TODO: Write moves to change middles
 
@@ -120,15 +121,6 @@
     'dPrime': 'l',
     'b': 'q',
     'bPrime': 'p'
-  };
-
-  Cube.prototype.faceAxes = {
-    'front': 'z',
-    'back': 'z',
-    'right': 'x',
-    'left': 'x',
-    'up': 'y',
-    'down': 'y'
   };
 
   Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
@@ -269,13 +261,56 @@
     this.move('rPrime', 'right');
   };
 
-  Cube.prototype.scramble = function () {
-    for (var i = 0; i < 25; i++) {
-      this.possibleMoves[~~(Math.random() * this.possibleMoves.length)].call(this);
+  // Cube.prototype.scramble = function () {
+  //   for (var i = 0; i < 25; i++) {
+  //     this.possibleMoves[~~(Math.random() * this.possibleMoves.length)].call(this);
+  //   }
+  // };
+
+  Cube.prototype.rotateCube = function (dir) {
+    // dir is either 'left', 'right', 'up', or 'down'
+    var seeMethod = 'see' + dir[0].toUpperCase() + dir.slice(1, dir.length);
+    this.virtualCube[seeMethod]();
+    this.animating = true;
+    var rubiksCube = new THREE.Object3D();
+    for (var i = 0; i < this.cubes.length; i++) {
+      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
+    }
+    scene.add(rubiksCube);
+
+    if (dir === 'left') {
+      var axis = 'y';
+      var dir = 1;
+      var callback = this.seeLeftCallback();
+    } else if (dir === 'right') {
+      var axis = 'y';
+      var callback = this.seeRightCallback();
+    } else if (dir === 'up') {
+      var axis = 'x';
+      var callback = this.seeUpCallback();
+    } else if (dir === 'down') {
+      var axis = 'x';
+      var callback = this.seeDownCallback();
+    }
+
+    this.animate(rubiksCube, this.cubes, axis, dir, callback.bind(this));
+  };
+
+  Cube.prototype.seeLeftCallback = function () {
+    return function () {
+      var temp = this.front.cubes;
+      this.front.cubes = this.left.cubes;
+      this.left.cubes = this.back.cubes;
+      this.back.cubes = this.right.cubes;
+      this.right.cubes = temp;
+      this.up.cubes = this.rotateCounterClockwise(this.up.cubes);
+      this.down.cubes = this.rotateClockwise(this.down.cubes);
     }
   };
 
   Cube.prototype.seeLeft = function () {
+    this.rotateCube('left');
+    return;
     this.virtualCube.seeLeft();
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
