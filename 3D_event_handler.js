@@ -187,7 +187,7 @@
   EventHandler.prototype.displayElapsedTime = function () {
     this.startTime = this.startTime || new Date();
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
-    $('.timer').text(time);
+    $('.timer').text(time.toFixed(2));
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
