@@ -42,13 +42,13 @@
   EventHandler.prototype.clickRelease = function click( event ) {
     if (!this.normal) {
       if (event.clientX < this.mousex - 50) {
-        this.cube.rotateCube('right')();
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
       } else if (event.clientX > this.mousex + 50) {
-        this.cube.rotateCube('left')();
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'left'));
       } else if (event.clientY < this.mousey - 50) {
-        this.cube.rotateCube('down')();
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
       } else if (event.clientY > this.mousey + 50) {
-        this.cube.rotateCube('up')();
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
       }
       return;
     }
@@ -63,36 +63,36 @@
     if (this.normal.z == 1) { // front face
       if (this.cube.up.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 40) {
-          this.cube.move('u');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
           return;
         } else if (event.clientX > this.mousex + 40) {
-          this.cube.move('uPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
           return;
         }
       } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 40) {
-          this.cube.move('dPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
           return;
         } else if (event.clientX > this.mousex + 40) {
-          this.cube.move('d');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
           return;
         }
       }
 
       if (this.cube.right.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
-          this.cube.move('r');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
           return;
         } else if (event.clientY > this.mousey + 40) {
-          this.cube.move('rPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
           return;
         }
       } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
-          this.cube.move('lPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
           return;
         } else if (event.clientY > this.mousey + 40) {
-          this.cube.move('l');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
           return;
         }
       }
@@ -101,21 +101,21 @@
       if (this.cube.front.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 30 &&
             event.clientY < this.mousey - 10) {
-          this.cube.move('fPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
           return;
         } else if (event.clientX > this.mousex + 30 &&
                    event.clientY > this.mousey + 10) {
-          this.cube.move('f');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
           return;
         }
       } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 30 &&
             event.clientY < this.mousey - 10) {
-          this.cube.move('b');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
           return;
         } else if (event.clientX > this.mousex + 30 &&
                    event.clientY > this.mousey + 10) {
-          this.cube.move('bPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
           return;
         }
       }
@@ -123,21 +123,21 @@
       if (this.cube.right.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
-          this.cube.move('r');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
           return;
         } else if (event.clientY > this.mousey + 40 &&
                    event.clientX < this.mousex - 20) {
-          this.cube.move('rPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
           return;
         }
       } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 20 &&
             event.clientY > this.mousey + 20) {
-          this.cube.move('l');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
           return;
         } else if (event.clientX > this.mousex + 20 &&
                    event.clientY < this.mousey - 20) {
-          this.cube.move('lPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
           return;
         }
       }
@@ -145,39 +145,39 @@
       if (this.cube.up.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
-          this.cube.move('uPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
           return;
         } else if (event.clientY > this.mousey + 20 &&
                    event.clientX < this.mousex - 20) {
-          this.cube.move('u');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
           return;
         }
       } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
-          this.cube.move('d');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
           return;
         } else if (event.clientY > this.mousey + 20 &&
                    event.clientX < this.mousex - 20) {
-          this.cube.move('dPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
           return;
         }
       }
 
       if (this.cube.front.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
-          this.cube.move('fPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
           return;
         } else if (event.clientY > this.mousey + 40) {
-          this.cube.move('f');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
           return;
         }
       } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
-          this.cube.move('b');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
           return;
         } else if (event.clientY > this.mousey + 40) {
-          this.cube.move('bPrime');
+          this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
           return;
         }
       }
@@ -210,6 +210,7 @@
 
     switch (key.keyCode) {
       case 13: // return
+        this.scrambled = false;
         this.solve();
         break;
       case 32: // space
@@ -220,7 +221,7 @@
         this.scramble();
         break;
       case 65: // a
-        this.eventLoop.push(this.cube.rotateCube.bind(this, 'left'));
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'left'));
         break;
       case 67: // c
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
@@ -281,7 +282,7 @@
         this.eventLoop.push(this.cube.rotateCube('down'));
         break;
       case 186: // semi-colon
-        this.eventLoop.push(this.cube.rotateCube('right'));
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
         break;
       case 191: // '/'
         this.displaySolveMoves();
