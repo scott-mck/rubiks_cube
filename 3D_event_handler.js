@@ -1,5 +1,5 @@
 // TODO: Refactor clickRelease
-// TODO: Move #scramble to this.cube
+// TODO: Move #scramble to Cube
 
 (function () {
   if (typeof window.Game === "undefined") {
@@ -191,7 +191,7 @@
   EventHandler.prototype.displaySolveMoves = function () {
     $('.solve-moves').empty();
     for (var i = 0; i < this.scrambleMoves.length; i++) {
-      var letter = this.cube.moveMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
+      var letter = window.Game.Cube.keyMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
       $('.solve-moves').append(letter).css('position', 'absolute');
     }
   };
@@ -220,58 +220,58 @@
         break;
       case 67: // c
         this.eventLoop.push(this.cube.seeUp);
-        this.eventLoop.push(this.cube.r);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
         break;
       case 68: // d
-        this.eventLoop.push(this.cube.l);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
         break;
       case 69: // e
-        this.eventLoop.push(this.cube.lPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
         break;
       case 70: // f
-        this.eventLoop.push(this.cube.uPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
         break;
       case 71: // g
-        this.eventLoop.push(this.cube.fPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
         break;
       case 72: // h
-        this.eventLoop.push(this.cube.f);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
         break;
       case 73: // i
-        this.eventLoop.push(this.cube.r);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
         break;
       case 74: // j
-        this.eventLoop.push(this.cube.u);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
         break;
       case 75: // k
-        this.eventLoop.push(this.cube.rPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
         break;
       case 76: // l
-        this.eventLoop.push(this.cube.dPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
         break;
       case 77: // m
         this.eventLoop.push(this.cube.seeUp);
-        this.eventLoop.push(this.cube.lPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
         break;
       case 78: // n
         this.eventLoop.push(this.cube.seeUp);
         break;
       case 80: // q
-        this.eventLoop.push(this.cube.bPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
         break;
       case 81: // p
-        this.eventLoop.push(this.cube.b);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
         break;
       case 82: // r
         this.eventLoop.push(this.cube.seeDown);
-        this.eventLoop.push(this.cube.rPrime);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
         break;
       case 83: // s
-        this.eventLoop.push(this.cube.d);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
         break;
       case 85: // u
         this.eventLoop.push(this.cube.seeDown);
-        this.eventLoop.push(this.cube.l);
+        this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
         break;
       case 89: // y
         this.eventLoop.push(this.cube.seeDown);
@@ -290,20 +290,17 @@
       var oppositeMove = oppositeMove || '';
       var randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
       fn = this.cube.possibleMoves[randIndex];
-
-      // find a new move if it undoes a previous move or is the third in a row
-      while (fn.name === oppositeMove ||
-             (fn.name === this.eventLoop[this.eventLoop.length - 1] &&
-             fn.name === this.eventLoop[this.eventLoop.length - 2])) {
+      while (fn === oppositeMove ||
+             (fn === this.eventLoop[this.eventLoop.length - 1] &&
+             fn === this.eventLoop[this.eventLoop.length - 2])) {
         randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
         fn = this.cube.possibleMoves[randIndex];
       }
-      this.eventLoop.push(fn);
-
-      if (fn.name.indexOf('Prime') > -1) {
-        oppositeMove = fn.name.slice(0, fn.name.indexOf('Prime'));
+      this.eventLoop.push(this.cube.move.bind(this.cube, fn));
+      if (fn.indexOf('Prime') > -1) {
+        oppositeMove = fn.slice(0, fn.indexOf('Prime'));
       } else {
-        oppositeMove = fn.name + 'Prime';
+        oppositeMove = fn + 'Prime';
       }
       this.scrambleMoves.push(oppositeMove);
     }
