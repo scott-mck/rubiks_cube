@@ -25,37 +25,111 @@
     this.right = {
       cubes: [],
       axis: 'x',
-      dir: -1
+      dir: -1,
+      upFace: {
+        up: [8, 5, 2]
+      },
+      rightFace: {
+        back: [0, 3, 6]
+      },
+      downFace: {
+        down: [2, 5, 8]
+      },
+      leftFace: {
+        front: [2, 5, 8]
+      }
     };
 
     this.left = {
       cubes: [],
       axis: 'x',
-      dir: 1
+      dir: 1,
+      upFace: {
+        up: [0, 3, 6]
+      },
+      rightFace: {
+        front: [0, 3, 6]
+      },
+      downFace: {
+        down: [6, 3, 0]
+      },
+      leftFace: {
+        back: [2, 5, 8]
+      }
     };
 
     this.up = {
       cubes: [],
       axis: 'y',
-      dir: -1
+      dir: -1,
+      upFace: {
+        back: [2, 1, 0]
+      },
+      rightFace: {
+        right: [2, 1, 0]
+      },
+      downFace: {
+        front: [0, 1, 2]
+      },
+      leftFace: {
+        left: [0, 1, 2]
+      }
     };
 
     this.down = {
       cubes: [],
       axis: 'y',
-      dir: 1
+      dir: 1,
+      upFace: {
+        front: [6, 7, 8]
+      },
+      rightFace: {
+        right: [6, 7, 8]
+      },
+      downFace: {
+        back: [8, 7, 6]
+      },
+      leftFace: {
+        left: [8, 7, 6]
+      }
+
     };
 
     this.back = {
       cubes: [],
       axis: 'z',
-      dir: 1
+      dir: 1,
+      upFace: {
+        up: [2, 1, 0]
+      },
+      rightFace: {
+        left: [0, 3, 6]
+      },
+      downFace: {
+        down: [8, 7, 6]
+      },
+      leftFace: {
+        right: [2, 5, 8]
+      }
+
     };
 
     this.front = {
       cubes: [],
       axis: 'z',
-      dir: -1
+      dir: -1,
+      upFace: {
+        up: [6, 7, 8]
+      },
+      rightFace: {
+        right: [0, 3, 6]
+      },
+      downFace: {
+        down: [0, 1, 2]
+      },
+      leftFace: {
+        left: [2, 5, 8]
+      }
     };
 
     for (var i = 0; i < 9; i++) {
