@@ -1,4 +1,3 @@
-// TODO: Refactor see methods
 // TODO: Possibly refacter #animate
 // TODO: Do not store a virtual cube
 // TODO: Write moves to change middles
@@ -104,11 +103,11 @@
       this.front.cubes.push(cubes[FrontIndices[i]]);
     }
 
-    this.possibleMoves = [this.r, this.rPrime, this.l, this.lPrime, this.u,
-      this.uPrime, this.f, this.fPrime, this.d, this.dPrime, this.b, this.bPrime];
+    this.possibleMoves = ['r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd',
+        'dPrime', 'f', 'fPrime', 'd', 'dPrime', 'b', 'bPrime'];
   };
 
-  Cube.prototype.moveMap = {
+  window.Game.Cube.keyMap = {
     'r': 'i',
     'rPrime': 'k',
     'u': 'j',
@@ -122,6 +121,15 @@
     'b': 'q',
     'bPrime': 'p'
   };
+
+  window.Game.Cube.moveMap = {
+    'r': 'right',
+    'l': 'left',
+    'f': 'front',
+    'b': 'back',
+    'd': 'down',
+    'u': 'up'
+  }
 
   Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
@@ -153,8 +161,9 @@
     }
   };
 
-  Cube.prototype.move = function (name, face) {
-    // ex: 'rPrime', 'right'
+  Cube.prototype.move = function (name) {
+    // name is the name of the move e.g. 'rPrime'
+    var face = window.Game.Cube.moveMap[name[0]];
     this.virtualCube[name]();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
@@ -177,42 +186,6 @@
       dir,
       this.reset.bind(this, face, dir)
     );
-  };
-
-  Cube.prototype.b = function b () {
-    this.move('b', 'back');
-  };
-
-  Cube.prototype.bPrime = function bPrime () {
-    this.move('bPrime', 'back');
-  };
-
-  Cube.prototype.d = function d () {
-    this.move('d', 'down');
-  };
-
-  Cube.prototype.dPrime = function dPrime () {
-    this.move('dPrime', 'down');
-  };
-
-  Cube.prototype.f = function f () {
-    this.move('f', 'front');
-  };
-
-  Cube.prototype.fPrime = function fPrime () {
-    this.move('fPrime', 'front');
-  };
-
-  Cube.prototype.l = function l () {
-    this.move('l', 'left');
-  };
-
-  Cube.prototype.lPrime = function lPrime () {
-    this.move('lPrime', 'left');
-  };
-
-  Cube.prototype.r = function r () {
-    this.move('r', 'right');
   };
 
   Cube.prototype.reset = function (face, dir) {
@@ -294,15 +267,8 @@
     this.move('rPrime', 'right');
   };
 
-  // Cube.prototype.scramble = function () {
-  //   for (var i = 0; i < 25; i++) {
-  //     this.possibleMoves[~~(Math.random() * this.possibleMoves.length)].call(this);
-  //   }
-  // };
-
   Cube.prototype.seeDown = function () {
     this.rotateCube('down');
-    return;
   };
 
   Cube.prototype.seeDownCallback = function () {
@@ -319,7 +285,6 @@
 
   Cube.prototype.seeLeft = function () {
     this.rotateCube('left');
-    return;
   };
 
   Cube.prototype.seeLeftCallback = function () {
@@ -336,7 +301,6 @@
 
   Cube.prototype.seeRight = function () {
     this.rotateCube('right');
-    return;
   };
 
   Cube.prototype.seeRightCallback = function () {
@@ -354,7 +318,6 @@
 
   Cube.prototype.seeUp = function () {
     this.rotateCube('up');
-    return;
   };
 
   Cube.prototype.seeUpCallback = function () {
@@ -371,13 +334,5 @@
 
   Cube.prototype.solved = function () {
     return this.virtualCube.solved();
-  };
-
-  Cube.prototype.u = function u () {
-    this.move('u', 'up');
-  };
-
-  Cube.prototype.uPrime = function uPrime () {
-    this.move('uPrime', 'up');
   };
 })();
