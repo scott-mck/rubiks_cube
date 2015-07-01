@@ -214,6 +214,7 @@
         break;
       case 32: // space
         $('.solve-moves').empty();
+        $('.timer').text('0.00').css('color', 'white');
         this.scrambleMoves = [];
         this.cube.isSolved = false;
         this.scramble();
@@ -320,7 +321,7 @@
   EventHandler.prototype.stopTimer = function () {
     clearInterval(this.timeId);
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
-    $('.timer').text(time);
+    $('.timer').text(time).css('color', 'green');
   };
 
   EventHandler.prototype.triggerEvent = function () {

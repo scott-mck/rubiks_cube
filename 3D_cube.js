@@ -262,11 +262,7 @@
 
     this.animate(rubiksCube, this.cubes, axis, dir, callback.bind(this));
   };
-
-  Cube.prototype.rPrime = function rPrime () {
-    this.move('rPrime', 'right');
-  };
-
+  
   Cube.prototype.seeDown = function () {
     this.rotateCube('down');
   };

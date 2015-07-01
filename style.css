@@ -15,11 +15,15 @@
   top: 50px;
 }
 
+.solve-moves {
+  right: 0px;
+}
+
 h2 {
   position: absolute;
   color: white;
   margin: 30px;
-  font-size: 48px;
+  font-size: 64px;
   top: 400px;
   right: 350px;
 }

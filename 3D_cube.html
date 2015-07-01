@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<h1 class="title">
-			RUBIK'S CUBE<br>
+			Rubik's Cube
 		</h1>
 
 		<h1 class="solve">
@@ -28,6 +28,7 @@
 
 		<script src="./jquery-2.1.4.min.js"></script>
 		<script src="./three.min.js"></script>
+		<script src="http://mrdoob.github.com/three.js/examples/fonts/helvetiker_regular.typeface.js"></script>
 		<script type="application/javascript" src="3D_cube.js"></script>
 		<script type="application/javascript" src="cube.js"></script>
 		<script type="application/javascript" src="3D_game.js"></script>
@@ -51,8 +52,20 @@
 				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
 				camera.position.z = 600;
 				scene = new THREE.Scene();
-				group = new THREE.Object3D();
-				// rotatingFace = new THREE.Object3D();
+
+				// var text = new THREE.TextGeometry("Rubik's Cube", {
+				// 	size: 80.0,
+				// 	height: 24.0,
+				// 	font: 'helvetiker'
+				// });
+				// var textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+				// var textMesh = new THREE.Mesh( text, textMaterial );
+				// scene.add(textMesh);
+				// textMesh.position.x -= 300;
+				// textMesh.position.y += 220;
+				// textMesh.position.z += 00;
+				// textMesh.rotation.y += Math.PI / 7;
+
 
 				//Make individual cube geometry
         for (var j = 0; j < 9; j++) {
