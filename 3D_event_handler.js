@@ -40,7 +40,6 @@
 
   EventHandler.prototype.clickRelease = function click( event ) {
     if (!this.normal) {
-      debugger
       if (event.clientX < this.mousex - 50) {
         this.cube.seeRight();
       } else if (event.clientX > this.mousex + 50) {
@@ -287,21 +286,25 @@
 
   EventHandler.prototype.scramble = function () {
     for (var i = 0; i < 30; i++) {
-      var prevFn = prevFn || ''; // make sure new scramble move does not undo previous
-      var fn = fn || function () {};
-      while (fn.name === fnName) {
-        var randIndex = ~~(Math.random() * this.cube.possibleMoves.length)
+      var oppositeMove = oppositeMove || '';
+      var randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
+      fn = this.cube.possibleMoves[randIndex];
+
+      // find a new move if it undoes a previous move or is the third in a row
+      while (fn.name === oppositeMove ||
+             (fn.name === this.eventLoop[this.eventLoop.length - 1] &&
+             fn.name === this.eventLoop[this.eventLoop.length - 2])) {
+        randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
         fn = this.cube.possibleMoves[randIndex];
       }
       this.eventLoop.push(fn);
 
-      var fnName = fn.name;
-      if (fnName.indexOf('Prime') > -1) {
-        prevFn = fnName.slice(0, fnName.indexOf('Prime'));
+      if (fn.name.indexOf('Prime') > -1) {
+        oppositeMove = fn.name.slice(0, fn.name.indexOf('Prime'));
       } else {
-        prevFn += fnName + 'Prime';
+        oppositeMove = fn.name + 'Prime';
       }
-      this.scrambleMoves.push(prevFn);
+      this.scrambleMoves.push(oppositeMove);
     }
     this.scrambled = true;
   };

@@ -1,6 +1,6 @@
 // TODO: Refactor reset methods
 // TODO: Find a different way to check if solved
-// TODO: No need to pass in scene and camera; they are in scope
+// TODO: Write moves to change middles
 
 (function () {
   if (typeof window.Game === "undefined") {
@@ -16,8 +16,6 @@
 
   var Cube = window.Game.Cube = function (scene, camera, cubes) {
     this.cubes = cubes;
-    this.scene = scene;
-    this.camera = camera;
 
     // Create an internal cube to check if solved
     this.virtualCube = new Game.VirtualCube();
@@ -80,11 +78,11 @@
     }.bind(this));
 
     rotatingFace.rotation[axis] += dir * Math.PI / 16;
-    renderer.render(this.scene, this.camera);
+    renderer.render(scene, camera);
 
     function resetRotatingFace(face) {
       for (var i = 0; i < face.length; i++) {
-        THREE.SceneUtils.detach(face[i], rotatingFace, this.scene);
+        THREE.SceneUtils.detach(face[i], rotatingFace, scene);
       }
       scene.remove(rotatingFace);
       rotatingFace = undefined;
@@ -108,10 +106,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.back[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.back[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.back, 'z', 1, this.resetBack.bind(this, 1));
   };
 
@@ -120,10 +118,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.back[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.back[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.back, 'z', -1, this.resetBack.bind(this, -1));
   };
 
@@ -132,10 +130,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.down[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.down[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.down, 'y', 1, this.resetDown.bind(this, 1));
   };
 
@@ -144,10 +142,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.down[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.down[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.down, 'y', -1, this.resetDown.bind(this, -1));
   };
 
@@ -156,10 +154,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.front[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.front[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.front, 'z', -1, this.resetFront.bind(this, 1));
   };
 
@@ -168,10 +166,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.front[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.front[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.front, 'z', 1, this.resetFront.bind(this, -1));
   };
 
@@ -180,10 +178,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.left[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.left[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.left, 'x', 1, this.resetLeft.bind(this, 1));
   };
 
@@ -192,10 +190,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.left[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.left[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.left, 'x', -1, this.resetLeft.bind(this, -1));
   };
 
@@ -204,10 +202,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.right[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.right[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.right, 'x', -1, this.resetRight.bind(this, 1));
   };
 
@@ -308,10 +306,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.right[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.right[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.right, 'x', 1, this.resetRight.bind(this, -1));
   };
 
@@ -326,9 +324,9 @@
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
     }
-    this.scene.add(rubiksCube);
+    scene.add(rubiksCube);
     this.animate(rubiksCube, this.cubes, 'y', 1, function () {
       var temp = this.front;
       this.front = this.left;
@@ -346,9 +344,9 @@
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
     }
-    this.scene.add(rubiksCube);
+    scene.add(rubiksCube);
     this.animate(rubiksCube, this.cubes, 'x', -1, function () {
       var temp = this.up;
       this.up = this.front;
@@ -366,9 +364,9 @@
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
     }
-    this.scene.add(rubiksCube);
+    scene.add(rubiksCube);
     this.animate(rubiksCube, this.cubes, 'y', -1, function () {
       var temp = this.front;
       this.front = this.right;
@@ -386,9 +384,9 @@
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], this.scene, rubiksCube);
+      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
     }
-    this.scene.add(rubiksCube);
+    scene.add(rubiksCube);
     this.animate(rubiksCube, this.cubes, 'x', 1, function () {
       var temp = this.up;
       this.up = this.back.reverse();
@@ -410,10 +408,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.up[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.up[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.up, 'y', -1, this.resetUp.bind(this, 1));
   };
 
@@ -422,10 +420,10 @@
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this.up[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(this.up[i], scene, rotatingFace);
     }
 
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.animate(rotatingFace, this.up, 'y', 1, this.resetUp.bind(this, -1));
   };
 })();
