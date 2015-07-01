@@ -210,7 +210,7 @@
     scene.add(rotatingFace);
 
     // The name of the reset method for this face
-    var reset = 'reset' + face[0].toUpperCase() + face.slice(1, face.length);
+    // var reset = 'reset' + face[0].toUpperCase() + face.slice(1, face.length);
     var dir = this[face].dir;
     if (name.indexOf('Prime') > -1) {
       dir *= -1;
@@ -221,7 +221,7 @@
       this[face].cubes,
       this[face].axis,
       dir,
-      this[reset].bind(this, dir * -1)
+      this.reset.bind(this, face, dir * -1)
     );
   };
 
@@ -259,6 +259,44 @@
 
   Cube.prototype.r = function r () {
     this.move('r', 'right');
+  };
+
+  Cube.prototype.reset = function (face, dir) {
+    // face is a string e.g. 'right'
+    if (dir == 1) {
+      this[face].cubes = this.rotateCounterClockwise(this[face].cubes);
+    } else if (dir == -1) {
+      this[face].cubes = this.rotateClockwise(this[face].cubes);
+    }
+
+    // for all faces, upFace, etc. reset those squares to the ones on current face
+    var upIndices = [0, 1, 2];
+    var rightIndices = [2, 5, 8];
+    var downIndices = [6, 7, 8];
+    var leftIndices = [0, 3, 6];
+
+    debugger
+    var workingFace = Object.keys(this[face].upFace)[0];
+    for (var i = 0; i < 3; i++) {
+      this[workingFace].cubes[this[face].upFace[i]] = this[face].cubes[upIndices[i]];
+    }
+
+    workingFace = Object.keys(this[face].rightFace)[0];
+    for (var i = 0; i < 3; i++) {
+      this[workingFace].cubes[this[face].rightFace[i]] = this[face].cubes[rightIndices[i]];
+    }
+
+    workingFace = Object.keys(this[face].downFace)[0];
+    for (var i = 0; i < 3; i++) {
+      this[workingFace].cubes[this[face].downFace[i]] = this[face].cubes[downIndices[i]];
+    }
+
+    workingFace = Object.keys(this[face].leftFace)[0];
+    for (var i = 0; i < 3; i++) {
+      this[workingFace].cubes[this[face].leftFace[i]] = this[face].cubes[leftIndices[i]];
+    }
+
+
   };
 
   Cube.prototype.resetBack = function (dir) {
