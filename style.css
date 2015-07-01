@@ -1,4 +1,6 @@
 .title {
+  opacity: 1;
+  transition: 1s;
   position: absolute;
   color: white;
   margin: 30px;
@@ -8,6 +10,8 @@
 }
 
 .solve {
+  opacity: 1;
+  transition: 1s;
   position: absolute;
   color: white;
   margin: 30px;
@@ -21,6 +25,8 @@
 }
 
 h2 {
+  opacity: 1;
+  transition: 1s;
   position: absolute;
   color: white;
   margin: 30px;
@@ -29,11 +35,15 @@ h2 {
   right: 350px;
 }
 
-h2.timer {
+.timer {
+  opacity: 1;
+  transition: 1s;
   text-align: left;
 }
 
 .instructions {
+  opacity: 1;
+  transition: 1s;
   position: absolute;
   top: 30px;
   left: 30px;
@@ -51,4 +61,8 @@ h2.timer {
 .instructions p {
   font-size: 20px;
   margin-left: 20px;
+}
+
+.begin {
+  opacity: 0;
 }

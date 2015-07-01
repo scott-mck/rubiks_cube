@@ -13,20 +13,20 @@
 		<link rel=StyleSheet href="style.css" type="text/css" media=screen>
 	</head>
 	<body>
-		<h1 class="title">
+		<h1 class="title begin">
 			Rubik's Cube
 		</h1>
 
-		<h1 class="solve">
+		<h1 class="solve begin">
 			TO SOLVE:<br>
-			<small class="solve-moves"></small>
+			<small class="solve-moves begin"></small>
 		</h1>
 
 		<h2>
-			<small class="timer">0.00</small>
+			<small class="timer begin"></small>
 		</h2>
 
-		<div class="instructions">
+		<div class="instructions begin">
 			<h1>How to play:</h1>
 			<p>
 				MOUSE INSTRUCTIONS<br>
@@ -59,6 +59,15 @@
 		<script type="application/javascript" src="3D_event_handler.js"></script>
 
 		<script>
+			setTimeout(function () {
+				$('.instructions').removeClass('begin');
+				$('.title').removeClass('begin');
+				$('.solve').removeClass('begin');
+				$('.timer').text('0.00');
+				$('.timer').removeClass('begin');
+			}, 1000);
+
+
 			var camera, scene, renderer;
 			var mesh;
 			var cubes = [];
