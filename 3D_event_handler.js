@@ -309,7 +309,7 @@
   EventHandler.prototype.solve = function () {
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
-      this.eventLoop.push(this.cube[fn]);
+      this.eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
   };
