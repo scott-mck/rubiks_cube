@@ -1,9 +1,10 @@
 .title {
+  position: absolute;
   color: white;
   margin: 30px;
-  font-size: 64px;
-  position: absolute;
+  font-size: 80px;
   left: 33%;
+  top: 50px;
 }
 
 .solve {
@@ -26,4 +27,26 @@ h2 {
   font-size: 64px;
   top: 400px;
   right: 350px;
+}
+
+h2.timer {
+  text-align: left;
+}
+
+.instructions {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  background: white;
+  width: 400px;
+  height: 800px;
+}
+
+.instructions h1 {
+  margin-left: 20px;
+}
+
+.instructions p {
+  font-size: 20px;
+  margin-left: 20px;
 }
