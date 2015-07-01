@@ -59,13 +59,14 @@
 		<script type="application/javascript" src="3D_event_handler.js"></script>
 
 		<script>
-			setTimeout(function () {
+			// setTimeout(function () {
 				$('.instructions').removeClass('begin');
 				$('.title').removeClass('begin');
 				$('.solve').removeClass('begin');
+				$('.solve-moves').removeClass('begin');
 				$('.timer').text('0.00');
 				$('.timer').removeClass('begin');
-			}, 1000);
+			// }, 250);
 
 
 			var camera, scene, renderer;
@@ -73,8 +74,10 @@
 			var cubes = [];
 			var startTime = new Date();
 
-			init();
-			animate();
+			setTimeout(function () {
+				init();
+				animate();
+			}, 1000);
 
 			function init () {
 				//setup scene
