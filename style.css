@@ -34,15 +34,17 @@
 }
 
 .solve:hover {
+  transition: 1s;
+  background: yellow;
   cursor: pointer;
 }
 
 .solve-moves {
   font-family: 'AMC', sans-serif;
-  left: 60px;
+  left: 640px;
   font-size: 30px;
   color: white;
-  top: 650px;
+  top: 750px;
 }
 
 h2 {
@@ -91,4 +93,26 @@ h2 {
 
 .begin {
   opacity: 0;
+}
+
+.sample {
+  transition: 1s;
+  position: absolute;
+  top: 660px;
+  left: 90px;
+  background: white;
+  border: 5px solid red;
+  border-radius: 10px;
+  font-family: 'AMC', sans-serif;
+  font-weight: bold;
+  font-size: 30px;
+  max-width: 300px;
+  padding: 10px;
+  background: green;
+}
+
+.sample:hover {
+  transition: 1s;
+  cursor: pointer;
+  background: yellow;
 }

@@ -1,6 +1,7 @@
 // TODO: Refactor clickRelease
 // TODO: Move #scramble to Cube
 // TODO: Keep track of average solve times
+// TODO: Do not allow movement of cube while scrambling
 
 (function () {
   if (typeof window.Game === "undefined") {
@@ -55,10 +56,7 @@
     }
 
     if (this.scrambled) {
-      $('h2').css('color', 'red');
-      this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
-      this.scrambled = false;
-      this.timing = true;
+      this.startTimer();
     }
 
     if (this.normal.z == 1) { // front face
@@ -206,17 +204,17 @@
     if ( this.scrambled &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
-        $('h2').css('color', 'red');
-        this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
-        this.scrambled = false;
-        this.timing = true;
+        this.startTimer();
+        // $('h2').css('color', 'red');
+        // this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
+        // this.scrambled = false;
+        // this.timing = true;
     }
 
     switch (key.keyCode) {
       case 13: // return
-        // this.scrambled = false;
-        // this.solve();
-        this.sampleSolve();
+        this.scrambled = false;
+        this.solve();
         break;
       case 32: // space
         $('.solve-moves').empty();
@@ -293,6 +291,10 @@
   };
 
   EventHandler.prototype.sampleSolve = function () {
+    $('.sample').html('Scrambling...');
+    setTimeout(function () {
+      $('.sample').html('GO!');
+    }.bind(this), 5000);
     var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
     var solve = ';; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
     for (var i = 0; i < scramble.length; i++) {
@@ -354,6 +356,13 @@
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
+  };
+
+  EventHandler.prototype.startTimer = function () {
+    $('.timer').css('color', 'red');
+    this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
+    this.scrambled = false;
+    this.timing = true;
   };
 
   EventHandler.prototype.stopTimer = function () {

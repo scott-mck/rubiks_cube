@@ -17,9 +17,6 @@
 			Rubik's Cube
 		</h1>
 
-		<h1 class="solve begin">
-			Click me to see solution!<br>
-		</h1>
 		<small class="solve-moves begin"></small>
 
 		<h2>
@@ -50,6 +47,13 @@
 			</p>
 		</div>
 
+		<h1 class="solve begin">
+			Click me to see solution!<br>
+		</h1>
+
+		<div class="sample begin">
+			Click me to see me solve it myself!
+		</div>
 		<script src="./jquery-2.1.4.min.js"></script>
 		<script src="./three.min.js"></script>
 		<script src="http://mrdoob.github.com/three.js/examples/fonts/helvetiker_regular.typeface.js"></script>
@@ -66,6 +70,8 @@
 			$('.solve-moves').removeClass('begin');
 			$('.timer').text('0.00');
 			$('.timer').removeClass('begin');
+			$('.sample').removeClass('begin');
+			
 			setInterval(function (i) {
 				var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];
 				var i = ~~(Math.random() * colors.length);
@@ -158,9 +164,8 @@
 				var eventHandler = new Game.EventHandler(rubiksCube, 'game');
 
 				window.addEventListener( 'resize', onWindowResize, false );
-				$('.solve').on('click', function () {
-					eventHandler.displaySolveMoves();
-				});
+				$('.solve').on('click', eventHandler.displaySolveMoves.bind(eventHandler));
+				$('.sample').on('click', eventHandler.sampleSolve.bind(eventHandler));
 			}
 
 			function onWindowResize() {
