@@ -1,15 +1,23 @@
+@font-face {
+  font-family: "AMC";
+  src: url("./AMC.ttf") format("truetype");
+}
+
 .title {
+  font-family: 'AMC', sans-serif;
   opacity: 1;
-  transition: 1s;
+  transition: 5s;
   position: absolute;
   color: white;
   margin: 30px;
   font-size: 80px;
   left: 33%;
   top: 50px;
+  color: blue;
 }
 
 .solve {
+  font-family: 'AMC', sans-serif;
   opacity: 1;
   transition: 1s;
   position: absolute;
@@ -19,8 +27,8 @@
   border-radius: 10px;
   margin: 30px;
   font-size: 50px;
-  right: 150px;
-  top: 100px;
+  left: 60px;
+  top: 550px;
   background: white;
   max-width: 263px;
 }
@@ -30,13 +38,15 @@
 }
 
 .solve-moves {
-  right: 130px;
+  font-family: 'AMC', sans-serif;
+  left: 60px;
   font-size: 30px;
   color: white;
-  top: 285px;
+  top: 750px;
 }
 
 h2 {
+  font-family: 'AMC', sans-serif;
   opacity: 1;
   transition: 1s;
   position: absolute;
@@ -48,29 +58,33 @@ h2 {
 }
 
 .timer {
+  font-family: 'AMC', sans-serif;
   opacity: 1;
   transition: 1s;
   text-align: left;
 }
 
 .instructions {
+  font-family: 'AMC', sans-serif;
   opacity: 1;
   transition: 1s;
   position: absolute;
   top: 30px;
-  left: 30px;
+  left: 90px;
   background: white;
-  width: 300px;
+  width: 320px;
   height: 500px;
   border: 5px solid red;
   border-radius: 10px;
 }
 
 .instructions h1 {
+  font-family: 'AMC', sans-serif;
   margin-left: 20px;
 }
 
 .instructions p {
+  font-family: 'AMC', sans-serif;
   font-size: 20px;
   margin-left: 20px;
 }

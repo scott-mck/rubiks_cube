@@ -196,6 +196,9 @@
       var letter = window.Game.Cube.keyMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
       $('.solve-moves').append(letter).css('position', 'absolute');
     }
+    if (this.scrambleMoves.length > 0) {
+      $('.solve').html('Type these letters!');
+    }
   };
 
   EventHandler.prototype.handleEvents = function (key) {
