@@ -205,10 +205,6 @@
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.startTimer();
-        // $('h2').css('color', 'red');
-        // this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
-        // this.scrambled = false;
-        // this.timing = true;
     }
 
     switch (key.keyCode) {
@@ -220,7 +216,6 @@
         $('.solve-moves').empty();
         $('.timer').text('0.00').css('color', 'white');
         this.scrambleMoves = [];
-        this.cube.isSolved = false;
         this.scramble();
         break;
       case 65: // a
@@ -332,6 +327,8 @@
   };
 
   EventHandler.prototype.scramble = function () {
+    this.cube.isSolved = false;
+    $('.scramble').addClass('.solve').html('Click me to see the solution!');
     var oppositeMove = '';
     var prevRandIndex = -1;
     for (var i = 0; i < 30; i++) {
