@@ -214,8 +214,9 @@
 
     switch (key.keyCode) {
       case 13: // return
-        this.scrambled = false;
-        this.solve();
+        // this.scrambled = false;
+        // this.solve();
+        this.sampleSolve();
         break;
       case 32: // space
         $('.solve-moves').empty();
@@ -279,16 +280,49 @@
         this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
         break;
       case 85: // u
-        this.eventLoop.push(this.cube.rotateCube('down'));
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
         break;
       case 89: // y
-        this.eventLoop.push(this.cube.rotateCube('down'));
+        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
         break;
       case 186: // semi-colon
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
         break;
     }
+  };
+
+  EventHandler.prototype.sampleSolve = function () {
+    var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
+    var solve = ';; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
+    for (var i = 0; i < scramble.length; i++) {
+      this.eventLoop.push(this.cube.move.bind(
+        this.cube,
+        window.Game.Cube.inverseKeyMap[scramble[i]]
+      ));
+    }
+
+    var _sleep = function (milli) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milli) {
+          break;
+        }
+      }
+    }
+
+    setTimeout(function () {
+      for (var i = 0; i < solve.length; i++) {
+        if (solve[i] === ' ') {
+          this.eventLoop.push(_sleep.bind(this, 400));
+        } else {
+          this.eventLoop.push(this.cube.move.bind(
+            this.cube,
+            window.Game.Cube.inverseKeyMap[solve[i]]
+          ));
+        }
+      }
+    }.bind(this), 5000);
   };
 
   EventHandler.prototype.scramble = function () {
@@ -302,6 +336,7 @@
         fn = this.cube.possibleMoves[randIndex];
       }
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
+      console.log(window.Game.Cube.keyMap[fn]);
       if (fn.indexOf('Prime') > -1) {
         oppositeMove = fn.slice(0, fn.indexOf('Prime'));
       } else {
@@ -334,6 +369,7 @@
       this.timing = false;
       this.startTime = undefined;
     }
+
     if (!this.cube.animating && this.eventLoop.length > 0) {
       this.eventLoop.shift().call(this.cube);
     }

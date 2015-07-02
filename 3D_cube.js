@@ -122,6 +122,26 @@
     'bPrime': 'p'
   };
 
+  window.Game.Cube.inverseKeyMap = {
+    'i': 'r',
+    'k': 'rPrime',
+    'j': 'u',
+    'f': 'uPrime',
+    'd': 'l',
+    'e': 'lPrime',
+    'h': 'f',
+    'g': 'fPrime',
+    's': 'd',
+    'l': 'dPrime',
+    'q': 'b',
+    'p': 'bPrime',
+    ';': 'right',
+    'a': 'left',
+    'y': 'down',
+    'n': 'up'
+  };
+
+
   window.Game.Cube.moveMap = {
     'r': 'right',
     'l': 'left',
@@ -139,6 +159,7 @@
 
     rotatingFace.rotation[axis] += dir * Math.PI / 16;
     renderer.render(scene, camera);
+    renderer.render(scene, camera); // fixes strange rending with box helper
 
     function resetRotatingFace(face) {
       for (var i = 0; i < face.length; i++) {
@@ -162,7 +183,19 @@
   };
 
   Cube.prototype.move = function (name) {
-    // name is the name of the move e.g. 'rPrime'
+    if (name === 'up') {
+      this.seeUp();
+      return;
+    } else if (name === 'down') {
+      this.seeDown();
+      return;
+    } else if (name === 'right') {
+      this.seeRight();
+      return;
+    } else if (name === 'left') {
+      this.seeLeft();
+      return;
+    }
     var face = window.Game.Cube.moveMap[name[0]];
     this.virtualCube[name]();
     this.animating = true;
