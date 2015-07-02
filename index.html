@@ -17,8 +17,6 @@
 			Rubik's Cube
 		</h1>
 
-		<small class="solve-moves begin"></small>
-
 		<h2>
 			<small class="timer begin"></small>
 		</h2>
@@ -47,9 +45,11 @@
 			</p>
 		</div>
 
-		<h1 class="solve begin">
-			Click me to see the solution!<br>
+		<h1 class="scramble begin">
+			Click me to scramble!<br>
 		</h1>
+
+		<small class="solve-moves begin"></small>
 
 		<div class="sample begin">
 			Click me to see me solve it myself!
@@ -66,7 +66,7 @@
 
 			$('.instructions').removeClass('begin');
 			$('.title').removeClass('begin');
-			$('.solve').removeClass('begin');
+			$('.scramble').removeClass('begin');
 			$('.solve-moves').removeClass('begin');
 			$('.timer').text('0.00');
 			$('.timer').removeClass('begin');
@@ -164,7 +164,15 @@
 				var eventHandler = new Game.EventHandler(rubiksCube, 'game');
 
 				window.addEventListener( 'resize', onWindowResize, false );
-				$('.solve').on('click', eventHandler.displaySolveMoves.bind(eventHandler));
+				$('.scramble').on('click', function () {
+					if ($('.scramble').hasClass('.solve')) {
+						eventHandler.displaySolveMoves();
+					} else {
+						$('.scramble').addClass('.solve');
+						eventHandler.scramble();
+						$('.scramble').html('Click me to see the solution!');
+					}
+				});
 				$('.sample').on('click', eventHandler.sampleSolve.bind(eventHandler));
 			}
 

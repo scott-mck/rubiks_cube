@@ -16,7 +16,7 @@
   color: blue;
 }
 
-.solve {
+.scramble {
   font-family: 'AMC', sans-serif;
   opacity: 1;
   transition: 1s;
@@ -33,7 +33,7 @@
   max-width: 263px;
 }
 
-.solve:hover {
+.scramble:hover {
   transition: 1s;
   background: purple;
   cursor: pointer;
