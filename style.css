@@ -26,10 +26,10 @@
   border: 5px solid red;
   border-radius: 10px;
   margin: 30px;
-  font-size: 50px;
+  font-size: 30px;
   left: 60px;
-  top: 550px;
-  background: white;
+  top: 520px;
+  background: green;
   max-width: 263px;
 }
 
@@ -42,7 +42,7 @@
   left: 60px;
   font-size: 30px;
   color: white;
-  top: 750px;
+  top: 650px;
 }
 
 h2 {
