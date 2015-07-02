@@ -178,7 +178,6 @@
     if (name.indexOf('Prime') > -1) {
       dir *= -1;
     }
-
     this.animate(
       rotatingFace,
       this[face].cubes,
@@ -190,7 +189,6 @@
 
   Cube.prototype.reset = function (face, dir) {
     // face is a string e.g. 'right'; referred to as 'this face'
-
     if (face === 'left' || face === 'down' || face === 'back') {
       dir *= -1;
     }
@@ -218,15 +216,15 @@
 
   Cube.prototype.rotateClockwise = function(face) {
     face = [face[6], face[3], face[0],
-                  face[7], face[4], face[1],
-                  face[8], face[5], face[2]];
+            face[7], face[4], face[1],
+            face[8], face[5], face[2]];
     return face;
   };
 
   Cube.prototype.rotateCounterClockwise = function(face) {
     face = [face[2], face[5], face[8],
-                  face[1], face[4], face[7],
-                  face[0], face[3], face[6]];
+            face[1], face[4], face[7],
+            face[0], face[3], face[6]];
     return face;
   };
 
@@ -262,7 +260,7 @@
 
     this.animate(rubiksCube, this.cubes, axis, dir, callback.bind(this));
   };
-  
+
   Cube.prototype.seeDown = function () {
     this.rotateCube('down');
   };

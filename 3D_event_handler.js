@@ -1,5 +1,6 @@
 // TODO: Refactor clickRelease
 // TODO: Move #scramble to Cube
+// TODO: Keep track of average solve times
 
 (function () {
   if (typeof window.Game === "undefined") {
@@ -286,9 +287,6 @@
         break;
       case 186: // semi-colon
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
-        break;
-      case 191: // '/'
-        this.displaySolveMoves();
         break;
     }
   };
