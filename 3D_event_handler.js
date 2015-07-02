@@ -1,5 +1,4 @@
 // TODO: Refactor clickRelease
-// TODO: Move #scramble to Cube
 // TODO: Keep track of average solve times
 // TODO: Do not allow movement of cube while scrambling
 
@@ -213,9 +212,6 @@
         this.solve();
         break;
       case 32: // space
-        $('.solve-moves').empty();
-        $('.timer').text('0.00').css('color', 'white');
-        this.scrambleMoves = [];
         this.scramble();
         break;
       case 65: // a
@@ -327,6 +323,9 @@
   };
 
   EventHandler.prototype.scramble = function () {
+    $('.solve-moves').empty();
+    $('.timer').text('0.00').css('color', 'white');
+    this.scrambleMoves = [];
     this.cube.isSolved = false;
     $('.scramble').addClass('.solve').html('Click me to see the solution!');
     var oppositeMove = '';
@@ -339,7 +338,6 @@
         fn = this.cube.possibleMoves[randIndex];
       }
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
-      console.log(window.Game.Cube.keyMap[fn]);
       if (fn.indexOf('Prime') > -1) {
         oppositeMove = fn.slice(0, fn.indexOf('Prime'));
       } else {
