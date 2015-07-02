@@ -58,7 +58,8 @@
       this.startTimer();
     }
 
-    if (this.normal.z == 1) { // front face
+    // RIGHT FACE
+    if (this.normal.z == 1) {
       if (this.cube.up.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
@@ -95,7 +96,8 @@
         }
       }
 
-    } else if (this.normal.y == 1) { // top face
+      // UP FACE
+    } else if (this.normal.y == 1) {
       if (this.cube.front.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 30 &&
             event.clientY < this.mousey - 10) {
@@ -139,7 +141,9 @@
           return;
         }
       }
-    } else if (this.normal.x == 1) { // right face
+
+      // RIGHT FACE
+    } else if (this.normal.x == 1) {
       if (this.cube.up.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
