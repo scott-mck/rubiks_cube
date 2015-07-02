@@ -374,6 +374,7 @@
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time).css('color', 'green');
     $('.scramble').removeClass('.solve').html('Click me to scramble!');
+    $('.solve-moves').empty();
   };
 
   EventHandler.prototype.triggerEvent = function () {
