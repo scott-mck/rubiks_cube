@@ -325,6 +325,10 @@
         }
       }
     }.bind(this), 5000);
+
+    setTimeout(function () {
+      $('.sample').html('Click me to see me solve it myself!');
+    }, 21000);
   };
 
   EventHandler.prototype.scramble = function () {
@@ -347,7 +351,7 @@
       this.scrambleMoves.push(oppositeMove);
     }
     this.scrambled = true;
-    $('.solve').html('Click me to see solution!');
+    $('.solve').html('Click me to see the solution!');
   };
 
   EventHandler.prototype.solve = function () {
