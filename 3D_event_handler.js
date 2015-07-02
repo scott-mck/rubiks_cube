@@ -299,19 +299,10 @@
       ));
     }
 
-    var _sleep = function (milli) {
-      var start = new Date().getTime();
-      for (var i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milli) {
-          break;
-        }
-      }
-    }
-
     setTimeout(function () {
       for (var i = 0; i < solve.length; i++) {
         if (solve[i] === ' ') {
-          this.eventLoop.push(_sleep.bind(this, 400));
+          this.eventLoop.push(this._sleep.bind(this, 400));
         } else {
           this.eventLoop.push(this.cube.move.bind(
             this.cube,
@@ -324,6 +315,15 @@
     setTimeout(function () {
       $('.sample').html('Click me to see me solve it myself!');
     }, 21000);
+  };
+
+  EventHandler.prototype._sleep = function (milli) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milli) {
+        break;
+      }
+    }
   };
 
   EventHandler.prototype.scramble = function () {
