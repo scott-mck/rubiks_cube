@@ -67,6 +67,14 @@
 			$('.solve-moves').removeClass('begin');
 			$('.timer').text('0.00');
 			$('.timer').removeClass('begin');
+			setInterval(function (i) {
+				var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];
+				var i = ~~(Math.random() * colors.length);
+				while (colors[i] === $('.title').css('color')) {
+					i = ~~(Math.random() * colors.length);
+				}
+				$('.title').css('color', colors[i]);
+			}, 5000);
 
 			var camera, scene, renderer;
 			var mesh;
@@ -152,7 +160,6 @@
 
 				window.addEventListener( 'resize', onWindowResize, false );
 				$('.solve').on('click', function () {
-					$('.solve').html('Type these letters!');
 					eventHandler.displaySolveMoves();
 				});
 			}
