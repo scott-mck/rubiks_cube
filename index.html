@@ -62,34 +62,16 @@
 		<script type="application/javascript" src="3D_event_handler.js"></script>
 
 		<script>
+			// TODO: Refactor init
 			// TODO: Fade in cube
-
-			$('.instructions').removeClass('begin');
-			$('.title').removeClass('begin');
-			$('.scramble').removeClass('begin');
-			$('.solve-moves').removeClass('begin');
-			$('.timer').text('0.00');
-			$('.timer').removeClass('begin');
-			$('.sample').removeClass('begin');
-
-			setInterval(function (i) {
-				var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];
-				var i = ~~(Math.random() * colors.length);
-				while (colors[i] === $('.title').css('color')) {
-					i = ~~(Math.random() * colors.length);
-				}
-				$('.title').css('color', colors[i]);
-			}, 5000);
-
 			var camera, scene, renderer;
 			var mesh;
+			var rubiksCube, eventHandler;
 			var cubes = [];
-			var startTime = new Date();
 
-			setTimeout(function () {
-				init();
-				animate();
-			}, 250);
+			init();
+			addEvents();
+			animate();
 
 			function init () {
 				//setup scene
@@ -100,20 +82,6 @@
 				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
 				camera.position.z = 600;
 				scene = new THREE.Scene();
-
-				// var text = new THREE.TextGeometry("Rubik's Cube", {
-				// 	size: 80.0,
-				// 	height: 24.0,
-				// 	font: 'helvetiker'
-				// });
-				// var textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-				// var textMesh = new THREE.Mesh( text, textMaterial );
-				// scene.add(textMesh);
-				// textMesh.position.x -= 300;
-				// textMesh.position.y += 220;
-				// textMesh.position.z += 00;
-				// textMesh.rotation.y += Math.PI / 7;
-
 
 				//Make individual cube geometry
         for (var j = 0; j < 9; j++) {
@@ -160,10 +128,20 @@
 				camera.position.z -= 100;
 				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
 
-				var rubiksCube = new Game.Cube(scene, camera, cubes);
-				var eventHandler = new Game.EventHandler(rubiksCube, 'game');
+				rubiksCube = new Game.Cube(scene, camera, cubes);
+				eventHandler = new Game.EventHandler(rubiksCube, 'game');
+			}
 
+			function addEvents() {
 				window.addEventListener( 'resize', onWindowResize, false );
+				$('.instructions').removeClass('begin');
+				$('.title').removeClass('begin');
+				$('.scramble').removeClass('begin');
+				$('.solve-moves').removeClass('begin');
+				$('.timer').text('0.00');
+				$('.timer').removeClass('begin');
+				$('.sample').removeClass('begin');
+
 				$('.scramble').on('click', function () {
 					if ($('.scramble').hasClass('.solve')) {
 						eventHandler.displaySolveMoves();
@@ -174,6 +152,15 @@
 					}
 				});
 				$('.sample').on('click', eventHandler.sampleSolve.bind(eventHandler));
+
+				setInterval(function () {
+					var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];
+					var i = ~~(Math.random() * colors.length);
+					while (colors[i] === $('.title').css('color')) {
+						i = ~~(Math.random() * colors.length);
+					}
+					$('.title').css('color', colors[i]);
+				}, 5000);
 			}
 
 			function onWindowResize() {
