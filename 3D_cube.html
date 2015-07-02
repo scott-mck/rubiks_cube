@@ -18,9 +18,9 @@
 		</h1>
 
 		<h1 class="solve begin">
-			TO SOLVE:<br>
-			<small class="solve-moves begin"></small>
+			Click me to see solution!<br>
 		</h1>
+		<small class="solve-moves begin"></small>
 
 		<h2>
 			<small class="timer begin"></small>
@@ -31,7 +31,7 @@
 			<p>
 				MOUSE INSTRUCTIONS<br>
 				Click on face and drag to move<br>
-				Click off face to rotate
+				Click off face and drag to rotate
 			</p>
 			<p>
 				KEYBOARD INSTRUCTIONS<br>
@@ -59,15 +59,14 @@
 		<script type="application/javascript" src="3D_event_handler.js"></script>
 
 		<script>
-			// setTimeout(function () {
-				$('.instructions').removeClass('begin');
-				$('.title').removeClass('begin');
-				$('.solve').removeClass('begin');
-				$('.solve-moves').removeClass('begin');
-				$('.timer').text('0.00');
-				$('.timer').removeClass('begin');
-			// }, 250);
+			// TODO: Fade in cube
 
+			$('.instructions').removeClass('begin');
+			$('.title').removeClass('begin');
+			$('.solve').removeClass('begin');
+			$('.solve-moves').removeClass('begin');
+			$('.timer').text('0.00');
+			$('.timer').removeClass('begin');
 
 			var camera, scene, renderer;
 			var mesh;
@@ -77,7 +76,7 @@
 			setTimeout(function () {
 				init();
 				animate();
-			}, 1000);
+			}, 250);
 
 			function init () {
 				//setup scene
@@ -152,6 +151,10 @@
 				var eventHandler = new Game.EventHandler(rubiksCube, 'game');
 
 				window.addEventListener( 'resize', onWindowResize, false );
+				$('.solve').on('click', function () {
+					$('.solve').html('Type these letters!');
+					eventHandler.displaySolveMoves();
+				});
 			}
 
 			function onWindowResize() {

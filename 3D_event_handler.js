@@ -309,6 +309,7 @@
       this.scrambleMoves.push(oppositeMove);
     }
     this.scrambled = true;
+    $('.solve').html('Click me to see solution!');
   };
 
   EventHandler.prototype.solve = function () {

@@ -13,15 +13,27 @@
   opacity: 1;
   transition: 1s;
   position: absolute;
-  color: white;
+  color: black;
+  padding: 10px;
+  border: 5px solid red;
+  border-radius: 10px;
   margin: 30px;
-  font-size: 30px;
+  font-size: 50px;
   right: 150px;
   top: 100px;
+  background: white;
+  max-width: 263px;
+}
+
+.solve:hover {
+  cursor: pointer;
 }
 
 .solve-moves {
-  right: 0px;
+  right: 130px;
+  font-size: 30px;
+  color: white;
+  top: 285px;
 }
 
 h2 {
