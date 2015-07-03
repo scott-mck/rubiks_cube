@@ -1,4 +1,4 @@
-# rubik's cube
+# Rubik's cube
 ## Features
 * Uses THREE.js to build, render, and mutate 3D objects
 * Move faces by using keyboard or by clicking, dragging, and releasing
