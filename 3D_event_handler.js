@@ -220,10 +220,14 @@
         break;
       case 65: // a
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'left'));
+        this.scrambleMoves.push('right');
         break;
       case 67: // c
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
+
+        this.scrambleMoves.push('down');
+        this.scrambleMoves.push('rPrime');
         break;
       case 68: // d
         this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
@@ -264,9 +268,13 @@
       case 77: // m
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
+
+        this.scrambleMoves.push('down');
+        this.scrambleMoves.push('l');
         break;
       case 78: // n
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
+        this.scrambleMoves.push('down');
         break;
       case 80: // q
         this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
@@ -279,6 +287,9 @@
       case 82: // r
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
+
+        this.scrambleMoves.push('up');
+        this.scrambleMoves.push('r');
         break;
       case 83: // s
         this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
@@ -287,12 +298,17 @@
       case 85: // u
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
         this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
+
+        this.scrambleMoves.push('up');
+        this.scrambleMoves.push('lPrime');
         break;
       case 89: // y
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
+        this.scrambleMoves.push('up');
         break;
       case 186: // semi-colon
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
+        this.scrambleMoves.push('left');
         break;
     }
   };
