@@ -355,9 +355,12 @@
   };
 
   EventHandler.prototype.scramble = function () {
+    if (this.cube.isSolved) {
+      this.scrambleMoves = [];
+    }
+    this.cube.isSolved = false;
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
-    this.cube.isSolved = false;
     $('.scramble').addClass('.solve').html('Click me to see the solution!');
     var oppositeMove = '';
     var prevRandIndex = -1;
