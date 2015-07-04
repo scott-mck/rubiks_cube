@@ -313,7 +313,7 @@
     }.bind(this), 5000);
 
     setTimeout(function () {
-      $('.sample').html('Click me to see me solve it myself!');
+      $('.sample').html('Click me to see an example solve!');
     }, 21000);
   };
 
