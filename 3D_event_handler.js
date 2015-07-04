@@ -227,30 +227,39 @@
         break;
       case 68: // d
         this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
+        this.scrambleMoves.push('lPrime');
         break;
       case 69: // e
         this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
+        this.scrambleMoves.push('l');
         break;
       case 70: // f
         this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
+        this.scrambleMoves.push('u');
         break;
       case 71: // g
         this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
+        this.scrambleMoves.push('f');
         break;
       case 72: // h
         this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
+        this.scrambleMoves.push('fPrime');
         break;
       case 73: // i
         this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
+        this.scrambleMoves.push('rPrime');
         break;
       case 74: // j
         this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
+        this.scrambleMoves.push('uPrime');
         break;
       case 75: // k
         this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
+        this.scrambleMoves.push('r');
         break;
       case 76: // l
         this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
+        this.scrambleMoves.push('d');
         break;
       case 77: // m
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
@@ -261,9 +270,11 @@
         break;
       case 80: // q
         this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
+        this.scrambleMoves.push('b');
         break;
       case 81: // p
         this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
+        this.scrambleMoves.push('bPrime');
         break;
       case 82: // r
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
@@ -271,6 +282,7 @@
         break;
       case 83: // s
         this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
+        this.scrambleMoves.push('dPrime');
         break;
       case 85: // u
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
@@ -329,7 +341,7 @@
   EventHandler.prototype.scramble = function () {
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
-    this.scrambleMoves = [];
+    // this.scrambleMoves = [];
     this.cube.isSolved = false;
     $('.scramble').addClass('.solve').html('Click me to see the solution!');
     var oppositeMove = '';
@@ -354,6 +366,7 @@
   };
 
   EventHandler.prototype.solve = function () {
+    debugger
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
