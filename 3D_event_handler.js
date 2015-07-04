@@ -341,7 +341,6 @@
   EventHandler.prototype.scramble = function () {
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
-    // this.scrambleMoves = [];
     this.cube.isSolved = false;
     $('.scramble').addClass('.solve').html('Click me to see the solution!');
     var oppositeMove = '';
@@ -366,7 +365,6 @@
   };
 
   EventHandler.prototype.solve = function () {
-    debugger
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
@@ -390,13 +388,15 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
+    if (this.cube.isSolved) {
+      $('.solve-moves').empty();
+    }
     if (this.cube.isSolved && this.timing) {
       this.eventLoop = [];
       this.stopTimer();
       this.timing = false;
       this.startTime = undefined;
     }
-
     if (!this.cube.animating && this.eventLoop.length > 0) {
       this.eventLoop.shift().call(this.cube);
     }
