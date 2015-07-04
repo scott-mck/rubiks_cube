@@ -27,7 +27,7 @@
   border-radius: 10px;
   margin: 30px;
   font-size: 30px;
-  left: 60px;
+  left: 10px;
   top: 520px;
   background: green;
   max-width: 300px;
@@ -56,7 +56,7 @@ h2 {
   margin: 30px;
   font-size: 64px;
   top: 400px;
-  right: 350px;
+  right: 15%;
 }
 
 .timer {
@@ -73,7 +73,7 @@ h2 {
   transition: 1s;
   position: absolute;
   top: 30px;
-  left: 90px;
+  left: 40px;
   background: yellow;
   width: 330px;
   height: 500px;
@@ -101,7 +101,7 @@ h2 {
   transition: 1s;
   position: absolute;
   top: 660px;
-  left: 90px;
+  left: 40px;
   background: white;
   border: 5px solid red;
   border-radius: 10px;
