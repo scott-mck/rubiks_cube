@@ -340,6 +340,7 @@
   };
 
   EventHandler.prototype.sampleSolve = function () {
+    this.cube.isSolved = false;
     var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
     var solve = ';; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
     for (var i = 0; i < scramble.length; i++) {
@@ -406,7 +407,7 @@
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
-    this.startTimer();
+    // this.startTimer();
     $('.scramble').removeClass('solve').html('Click me to scramble!');
   };
 
@@ -419,6 +420,7 @@
 
   EventHandler.prototype.stopTimer = function () {
     clearInterval(this.timeId);
+    this.timing = false;
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time).css('color', 'green');
     $('.scramble').removeClass('solve').html('Click me to scramble!');
@@ -432,7 +434,6 @@
     if (this.cube.isSolved && this.timing) {
       this.eventLoop = [];
       this.stopTimer();
-      this.timing = false;
       this.startTime = undefined;
     }
     if (!this.cube.animating && this.eventLoop.length > 0) {
