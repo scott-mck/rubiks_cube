@@ -48,7 +48,7 @@
 				n: look up<br>
 				<br>
 				Space: scramble<br>
-				Enter: auto-solve!<br>
+				Enter: display solve moves<br>
 			</p>
 		</div>
 
@@ -59,7 +59,7 @@
 		<small class="solve-moves begin"></small>
 
 		<div class="sample begin">
-			Click me to see an example solve!
+			Click me to see an example solve! (starts from a solved position)
 		</div>
 
 		<script>
@@ -69,6 +69,7 @@
 			var mesh;
 			var rubiksCube, eventHandler;
 			var cubes = [];
+			var solvedCubes = [];
 
 			init();
 			addEvents();
@@ -119,9 +120,11 @@
 						helper.material.linewidth = 10;
 
 						cubes.push(mesh);
+						solvedCubes.push(mesh);
 						scene.add(helper);
 						scene.add(mesh);
 					}
+
         }
 
 				camera.position.x += 250;
@@ -144,15 +147,19 @@
 				$('.sample').removeClass('begin');
 
 				$('.scramble').on('click', function () {
-					if ($('.scramble').hasClass('.solve')) {
-						eventHandler.displaySolveMoves();
+					if ($('.scramble').hasClass('solve')) {
+						eventHandler.solve();
 					} else {
-						$('.scramble').addClass('.solve');
+						$('.scramble').addClass('solve');
 						eventHandler.scramble();
-						$('.scramble').html('Click me to see the solution!');
+						$('.scramble').html('Click me to solve!');
 					}
 				});
-				$('.sample').on('click', eventHandler.sampleSolve.bind(eventHandler));
+
+				$('.sample').on('click', function () {
+					eventHandler.solve.call(eventHandler);
+					eventHandler.sampleSolve.call(eventHandler);
+				});
 
 				setInterval(function () {
 					var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];

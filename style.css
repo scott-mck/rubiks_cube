@@ -6,7 +6,7 @@
 .title {
   font-family: 'AMC', sans-serif;
   opacity: 1;
-  transition: 5s;
+  transition: opacity 1s;
   position: absolute;
   color: white;
   margin: 30px;
@@ -19,14 +19,14 @@
 .scramble {
   font-family: 'AMC', sans-serif;
   opacity: 1;
-  transition: 1s;
+  transition: 500ms;
   position: absolute;
   color: black;
   padding: 10px;
   border: 5px solid red;
   border-radius: 10px;
   margin: 30px;
-  font-size: 30px;
+  font-size: 20px;
   left: 10px;
   top: 520px;
   background: green;
@@ -34,7 +34,7 @@
 }
 
 .scramble:hover {
-  transition: 1s;
+  transition: 500ms;
   background: purple;
   cursor: pointer;
 }
@@ -50,7 +50,7 @@
 h2 {
   font-family: 'AMC', sans-serif;
   opacity: 1;
-  transition: 1s;
+  transition: 500ms;
   position: absolute;
   color: white;
   margin: 30px;
@@ -62,7 +62,7 @@ h2 {
 .timer {
   font-family: 'AMC', sans-serif;
   opacity: 1;
-  transition: 1s;
+  transition: 500ms;
   text-align: left;
 }
 
@@ -70,7 +70,7 @@ h2 {
   font-family: 'AMC', sans-serif;
   font-weight: bold;
   opacity: 1;
-  transition: 1s;
+  transition: 500ms;
   position: absolute;
   top: 30px;
   left: 40px;
@@ -98,23 +98,23 @@ h2 {
 }
 
 .sample {
-  transition: 1s;
+  transition: 500ms;
   position: absolute;
-  top: 660px;
+  top: 615px;
   left: 40px;
   background: white;
   border: 5px solid red;
   border-radius: 10px;
   font-family: 'AMC', sans-serif;
   font-weight: bold;
-  font-size: 30px;
+  font-size: 20px;
   max-width: 300px;
   padding: 10px;
   background: green;
 }
 
 .sample:hover {
-  transition: 1s;
+  transition: 500ms;
   cursor: pointer;
   background: purple;
 }

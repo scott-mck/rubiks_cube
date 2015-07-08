@@ -44,12 +44,16 @@
     if (!this.normal) {
       if (event.clientX < this.mousex - 50) {
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
+        this.scrambleMoves.push('left');
       } else if (event.clientX > this.mousex + 50) {
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'left'));
+        this.scrambleMoves.push('right');
       } else if (event.clientY < this.mousey - 50) {
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
+        this.scrambleMoves.push('up');
       } else if (event.clientY > this.mousey + 50) {
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
+        this.scrambleMoves.push('down');
       }
       return;
     }
@@ -63,17 +67,21 @@
       if (this.cube.up.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
+          this.scrambleMoves.push('uPrime');
           return;
         } else if (event.clientX > this.mousex + 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
+          this.scrambleMoves.push('u');
           return;
         }
       } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
+          this.scrambleMoves.push('d');
           return;
         } else if (event.clientX > this.mousex + 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
+          this.scrambleMoves.push('dPrime');
           return;
         }
       }
@@ -81,17 +89,21 @@
       if (this.cube.right.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
+          this.scrambleMoves.push('rPrime');
           return;
         } else if (event.clientY > this.mousey + 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
+          this.scrambleMoves.push('r');
           return;
         }
       } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
+          this.scrambleMoves.push('l');
           return;
         } else if (event.clientY > this.mousey + 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
+          this.scrambleMoves.push('lPrime');
           return;
         }
       }
@@ -102,20 +114,24 @@
         if (event.clientX < this.mousex - 30 &&
             event.clientY < this.mousey - 10) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
+          this.scrambleMoves.push('f');
           return;
         } else if (event.clientX > this.mousex + 30 &&
                    event.clientY > this.mousey + 10) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
+          this.scrambleMoves.push('fPrime');
           return;
         }
       } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 30 &&
             event.clientY < this.mousey - 10) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
+          this.scrambleMoves.push('bPrime');
           return;
         } else if (event.clientX > this.mousex + 30 &&
                    event.clientY > this.mousey + 10) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
+          this.scrambleMoves.push('b');
           return;
         }
       }
@@ -124,20 +140,24 @@
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
+          this.scrambleMoves.push('rPrime');
           return;
         } else if (event.clientY > this.mousey + 40 &&
                    event.clientX < this.mousex - 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
+          this.scrambleMoves.push('r');
           return;
         }
       } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
         if (event.clientX < this.mousex - 20 &&
             event.clientY > this.mousey + 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
+          this.scrambleMoves.push('lPrime');
           return;
         } else if (event.clientX > this.mousex + 20 &&
                    event.clientY < this.mousey - 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
+          this.scrambleMoves.push('l');
           return;
         }
       }
@@ -148,20 +168,24 @@
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
+          this.scrambleMoves.push('u');
           return;
         } else if (event.clientY > this.mousey + 20 &&
                    event.clientX < this.mousex - 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
+          this.scrambleMoves.push('uPrime');
           return;
         }
       } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 20 &&
             event.clientX > this.mousex + 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
+          this.scrambleMoves.push('dPrime');
           return;
         } else if (event.clientY > this.mousey + 20 &&
                    event.clientX < this.mousex - 20) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
+          this.scrambleMoves.push('d');
           return;
         }
       }
@@ -169,17 +193,21 @@
       if (this.cube.front.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
+          this.scrambleMoves.push('f');
           return;
         } else if (event.clientY > this.mousey + 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
+          this.scrambleMoves.push('fPrime');
           return;
         }
       } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
         if (event.clientY < this.mousey - 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
+          this.scrambleMoves.push('bPrime');
           return;
         } else if (event.clientY > this.mousey + 40) {
           this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
+          this.scrambleMoves.push('b');
           return;
         }
       }
@@ -198,9 +226,6 @@
       var letter = window.Game.Cube.keyMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
       $('.solve-moves').append(letter).css('position', 'absolute');
     }
-    if (this.scrambleMoves.length > 0) {
-      $('.solve').html('Type these letters!');
-    }
   };
 
   EventHandler.prototype.handleEvents = function (key) {
@@ -212,8 +237,9 @@
 
     switch (key.keyCode) {
       case 13: // return
-        this.scrambled = false;
-        this.solve();
+        // this.scrambled = false;
+        // this.solve();
+        this.displaySolveMoves();
         break;
       case 32: // space
         this.scramble();
@@ -314,10 +340,6 @@
   };
 
   EventHandler.prototype.sampleSolve = function () {
-    $('.sample').html('Scrambling...');
-    setTimeout(function () {
-      $('.sample').html('GO!');
-    }.bind(this), 5000);
     var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
     var solve = ';; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
     for (var i = 0; i < scramble.length; i++) {
@@ -339,10 +361,6 @@
         }
       }
     }.bind(this), 5000);
-
-    setTimeout(function () {
-      $('.sample').html('Click me to see an example solve!');
-    }, 21000);
   };
 
   EventHandler.prototype._sleep = function (milli) {
@@ -361,7 +379,7 @@
     this.cube.isSolved = false;
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
-    $('.scramble').addClass('.solve').html('Click me to see the solution!');
+    $('.scramble').addClass('solve').html('Click me to see the solution!');
     var oppositeMove = '';
     var prevRandIndex = -1;
     for (var i = 0; i < 30; i++) {
@@ -389,6 +407,7 @@
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
+    $('.scramble').removeClass('solve').html('Click me to scramble!');
   };
 
   EventHandler.prototype.startTimer = function () {
@@ -402,7 +421,7 @@
     clearInterval(this.timeId);
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time).css('color', 'green');
-    $('.scramble').removeClass('.solve').html('Click me to scramble!');
+    $('.scramble').removeClass('solve').html('Click me to scramble!');
     $('.solve-moves').empty();
   };
 
