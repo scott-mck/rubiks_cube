@@ -379,7 +379,7 @@
     this.cube.isSolved = false;
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
-    $('.scramble').addClass('solve').html('Click me to see the solution!');
+    $('.scramble').addClass('solve').html('Click me to auto-solve!');
     var oppositeMove = '';
     var prevRandIndex = -1;
     for (var i = 0; i < 30; i++) {
@@ -398,7 +398,6 @@
       this.scrambleMoves.push(oppositeMove);
     }
     this.scrambled = true;
-    $('.solve').html('Click me to see the solution!');
   };
 
   EventHandler.prototype.solve = function () {
@@ -407,6 +406,7 @@
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
+    this.startTimer();
     $('.scramble').removeClass('solve').html('Click me to scramble!');
   };
 
