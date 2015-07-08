@@ -6,7 +6,7 @@
 .title {
   font-family: 'AMC', sans-serif;
   opacity: 1;
-  transition: opacity 1s;
+  transition: 5s;
   position: absolute;
   color: white;
   margin: 30px;
