@@ -93,10 +93,6 @@ h2 {
   margin-left: 20px;
 }
 
-.begin {
-  opacity: 0;
-}
-
 .sample {
   transition: 500ms;
   position: absolute;

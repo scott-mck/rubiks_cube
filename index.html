@@ -19,15 +19,15 @@
 		<script type="application/javascript" src="3D_event_handler.js"></script>
 	</head>
 	<body>
-		<h1 class="title begin">
+		<h1 class="title">
 			Rubik's Cube
 		</h1>
 
 		<h2>
-			<small class="timer begin"></small>
+			<small class="timer">0.00</small>
 		</h2>
 
-		<div class="instructions begin">
+		<div class="instructions">
 			<h1>How to play:</h1>
 			<p>
 				MOUSE INSTRUCTIONS<br>
@@ -52,13 +52,13 @@
 			</p>
 		</div>
 
-		<h1 class="scramble begin">
+		<h1 class="scramble">
 			Click me to scramble!<br>
 		</h1>
 
-		<small class="solve-moves begin"></small>
+		<small class="solve-moves"></small>
 
-		<div class="sample begin">
+		<div class="sample">
 			Click me to see an example solve! (starts from a solved position)
 		</div>
 
@@ -130,22 +130,13 @@
 				camera.position.x += 250;
 				camera.position.y += 300;
 				camera.position.z -= 100;
-				camera.lookAt(cubes[13].position); //look at middle of Rubik's Cube
+				camera.lookAt(cubes[13].position); // look at middle of Rubik's Cube
 
 				rubiksCube = new Game.Cube(scene, camera, cubes);
 				eventHandler = new Game.EventHandler(rubiksCube, 'game');
 			}
 
 			function addEvents() {
-				window.addEventListener( 'resize', onWindowResize, false );
-				$('.instructions').removeClass('begin');
-				$('.title').removeClass('begin');
-				$('.scramble').removeClass('begin');
-				$('.solve-moves').removeClass('begin');
-				$('.timer').text('0.00');
-				$('.timer').removeClass('begin');
-				$('.sample').removeClass('begin');
-
 				$('.scramble').on('click', function () {
 					if ($('.scramble').hasClass('solve')) {
 						eventHandler.solve();
