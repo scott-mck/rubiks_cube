@@ -407,7 +407,6 @@
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
-    // this.startTimer();
     $('.scramble').removeClass('solve').html('Click me to scramble!');
   };
 
@@ -432,8 +431,9 @@
       $('.solve-moves').empty();
     }
     if (this.cube.isSolved && this.timing) {
-      this.eventLoop = [];
       this.stopTimer();
+      this.eventLoop = [];
+      this.scrambleMoves = [];
       this.startTime = undefined;
     }
     if (!this.cube.animating && this.eventLoop.length > 0) {
