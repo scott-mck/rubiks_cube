@@ -17,7 +17,7 @@
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
     window.addEventListener( 'mousedown', this.click.bind(this), false );
     window.addEventListener( 'mouseup', this.clickRelease.bind(this), false );
-    this.triggerId = setInterval(this.triggerEvent.bind(this), 10);
+    setInterval(this.triggerEvent.bind(this), 10);
   };
 
   EventHandler.prototype.click = function click( event ) {
@@ -442,6 +442,10 @@
     }
     if (!this.cube.animating && this.eventLoop.length > 0) {
       this.eventLoop.shift().call(this.cube);
+    }
+    if (this.cube.solved()) {
+      $('.solve-moves').empty();
+      this.scrambleMoves = [];
     }
   };
 })();

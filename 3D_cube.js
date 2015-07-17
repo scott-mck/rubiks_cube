@@ -180,9 +180,6 @@
       resetRotatingFace(face);
       callback && callback();
       this.animating = false;
-      // if (this.solved()) {
-      //   this.isSolved = true;
-      // }
     }
   };
 
