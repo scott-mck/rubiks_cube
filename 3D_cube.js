@@ -19,7 +19,7 @@
 
     // Create an internal cube to check if solved
     this.virtualCube = new Game.VirtualCube();
-    this.isSolved = false;
+    // this.isSolved = false;
     this.animating = false; // No simultaneous moves
 
     this.right = {
@@ -176,9 +176,9 @@
       resetRotatingFace(face);
       callback && callback();
       this.animating = false;
-      if (this.solved()) {
-        this.isSolved = true;
-      }
+      // if (this.solved()) {
+      //   this.isSolved = true;
+      // }
     }
   };
 

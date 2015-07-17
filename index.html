@@ -139,6 +139,7 @@
 			function addEvents() {
 				$('.scramble').on('click', function () {
 					if ($('.scramble').hasClass('solve')) {
+						$('.scramble').removeClass('solve');
 						eventHandler.solve();
 					} else {
 						$('.scramble').addClass('solve');
@@ -147,8 +148,8 @@
 				});
 
 				$('.sample').on('click', function () {
-					eventHandler.solve.call(eventHandler);
-					eventHandler.sampleSolve.call(eventHandler);
+					eventHandler.solve();
+					eventHandler.sampleSolve();
 				});
 
 				setInterval(function () {

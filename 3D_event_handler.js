@@ -237,12 +237,16 @@
 
     switch (key.keyCode) {
       case 13: // return
-        // this.scrambled = false;
-        // this.solve();
         this.displaySolveMoves();
         break;
       case 32: // space
-        this.scramble();
+        if ($('.scramble').hasClass('solve')) {
+          $('.scramble').removeClass('solve');
+          this.solve();
+        } else {
+          $('.scramble').addClass('solve');
+          this.scramble();
+        }
         break;
       case 65: // a
         this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'left'));
@@ -374,10 +378,9 @@
   };
 
   EventHandler.prototype.scramble = function () {
-    if (this.cube.isSolved) {
+    if (this.cube.solved()) {
       this.scrambleMoves = [];
     }
-    this.cube.isSolved = false;
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Click me to auto-solve!');
@@ -402,6 +405,7 @@
   };
 
   EventHandler.prototype.solve = function () {
+    this.scrambled = false;
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
@@ -427,10 +431,10 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
-    if (this.cube.isSolved) {
+    if (this.cube.solved()) {
       $('.solve-moves').empty();
     }
-    if (this.cube.isSolved && this.timing) {
+    if (this.cube.solved() && this.timing) {
       this.stopTimer();
       this.eventLoop = [];
       this.scrambleMoves = [];
