@@ -381,9 +381,6 @@
   };
 
   EventHandler.prototype.scramble = function () {
-    // if (this.cube.solved()) {
-    //   this.scrambleMoves = [];
-    // }
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Click me to auto-solve!');

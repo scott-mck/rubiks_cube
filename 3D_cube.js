@@ -19,7 +19,6 @@
 
     // Create an internal cube to check if solved
     this.virtualCube = new Game.VirtualCube();
-    // this.isSolved = false;
     this.animating = false; // No simultaneous moves
 
     this.right = {
