@@ -119,7 +119,11 @@
     'd': 's',
     'dPrime': 'l',
     'b': 'q',
-    'bPrime': 'p'
+    'bPrime': 'p',
+    'left': 'a',
+    'right': ';',
+    'up': 'n',
+    'down': 'y'
   };
 
   window.Game.Cube.inverseKeyMap = {
