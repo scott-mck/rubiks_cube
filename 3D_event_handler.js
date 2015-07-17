@@ -221,6 +221,9 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
+    if (this.cube.solved()) {
+      this.scrambleMoves = [];
+    }
     $('.solve-moves').empty();
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var letter = window.Game.Cube.keyMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
@@ -378,9 +381,9 @@
   };
 
   EventHandler.prototype.scramble = function () {
-    if (this.cube.solved()) {
-      this.scrambleMoves = [];
-    }
+    // if (this.cube.solved()) {
+    //   this.scrambleMoves = [];
+    // }
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Click me to auto-solve!');
@@ -431,9 +434,6 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
-    if (this.cube.solved()) {
-      $('.solve-moves').empty();
-    }
     if (this.cube.solved() && this.timing) {
       this.stopTimer();
       this.eventLoop = [];
