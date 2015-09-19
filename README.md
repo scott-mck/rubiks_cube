@@ -1,3 +1,5 @@
+## [Live](http://scott-mck.github.io/rubiks_cube/)
+
 # Rubik's cube
 ## Features
 * Uses THREE.js to build, render, and mutate 3D objects
