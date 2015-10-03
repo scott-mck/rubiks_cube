@@ -31,7 +31,9 @@
 				<p>; -- look right</p>
 				<p>y -- look down</p>
 				<p>n -- look up</p>
+
 				<br>
+
 				<p>Space -- scramble</p>
 				<p>Enter -- display solve moves</p>
 			</div>
@@ -161,7 +163,7 @@
 			}
 
 			function onWindowResize() {
-				// camera.aspect = canvasWidth / canvasHeight;
+				camera.aspect = $('#what').width() / $('#what').height();
 				camera.updateProjectionMatrix();
 				renderer.setSize($('#what').width(), $('#what').height());
 			}
