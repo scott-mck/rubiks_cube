@@ -69,9 +69,9 @@ body {
 
 .button {
   transition: 200ms;
-  display: inline-block;
   margin: 5px 3px 5px 0px;
   font-family: 'AMC', sans-serif;
+  text-align: center;
   padding: 5px;
   border: 3px solid red;
   border-radius: 8px;
