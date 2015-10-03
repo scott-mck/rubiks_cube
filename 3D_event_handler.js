@@ -15,8 +15,8 @@
     this.timing = false;
 
     window.addEventListener('keyup', this.handleEvents.bind(this), false);
-    window.addEventListener( 'mousedown', this.click.bind(this), false );
-    window.addEventListener( 'mouseup', this.clickRelease.bind(this), false );
+    // window.addEventListener( 'mousedown', this.click.bind(this), false );
+    // window.addEventListener( 'mouseup', this.clickRelease.bind(this), false );
     setInterval(this.triggerEvent.bind(this), 10);
   };
 
@@ -227,7 +227,7 @@
     $('.solve-moves').empty();
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var letter = window.Game.Cube.keyMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
-      $('.solve-moves').append(letter).css('position', 'absolute');
+      $('.solve-moves').append(letter);
     }
   };
 

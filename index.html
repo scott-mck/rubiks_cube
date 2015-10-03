@@ -3,13 +3,6 @@
 	<head>
 		<title>Rubik's Cube</title>
 		<meta charset="utf-8">
-		<style>
-			body {
-				margin: 0px;
-				background-color: #000000;
-				overflow: hidden;
-			}
-		</style>
 		<link rel=StyleSheet href="style.css" type="text/css" media=screen>
 		<script src="./jquery-2.1.4.min.js"></script>
 		<script src="./three.min.js"></script>
@@ -19,52 +12,53 @@
 		<script type="application/javascript" src="3D_event_handler.js"></script>
 	</head>
 	<body>
-		<h1 class="title">
+		<div id="what"></div>
+
+		<div class="title">
 			Rubik's Cube
-		</h1>
+		</div>
 
-		<h2>
-			<small class="timer">0.00</small>
-		</h2>
-
-		<div class="instructions">
-			<h1>How to play:</h1>
-			<p>
-				MOUSE INSTRUCTIONS<br>
-				Click on face and drag to move<br>
-				Click off face and drag to rotate
-			</p>
-			<p>
-				KEYBOARD INSTRUCTIONS<br>
-				i, k: move right face<br>
-				f, j: move up face<br>
-				e, d: move left face<br>
-				s, l: move down face<br>
-				g, h: move front face<br>
-				q, p: move back face<br>
-				a: look left<br>
-				semi-colon: look right<br>
-				y: look down<br>
-				n: look up<br>
+		<div id="sidebar">
+			<div class="instructions">
+				<span class="section">KEYBOARD</span>
+				<p>i, k -- move right face</p>
+				<p>f, j -- move up face</p>
+				<p>e, d -- move left face</p>
+				<p>s, l -- move down face</p>
+				<p>g, h -- move front face</p>
+				<p>q, p -- move back face</p>
+				<p>a -- look left</p>
+				<p>; -- look right</p>
+				<p>y -- look down</p>
+				<p>n -- look up</p>
 				<br>
-				Space: scramble<br>
-				Enter: display solve moves<br>
-			</p>
+				<p>Space -- scramble</p>
+				<p>Enter -- display solve moves</p>
+			</div>
+
+			<div class="button">
+				Scramble<br>
+			</div>
+
+			<div class="button">
+				Example solve
+			</div>
+
+			<div class="timer">
+				0.00
+			</div>
+
+			<div class="solve-moves"></div>
 		</div>
 
-		<h1 class="scramble">
-			Click me to scramble!<br>
-		</h1>
-
-		<small class="solve-moves"></small>
-
-		<div class="sample">
-			Click me to see an example solve! (starts from a solved position)
-		</div>
+		<!-- <div id="canvas"></div> -->
 
 		<script>
 			// TODO: Refactor init
 			// TODO: Fade in cube
+			var canvasWidth = $('#what').width();
+			var canvasHeight = $('#what').height();
+
 			var camera, scene, renderer;
 			var mesh;
 			var rubiksCube, eventHandler;
@@ -76,12 +70,15 @@
 			animate();
 
 			function init () {
+				container = document.getElementById('what');
+				document.body.appendChild(container);
+
 				//setup scene
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.body.appendChild( renderer.domElement );
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				renderer.setSize( canvasWidth, canvasHeight );
+				container.appendChild( renderer.domElement );
+				camera = new THREE.PerspectiveCamera( 70, canvasWidth / canvasHeight, 1, 1000 );
 				camera.position.z = 600;
 				scene = new THREE.Scene();
 
@@ -164,9 +161,9 @@
 			}
 
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
+				// camera.aspect = canvasWidth / canvasHeight;
 				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize($('#what').width(), $('#what').height());
 			}
 
 			function animate() {

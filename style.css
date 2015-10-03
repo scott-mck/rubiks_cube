@@ -3,114 +3,100 @@
   src: url("./AMC.ttf") format("truetype");
 }
 
+body {
+  position: relative;
+  margin: 0px;
+  background-color: #000000;
+  overflow: hidden;
+}
+
+#what {
+  z-index: -1;
+  position: absolute;
+  top: 0px;
+  left: 50px;
+  min-width: 1000px;
+  min-height: 600px;
+  width: 100vw;
+  height: 60vw;
+  /*background: red;*/
+}
+
+#canvas {
+  /*margin-left: 300px;*/
+  height: 100px;
+}
+
 .title {
-  font-family: 'AMC', sans-serif;
-  opacity: 1;
   transition: 10s;
   position: absolute;
-  color: white;
-  margin: 30px;
+  top: 30px;
+  left: 260px;
+  width: 50%;
+  min-width: 500px;
+  text-align: center;
+  font-family: 'AMC', sans-serif;
   font-size: 80px;
-  left: 33%;
-  top: 50px;
   color: blue;
 }
 
-.scramble {
-  font-family: 'AMC', sans-serif;
-  opacity: 1;
-  transition: 500ms;
-  position: absolute;
-  color: black;
-  padding: 10px;
-  border: 5px solid red;
-  border-radius: 10px;
-  margin: 30px;
-  font-size: 20px;
-  left: 10px;
-  top: 520px;
-  background: green;
-  max-width: 300px;
-}
-
-.scramble:hover {
-  transition: 500ms;
-  background: purple;
-  cursor: pointer;
-}
-
-.solve-moves {
-  font-family: 'AMC', sans-serif;
-  left: 640px;
-  font-size: 30px;
-  color: white;
-  top: 750px;
-}
-
-h2 {
-  font-family: 'AMC', sans-serif;
-  opacity: 1;
-  transition: 500ms;
-  position: absolute;
-  color: white;
-  margin: 30px;
-  font-size: 64px;
-  top: 400px;
-  right: 15%;
-}
-
-.timer {
-  font-family: 'AMC', sans-serif;
-  opacity: 1;
-  transition: 500ms;
-  text-align: left;
+#sidebar {
+  z-index: 10;
+  width: 260px;
+  margin: 10px;
+  margin-top: 46px;
 }
 
 .instructions {
   font-family: 'AMC', sans-serif;
-  font-weight: bold;
-  opacity: 1;
-  transition: 500ms;
-  position: absolute;
-  top: 30px;
-  left: 40px;
+  padding: 10px;
   background: yellow;
-  width: 330px;
-  height: 500px;
-  border: 5px solid red;
+  border: 3px solid red;
   border-radius: 10px;
 }
 
-.instructions h1 {
-  font-family: 'AMC', sans-serif;
-  margin-top: 15px;
-  margin-left: 20px;
+.instructions span.section {
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 .instructions p {
+  margin: 0px;
   font-family: 'AMC', sans-serif;
-  font-size: 20px;
-  margin-left: 20px;
+  font-size: 18px;
 }
 
-.sample {
-  transition: 500ms;
-  position: absolute;
-  top: 615px;
-  left: 40px;
-  background: white;
-  border: 5px solid red;
-  border-radius: 10px;
+.button {
+  transition: 200ms;
+  display: inline-block;
+  margin: 5px 3px 5px 0px;
   font-family: 'AMC', sans-serif;
-  font-weight: bold;
+  padding: 5px;
+  border: 3px solid red;
+  border-radius: 8px;
   font-size: 20px;
-  max-width: 300px;
-  padding: 10px;
   background: green;
 }
 
-.sample:hover {
-  transition: 500ms;
-  cursor: pointer;
+.button:hover {
   background: purple;
+  cursor: pointer;
+}
+
+.timer {
+  margin-top: 20px;
+  text-align: center;
+  font-family: 'AMC', sans-serif;
+  transition: 500ms;
+  color: white;
+  font-size: 64px;
+}
+
+.solve-moves {
+  margin-top: 20px;
+  word-break: break-all;
+  font-family: 'AMC', sans-serif;
+  font-size: 30px;
+  color: white;
 }
