@@ -383,7 +383,7 @@
   EventHandler.prototype.scramble = function () {
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
-    $('.scramble').addClass('solve').html('Click me to auto-solve!');
+    $('.scramble').addClass('solve').html('Solve');
     var oppositeMove = '';
     var prevRandIndex = -1;
     for (var i = 0; i < 30; i++) {
@@ -411,7 +411,7 @@
       this.eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
-    $('.scramble').removeClass('solve').html('Click me to scramble!');
+    $('.scramble').removeClass('solve').html('Scramble');
   };
 
   EventHandler.prototype.startTimer = function () {
@@ -426,7 +426,7 @@
     this.timing = false;
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time).css('color', 'green');
-    $('.scramble').removeClass('solve').html('Click me to scramble!');
+    $('.scramble').removeClass('solve').html('Scramble');
     $('.solve-moves').empty();
   };
 
