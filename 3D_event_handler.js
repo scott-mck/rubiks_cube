@@ -1,6 +1,6 @@
-// TODO: Refactor clickRelease
 // TODO: Keep track of average solve times
 // TODO: Do not allow movement of cube while scrambling
+// TODO: Make title in THREE.js -- easier to move cube
 
 (function () {
   if (typeof window.Game === "undefined") {
@@ -8,213 +8,46 @@
   }
 
   var EventHandler = window.Game.EventHandler = function (cube) {
-    this.cube = cube;
-    this.eventLoop = [];
+    this._cube = cube;
+    this._eventLoop = [];
     this.scrambleMoves = [];
-    this.scrambled = false;
-    this.timing = false;
+    this._scrambled = false;
+    this._timing = false;
 
     $(window).on('keyup', this.handleEvents.bind(this));
     $('#canvas').on('mousedown', this.click.bind(this));
-    $('#canvas').on('mouseup', this.clickRelease.bind(this));
     setInterval(this.triggerEvent.bind(this), 10);
   };
 
-  EventHandler.prototype.click = function click(event) {
-    this.normal = undefined;
-    this.mousex = event.clientX;
-    this.mousey = event.clientY;
+  EventHandler.prototype.click = function (event) {
+    // Callbacks will be mutated depending on which cube face the user clicks on
+    var callbacks = {
+      leftCallback: 'leftCallbackString',
+      rightCallback: 'rightCallbackString',
+      upCallback: 'upCallbackString',
+      downCallback: 'downCallbackString'
+    };
+    var intersects = this._getIntersects(event);
 
-    var canvasBox = renderer.domElement.getBoundingClientRect();
-    var canvasMouseX = event.clientX - canvasBox.left;
-    var canvasMouseY = event.clientY - canvasBox.top;
+    if (intersects.length === 0) {
+      this._getRotateCallbacks(callbacks);
+      $('#canvas').one('mouseup', this._mouseUpCallback.bind(this, callbacks, event));
+    } else {
+      var clickedCube = intersects[0].object;
+      var normal = new THREE.Matrix4().extractRotation(clickedCube.matrixWorld)
+        .multiplyVector3(intersects[0].face.normal.clone());
 
-    var mouse = new THREE.Vector2();
-    mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1;
-    var raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, camera);
-    var intersects = raycaster.intersectObjects(scene.children);
-
-    if (intersects.length > 0) {
-      var object = intersects[0];
-      this.object = object.object;
-      this.normal = new THREE.Matrix4().extractRotation(this.object.matrixWorld)
-        .multiplyVector3(object.face.normal.clone());
-    }
-  };
-
-  EventHandler.prototype.clickRelease = function click( event ) {
-    if (!this.normal) {
-      if (event.clientX < this.mousex - 50) {
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
-        this.scrambleMoves.push('left');
-      } else if (event.clientX > this.mousex + 50) {
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'left'));
-        this.scrambleMoves.push('right');
-      } else if (event.clientY < this.mousey - 50) {
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
-        this.scrambleMoves.push('up');
-      } else if (event.clientY > this.mousey + 50) {
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
-        this.scrambleMoves.push('down');
-      }
-      return;
-    }
-
-    if (this.scrambled) {
-      this.startTimer();
-    }
-
-    // RIGHT FACE
-    if (this.normal.z == 1) {
-      if (this.cube.up.cubes.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
-          this.scrambleMoves.push('uPrime');
-          return;
-        } else if (event.clientX > this.mousex + 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
-          this.scrambleMoves.push('u');
-          return;
-        }
-      } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
-          this.scrambleMoves.push('d');
-          return;
-        } else if (event.clientX > this.mousex + 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
-          this.scrambleMoves.push('dPrime');
-          return;
-        }
+      if (normal.x === 1) {
+        this._getRightCallbacks(clickedCube, normal, callbacks);
+      } else if (normal.y === 1) {
+        this._getUpCallbacks(clickedCube, normal, callbacks);
+      } else if (normal.z === 1) {
+        this._getFrontCallbacks(clickedCube, normal, callbacks);
       }
 
-      if (this.cube.right.cubes.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
-          this.scrambleMoves.push('rPrime');
-          return;
-        } else if (event.clientY > this.mousey + 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
-          this.scrambleMoves.push('r');
-          return;
-        }
-      } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
-          this.scrambleMoves.push('l');
-          return;
-        } else if (event.clientY > this.mousey + 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
-          this.scrambleMoves.push('lPrime');
-          return;
-        }
-      }
-
-      // UP FACE
-    } else if (this.normal.y == 1) {
-      if (this.cube.front.cubes.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 30 &&
-            event.clientY < this.mousey - 10) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
-          this.scrambleMoves.push('f');
-          return;
-        } else if (event.clientX > this.mousex + 30 &&
-                   event.clientY > this.mousey + 10) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
-          this.scrambleMoves.push('fPrime');
-          return;
-        }
-      } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 30 &&
-            event.clientY < this.mousey - 10) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
-          this.scrambleMoves.push('bPrime');
-          return;
-        } else if (event.clientX > this.mousex + 30 &&
-                   event.clientY > this.mousey + 10) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
-          this.scrambleMoves.push('b');
-          return;
-        }
-      }
-
-      if (this.cube.right.cubes.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 20 &&
-            event.clientX > this.mousex + 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
-          this.scrambleMoves.push('rPrime');
-          return;
-        } else if (event.clientY > this.mousey + 40 &&
-                   event.clientX < this.mousex - 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
-          this.scrambleMoves.push('r');
-          return;
-        }
-      } else if (this.cube.left.cubes.indexOf(this.object) > -1) {
-        if (event.clientX < this.mousex - 20 &&
-            event.clientY > this.mousey + 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
-          this.scrambleMoves.push('lPrime');
-          return;
-        } else if (event.clientX > this.mousex + 20 &&
-                   event.clientY < this.mousey - 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
-          this.scrambleMoves.push('l');
-          return;
-        }
-      }
-
-      // RIGHT FACE
-    } else if (this.normal.x == 1) {
-      if (this.cube.up.cubes.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 20 &&
-            event.clientX > this.mousex + 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
-          this.scrambleMoves.push('u');
-          return;
-        } else if (event.clientY > this.mousey + 20 &&
-                   event.clientX < this.mousex - 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
-          this.scrambleMoves.push('uPrime');
-          return;
-        }
-      } else if (this.cube.down.cubes.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 20 &&
-            event.clientX > this.mousex + 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
-          this.scrambleMoves.push('dPrime');
-          return;
-        } else if (event.clientY > this.mousey + 20 &&
-                   event.clientX < this.mousex - 20) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
-          this.scrambleMoves.push('d');
-          return;
-        }
-      }
-
-      if (this.cube.front.cubes.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
-          this.scrambleMoves.push('f');
-          return;
-        } else if (event.clientY > this.mousey + 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
-          this.scrambleMoves.push('fPrime');
-          return;
-        }
-      } else if (this.cube.back.cubes.indexOf(this.object) > -1) {
-        if (event.clientY < this.mousey - 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
-          this.scrambleMoves.push('bPrime');
-          return;
-        } else if (event.clientY > this.mousey + 40) {
-          this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
-          this.scrambleMoves.push('b');
-          return;
-        }
-      }
+      // When user releases mouse, this function is called and is passed the set
+      // of possible callbacks, the mousedown event, and the mouseup event
+      $('#canvas').one('mouseup', this._mouseUpCallback.bind(this, callbacks, event));
     }
   };
 
@@ -225,7 +58,7 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    if (this.cube.solved()) {
+    if (this._cube.solved()) {
       this.scrambleMoves = [];
     }
     $('.solve-moves').empty();
@@ -236,7 +69,7 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-    if ( this.scrambled &&
+    if ( this._scrambled &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.startTimer();
@@ -256,107 +89,103 @@
         }
         break;
       case 65: // a
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'left'));
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'left'));
         this.scrambleMoves.push('right');
         break;
       case 67: // c
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
-
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'up'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'r'));
         this.scrambleMoves.push('down');
         this.scrambleMoves.push('rPrime');
         break;
       case 68: // d
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
         this.scrambleMoves.push('lPrime');
         break;
       case 69: // e
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'lPrime'));
         this.scrambleMoves.push('l');
         break;
       case 70: // f
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'uPrime'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'uPrime'));
         this.scrambleMoves.push('u');
         break;
       case 71: // g
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'fPrime'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'fPrime'));
         this.scrambleMoves.push('f');
         break;
       case 72: // h
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'f'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'f'));
         this.scrambleMoves.push('fPrime');
         break;
       case 73: // i
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'r'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'r'));
         this.scrambleMoves.push('rPrime');
         break;
       case 74: // j
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'u'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'u'));
         this.scrambleMoves.push('uPrime');
         break;
       case 75: // k
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'rPrime'));
         this.scrambleMoves.push('r');
         break;
       case 76: // l
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'dPrime'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'dPrime'));
         this.scrambleMoves.push('d');
         break;
       case 77: // m
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'lPrime'));
-
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'up'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'lPrime'));
         this.scrambleMoves.push('down');
         this.scrambleMoves.push('l');
         break;
       case 78: // n
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'up'));
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'up'));
         this.scrambleMoves.push('down');
         break;
       case 80: // q
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'bPrime'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'bPrime'));
         this.scrambleMoves.push('b');
         break;
       case 81: // p
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'b'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'b'));
         this.scrambleMoves.push('bPrime');
         break;
       case 82: // r
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'rPrime'));
-
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'down'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'rPrime'));
         this.scrambleMoves.push('up');
         this.scrambleMoves.push('r');
         break;
       case 83: // s
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'd'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'd'));
         this.scrambleMoves.push('dPrime');
         break;
       case 85: // u
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
-        this.eventLoop.push(this.cube.move.bind(this.cube, 'l'));
-
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'down'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
         this.scrambleMoves.push('up');
         this.scrambleMoves.push('lPrime');
         break;
       case 89: // y
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'down'));
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'down'));
         this.scrambleMoves.push('up');
         break;
       case 186: // semi-colon
-        this.eventLoop.push(this.cube.rotateCube.bind(this.cube, 'right'));
+        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'right'));
         this.scrambleMoves.push('left');
         break;
     }
   };
 
   EventHandler.prototype.sampleSolve = function () {
-    this.cube.isSolved = false;
+    this._cube.isSolved = false;
     var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
     var solve = ';; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
     for (var i = 0; i < scramble.length; i++) {
-      this.eventLoop.push(this.cube.move.bind(
-        this.cube,
+      this._eventLoop.push(this._cube.move.bind(
+        this._cube,
         window.Game.Cube.inverseKeyMap[scramble[i]]
       ));
     }
@@ -364,24 +193,15 @@
     setTimeout(function () {
       for (var i = 0; i < solve.length; i++) {
         if (solve[i] === ' ') {
-          this.eventLoop.push(this._sleep.bind(this, 400));
+          this._eventLoop.push(this._sleep.bind(this, 400));
         } else {
-          this.eventLoop.push(this.cube.move.bind(
-            this.cube,
+          this._eventLoop.push(this._cube.move.bind(
+            this._cube,
             window.Game.Cube.inverseKeyMap[solve[i]]
           ));
         }
       }
     }.bind(this), 5000);
-  };
-
-  EventHandler.prototype._sleep = function (milli) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milli) {
-        break;
-      }
-    }
   };
 
   EventHandler.prototype.scramble = function () {
@@ -391,13 +211,13 @@
     var oppositeMove = '';
     var prevRandIndex = -1;
     for (var i = 0; i < 30; i++) {
-      var randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
-      fn = this.cube.possibleMoves[randIndex];
+      var randIndex = ~~(Math.random() * this._cube.possibleMoves.length);
+      fn = this._cube.possibleMoves[randIndex];
       while (fn === oppositeMove || randIndex == prevRandIndex) {
-        randIndex = ~~(Math.random() * this.cube.possibleMoves.length);
-        fn = this.cube.possibleMoves[randIndex];
+        randIndex = ~~(Math.random() * this._cube.possibleMoves.length);
+        fn = this._cube.possibleMoves[randIndex];
       }
-      this.eventLoop.push(this.cube.move.bind(this.cube, fn));
+      this._eventLoop.push(this._cube.move.bind(this._cube, fn));
       if (fn.indexOf('Prime') > -1) {
         oppositeMove = fn.slice(0, fn.indexOf('Prime'));
       } else {
@@ -405,14 +225,14 @@
       }
       this.scrambleMoves.push(oppositeMove);
     }
-    this.scrambled = true;
+    this._scrambled = true;
   };
 
   EventHandler.prototype.solve = function () {
-    this.scrambled = false;
+    this._scrambled = false;
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
-      this.eventLoop.push(this.cube.move.bind(this.cube, fn));
+      this._eventLoop.push(this._cube.move.bind(this._cube, fn));
     }
     this.scrambleMoves = [];
     $('.scramble').removeClass('solve').html('Scramble');
@@ -421,13 +241,13 @@
   EventHandler.prototype.startTimer = function () {
     $('.timer').css('color', 'red');
     this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
-    this.scrambled = false;
-    this.timing = true;
+    this._scrambled = false;
+    this._timing = true;
   };
 
   EventHandler.prototype.stopTimer = function () {
     clearInterval(this.timeId);
-    this.timing = false;
+    this._timing = false;
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time).css('color', 'green');
     $('.scramble').removeClass('solve').html('Scramble');
@@ -435,18 +255,136 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
-    if (this.cube.solved() && this.timing) {
+    if (this._cube.solved() && this._timing) {
       this.stopTimer();
-      this.eventLoop = [];
+      this._eventLoop = [];
       this.scrambleMoves = [];
       this.startTime = undefined;
     }
-    if (!this.cube.animating && this.eventLoop.length > 0) {
-      this.eventLoop.shift().call(this.cube);
+    if (!this._cube.animating && this._eventLoop.length > 0) {
+      this._eventLoop.shift().call(this._cube);
     }
-    if (this.cube.solved()) {
+    if (this._cube.solved()) {
       $('.solve-moves').empty();
       this.scrambleMoves = [];
+    }
+  };
+
+  EventHandler.prototype._getFrontCallbacks = function (clickedCube, normal, callbacks) {
+    var cubeX = clickedCube.position.x;
+    var cubeY = clickedCube.position.y;
+
+    // Get possible vertical moves
+    if (~~cubeX > 0) {
+      callbacks.upCallback = 'r';
+      callbacks.downCallback = 'rPrime';
+    } else if (~~cubeX < 0) {
+      callbacks.upCallback = 'lPrime';
+      callbacks.downCallback = 'l';
+    }
+
+    // Get possible horizontal moves
+    if (~~cubeY > 0) {
+      callbacks.leftCallback = 'uPrime';
+      callbacks.rightCallback = 'u';
+    } else if (~~cubeY < 0) {
+      callbacks.leftCallback = 'd';
+      callbacks.rightCallback = 'dPrime';
+    }
+  };
+
+  EventHandler.prototype._getIntersects = function (event) {
+    var canvasBox = renderer.domElement.getBoundingClientRect();
+    var canvasMouseX = event.clientX - canvasBox.left;
+    var canvasMouseY = event.clientY - canvasBox.top;
+
+    var mouse = new THREE.Vector2();
+    mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1;
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    return raycaster.intersectObjects(scene.children);
+  };
+
+  EventHandler.prototype._getRightCallbacks = function (clickedCube, normal, callbacks) {
+    var cubeY = clickedCube.position.y;
+    var cubeZ = clickedCube.position.z;
+
+    // Get possible vertical moves
+    if (~~cubeY > 0) {
+      callbacks.leftCallback = 'uPrime';
+      callbacks.rightCallback = 'u';
+    } else if (~~cubeY < 0) {
+      callbacks.leftCallback = 'd';
+      callbacks.rightCallback = 'dPrime';
+    }
+
+    // Get possible horizontal moves
+    if (~~cubeZ > 0) {
+      callbacks.upCallback = 'fPrime';
+      callbacks.downCallback = 'f';
+    } else if (~~cubeZ < 0) {
+      callbacks.upCallback = 'b';
+      callbacks.downCallback = 'bPrime';
+    }
+  };
+
+  EventHandler.prototype._getRotateCallbacks = function (callbacks) {
+    callbacks.leftCallback = 'left';
+    callbacks.rightCallback = 'right';
+    callbacks.upCallback = 'down';
+    callbacks.downCallback = 'up';
+  };
+
+  EventHandler.prototype._getUpCallbacks = function (clickedCube, normal, callbacks) {
+    var cubeX = clickedCube.position.x;
+    var cubeZ = clickedCube.position.z;
+
+    // Get possible vertical moves
+    if (~~cubeX > 0) {
+      callbacks.upCallback = 'r';
+      callbacks.downCallback = 'rPrime';
+    } else if (~~cubeX < 0) {
+      callbacks.upCallback = 'lPrime';
+      callbacks.downCallback = 'l';
+    }
+
+    // Get possible horizontal moves
+    if (~~cubeZ > 0) {
+      callbacks.leftCallback = 'f';
+      callbacks.rightCallback = 'fPrime';
+    } else if (~~cubeZ < 0) {
+      callbacks.leftCallback = 'bPrime';
+      callbacks.rightCallback = 'b';
+    }
+  };
+
+  EventHandler.prototype._mouseUpCallback = function (callbacks, mouseDown, mouseUp) {
+    if (mouseUp.clientX > mouseDown.clientX + 40) {
+      this._eventLoop.push(
+        this._cube.move.bind(this._cube, callbacks.leftCallback)
+      );
+    } else if (mouseUp.clientX < mouseDown.clientX - 40) {
+      this._eventLoop.push(
+        this._cube.move.bind(this._cube, callbacks.rightCallback)
+      );
+    } else if (mouseUp.clientY > mouseDown.clientY + 40) {
+      this._eventLoop.push(
+        this._cube.move.bind(this._cube, callbacks.downCallback)
+      );
+    } else if (mouseUp.clientY < mouseDown.clientY - 40) {
+      this._eventLoop.push(
+        this._cube.move.bind(this._cube, callbacks.upCallback)
+      );
+    }
+  };
+
+  EventHandler.prototype._sleep = function (milli) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milli) {
+        break;
+      }
     }
   };
 })();
