@@ -205,8 +205,6 @@
     }
     scene.add(rotatingFace);
 
-    // The name of the reset method for this face
-    // var reset = 'reset' + face[0].toUpperCase() + face.slice(1, face.length);
     var dir = this[face].dir;
     if (name.indexOf('Prime') > -1) {
       dir *= -1;
