@@ -164,18 +164,16 @@
     renderer.render(scene, camera);
     renderer.render(scene, camera); // fixes strange rendering with box helper
 
-    function resetRotatingFace(cubes) {
-      for (var i = 0; i < cubes.length; i++) {
-        THREE.SceneUtils.detach(cubes[i], rotatingFace, scene);
-      }
-      scene.remove(rotatingFace);
-    }
-
-    // when rotatingFace is done rotating, remove rotatingFace from scene
+    // When done rotating
     if (rotatingFace.rotation[face.axis] >= Math.PI / 2 ||
           rotatingFace.rotation[face.axis] <= -Math.PI / 2) {
       cancelAnimationFrame(id);
-      resetRotatingFace(face.cubes);
+      // Remove rotating face from scene
+      for (var i = 0; i < face.cubes.length; i++) {
+        THREE.SceneUtils.detach(face.cubes[i], rotatingFace, scene);
+      }
+      scene.remove(rotatingFace);
+      // Update cube data
       callback && callback();
       this.animating = false;
     }
