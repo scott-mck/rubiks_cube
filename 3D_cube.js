@@ -180,26 +180,48 @@
   };
 
   Cube.prototype.move = function (name) {
-    if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
-      var seeFn = 'see' + name[0].toUpperCase() + name.slice(1);
-      this[seeFn]();
-      return;
-    }
-    
     var face = window.Game.Cube.moveMap[name[0]];
-    this._virtualCube[name]();
+    var virtualCubeFn;
+    var cubesToRotate, axis, dir, resetCallback;
+
+    if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
+      cubesToRotate = this.cubes;
+      if (name === 'left') {
+        axis = 'y';
+        dir = 1;
+      } else if (name === 'right') {
+        axis = 'y';
+        dir = -1;
+      } else if (name === 'up') {
+        axis = 'x';
+        dir = 1;
+      } else if (name === 'down') {
+        axis = 'x';
+        dir = -1;
+      }
+      virtualCubeFn = 'see' + name[0].toUpperCase() + name.slice(1);
+      resetCallback = this['_' + virtualCubeFn + 'Callback']();
+
+    } else {
+      virtualCubeFn = name;
+      cubesToRotate = this[face].cubes;
+      axis = this[face].axis;
+      dir = this[face].dir;
+      if (name.indexOf('Prime') > -1) {
+        dir *= -1;
+      }
+      resetCallback = this['_reset'].bind(this, face, dir);
+    }
+
+    this._virtualCube[virtualCubeFn]();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < 9; i++) {
-      THREE.SceneUtils.attach(this[face].cubes[i], scene, rotatingFace);
+    for (var i = 0; i < cubesToRotate.length; i++) {
+      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
     }
     scene.add(rotatingFace);
 
-    var dir = this[face].dir;
-    if (name.indexOf('Prime') > -1) {
-      dir *= -1;
-    }
-    this.animate(rotatingFace, this[face].cubes, this[face].axis, dir, this._reset.bind(this, face, dir));
+    this.animate(rotatingFace, cubesToRotate, axis, dir, resetCallback);
   };
 
   Cube.prototype.randomMove = function () {
@@ -218,39 +240,6 @@
             face[1], face[4], face[7],
             face[0], face[3], face[6]];
     return face;
-  };
-
-  Cube.prototype.rotateCube = function (dir) {
-    // dir is either 'left', 'right', 'up', or 'down'
-    var seeMethod = 'see' + dir[0].toUpperCase() + dir.slice(1, dir.length);
-    this._virtualCube[seeMethod]();
-    this.animating = true;
-    var rubiksCube = new THREE.Object3D();
-    for (var i = 0; i < this.cubes.length; i++) {
-      THREE.SceneUtils.attach(this.cubes[i], scene, rubiksCube);
-    }
-    scene.add(rubiksCube);
-
-    var axis, dir, callback;
-    if (dir === 'left') {
-      axis = 'y';
-      dir = 1;
-      callback = this._seeLeftCallback();
-    } else if (dir === 'right') {
-      axis = 'y';
-      dir = -1;
-      callback = this._seeRightCallback();
-    } else if (dir === 'up') {
-      axis = 'x';
-      dir = 1;
-      callback = this._seeUpCallback();
-    } else if (dir === 'down') {
-      axis = 'x';
-      dir = -1;
-      callback = this._seeDownCallback();
-    }
-
-    this.animate(rubiksCube, this.cubes, axis, dir, callback.bind(this));
   };
 
   Cube.prototype.seeDown = function () {
@@ -309,7 +298,7 @@
       this.back.cubes = temp.reverse();
       this.right.cubes = this.rotateClockwise(this.right.cubes);
       this.left.cubes = this.rotateCounterClockwise(this.left.cubes);
-    }
+    }.bind(this);
   };
 
   Cube.prototype._seeLeftCallback = function () {
@@ -321,7 +310,7 @@
       this.right.cubes = frontFace;
       this.up.cubes = this.rotateCounterClockwise(this.up.cubes);
       this.down.cubes = this.rotateClockwise(this.down.cubes);
-    }
+    }.bind(this);
   };
 
   Cube.prototype._seeRightCallback = function () {
@@ -334,7 +323,7 @@
 
       this.up.cubes = this.rotateClockwise(this.up.cubes);
       this.down.cubes = this.rotateCounterClockwise(this.down.cubes);
-    }
+    }.bind(this);
   };
 
   Cube.prototype._seeUpCallback = function () {
@@ -346,6 +335,6 @@
       this.front.cubes = temp;
       this.right.cubes = this.rotateCounterClockwise(this.right.cubes);
       this.left.cubes = this.rotateClockwise(this.left.cubes);
-    }
+    }.bind(this);
   };
 })();

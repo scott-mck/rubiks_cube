@@ -90,11 +90,11 @@
         }
         break;
       case 65: // a
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'left'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'left'));
         this.scrambleMoves.push('right');
         break;
       case 67: // c
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'up'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'r'));
         this.scrambleMoves.push('down');
         this.scrambleMoves.push('rPrime');
@@ -136,13 +136,13 @@
         this.scrambleMoves.push('d');
         break;
       case 77: // m
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'up'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'lPrime'));
         this.scrambleMoves.push('down');
         this.scrambleMoves.push('l');
         break;
       case 78: // n
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'up'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this.scrambleMoves.push('down');
         break;
       case 80: // q
@@ -154,7 +154,7 @@
         this.scrambleMoves.push('bPrime');
         break;
       case 82: // r
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'down'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'rPrime'));
         this.scrambleMoves.push('up');
         this.scrambleMoves.push('r');
@@ -164,17 +164,17 @@
         this.scrambleMoves.push('dPrime');
         break;
       case 85: // u
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'down'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
         this.scrambleMoves.push('up');
         this.scrambleMoves.push('lPrime');
         break;
       case 89: // y
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'down'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this.scrambleMoves.push('up');
         break;
       case 186: // semi-colon
-        this._eventLoop.push(this._cube.rotateCube.bind(this._cube, 'right'));
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'right'));
         this.scrambleMoves.push('left');
         break;
     }
