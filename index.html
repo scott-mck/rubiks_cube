@@ -12,7 +12,7 @@
 		<script type="application/javascript" src="3D_event_handler.js"></script>
 	</head>
 	<body>
-		<div id="what"></div>
+		<div id="canvas"></div>
 
 		<div class="title">
 			Rubik's Cube
@@ -53,13 +53,11 @@
 			<div class="solve-moves"></div>
 		</div>
 
-		<!-- <div id="canvas"></div> -->
-
 		<script>
 			// TODO: Refactor init
 			// TODO: Fade in cube
-			var canvasWidth = $('#what').width();
-			var canvasHeight = $('#what').height();
+			var canvasWidth = $('#canvas').width();
+			var canvasHeight = $('#canvas').height();
 
 			var camera, scene, renderer;
 			var mesh;
@@ -72,7 +70,7 @@
 			animate();
 
 			function init () {
-				container = document.getElementById('what');
+				container = document.getElementById('canvas');
 				document.body.appendChild(container);
 
 				//setup scene
@@ -163,9 +161,9 @@
 			}
 
 			function onWindowResize() {
-				camera.aspect = $('#what').width() / $('#what').height();
+				camera.aspect = $('#canvas').width() / $('#canvas').height();
 				camera.updateProjectionMatrix();
-				renderer.setSize($('#what').width(), $('#what').height());
+				renderer.setSize($('#canvas').width(), $('#canvas').height());
 			}
 
 			function animate() {
