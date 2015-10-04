@@ -213,20 +213,22 @@
     $('.solve-moves').empty();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Solve');
-    var oppositeMove = '';
-    var prevRandIndex = -1;
+
+    var prevMove = ''; // no two scramble moves are the same
+    var oppositeMove = ''; // no two scramble moves cancel out
+
     for (var i = 0; i < 30; i++) {
-      var randIndex = ~~(Math.random() * this._cube.possibleMoves.length);
-      fn = this._cube.possibleMoves[randIndex];
-      while (fn === oppositeMove || randIndex == prevRandIndex) {
-        randIndex = ~~(Math.random() * this._cube.possibleMoves.length);
-        fn = this._cube.possibleMoves[randIndex];
+      // Get random move, make sure no two in a row are the same
+      var randMove = this._cube.randomMove();
+      while (randMove === oppositeMove || randMove === prevMove) {
+        randMove = this._cube.randomMove();
       }
-      this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-      if (fn.indexOf('Prime') > -1) {
-        oppositeMove = fn.slice(0, fn.indexOf('Prime'));
+      this._eventLoop.push(this._cube.move.bind(this._cube, randMove));
+
+      if (randMove.indexOf('Prime') > -1) {
+        oppositeMove = randMove[0];
       } else {
-        oppositeMove = fn + 'Prime';
+        oppositeMove = randMove + 'Prime';
       }
       this.scrambleMoves.push(oppositeMove);
     }
