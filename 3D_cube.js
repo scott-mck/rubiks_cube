@@ -200,8 +200,7 @@
         dir = -1;
       }
       virtualCubeFn = 'see' + name[0].toUpperCase() + name.slice(1);
-      resetCallback = this['_' + virtualCubeFn + 'Callback']();
-
+      resetCallback = this._getSeeCallback.bind(this, name);
     } else {
       virtualCubeFn = name;
       cubesToRotate = this[face].cubes;
@@ -289,52 +288,53 @@
     }
   };
 
-  Cube.prototype._seeDownCallback = function () {
-    return function () {
-      var temp = this.up.cubes;
-      this.up.cubes = this.front.cubes;
-      this.front.cubes = this.down.cubes;
-      this.down.cubes = this.back.cubes.reverse();
-      this.back.cubes = temp.reverse();
-      this.right.cubes = this.rotateClockwise(this.right.cubes);
-      this.left.cubes = this.rotateCounterClockwise(this.left.cubes);
-    }.bind(this);
-  };
+  Cube.prototype._getSeeCallback = function (dir) {
+    var facesToReset, clockwiseFace, counterClockwiseFace, startPos, endPos, inc;
+    var reverseFaces = [];
+    if (dir === 'left') {
+      facesToReset = this.down.relativeFaces;
+      clockwiseFace = 'down';
+      counterClockwiseFace = 'up';
+      startPos = facesToReset.length - 1;
+      endPos = 0;
+      inc = -1;
+    } else if (dir === 'right') {
+      facesToReset = this.down.relativeFaces;
+      clockwiseFace = 'up';
+      counterClockwiseFace = 'down';
+      startPos = 0;
+      endPos = facesToReset.length - 1;
+      inc = 1;
+    } else if (dir === 'up') {
+      facesToReset = this.left.relativeFaces;
+      clockwiseFace = 'left';
+      counterClockwiseFace = 'right';
+      startPos = facesToReset.length - 1;
+      endPos = 0;
+      inc = -1;
+      reverseFaces = ['up', 'back'];
+    } else if (dir === 'down') {
+      facesToReset = this.left.relativeFaces;
+      clockwiseFace = 'right';
+      counterClockwiseFace = 'left';
+      startPos = 0;
+      endPos = facesToReset.length - 1;
+      inc = 1;
+      reverseFaces = ['back', 'down'];
+    }
 
-  Cube.prototype._seeLeftCallback = function () {
-    return function () {
-      var frontFace = this.front.cubes;
-      this.front.cubes = this.left.cubes;
-      this.left.cubes = this.back.cubes;
-      this.back.cubes = this.right.cubes;
-      this.right.cubes = frontFace;
-      this.up.cubes = this.rotateCounterClockwise(this.up.cubes);
-      this.down.cubes = this.rotateClockwise(this.down.cubes);
-    }.bind(this);
-  };
+    var tempFace = facesToReset[startPos].face;
+    var temp = this[tempFace].cubes;
+    for (var i = startPos; i !== endPos; i += inc) {
+      this[facesToReset[i].face].cubes = this[facesToReset[i + inc].face].cubes;
+    }
+    this[facesToReset[endPos].face].cubes = temp;
 
-  Cube.prototype._seeRightCallback = function () {
-    return function () {
-      var frontFace = this.front.cubes;
-      this.front.cubes = this.right.cubes;
-      this.right.cubes = this.back.cubes;
-      this.back.cubes = this.left.cubes;
-      this.left.cubes = frontFace;
+    this[clockwiseFace].cubes = this.rotateClockwise(this[clockwiseFace].cubes);
+    this[counterClockwiseFace].cubes = this.rotateCounterClockwise(this[counterClockwiseFace].cubes);
 
-      this.up.cubes = this.rotateClockwise(this.up.cubes);
-      this.down.cubes = this.rotateCounterClockwise(this.down.cubes);
-    }.bind(this);
-  };
-
-  Cube.prototype._seeUpCallback = function () {
-    return function () {
-      var temp = this.up.cubes;
-      this.up.cubes = this.back.cubes.reverse();
-      this.back.cubes = this.down.cubes.reverse();
-      this.down.cubes = this.front.cubes;
-      this.front.cubes = temp;
-      this.right.cubes = this.rotateCounterClockwise(this.right.cubes);
-      this.left.cubes = this.rotateClockwise(this.left.cubes);
-    }.bind(this);
+    for (var i = 0; i < reverseFaces.length; i++) {
+      this[reverseFaces[i]].cubes.reverse();
+    }
   };
 })();
