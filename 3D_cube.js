@@ -162,7 +162,7 @@
 
     rotatingFace.rotation[axis] += dir * Math.PI / 16;
     renderer.render(scene, camera);
-    renderer.render(scene, camera); // fixes strange rending with box helper
+    renderer.render(scene, camera); // fixes strange rendering with box helper
 
     function resetRotatingFace(face) {
       for (var i = 0; i < face.length; i++) {
