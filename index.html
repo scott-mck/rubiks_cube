@@ -35,12 +35,12 @@
 
 				<br>
 
-				<p>Space -- scramble</p>
+				<p>Space -- scramble / solve</p>
 				<p>Enter -- display solve moves</p>
 			</div>
 
 			<div class="scramble button">
-				Scramble<br>
+				Scramble
 			</div>
 
 			<div class="sample button">
@@ -153,6 +153,21 @@
 				$('.sample').on('click', function () {
 					eventHandler.solve();
 					eventHandler.sampleSolve();
+				});
+
+				$('.button').hover(function (event) {
+					$(event.currentTarget).css('background', 'green');
+				},
+				function (event) {
+					$(event.currentTarget).css('background', 'yellow');
+				});
+
+				$('.button').on('mousedown', function (event) {
+					$(event.currentTarget).css('background', 'red');
+				});
+
+				$('.button').on('mouseup', function (event) {
+					$(event.currentTarget).css('background', 'yellow');
 				});
 
 				setInterval(function () {
