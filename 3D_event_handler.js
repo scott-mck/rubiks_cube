@@ -14,29 +14,33 @@
     this.scrambled = false;
     this.timing = false;
 
-    window.addEventListener('keyup', this.handleEvents.bind(this), false);
-    // window.addEventListener( 'mousedown', this.click.bind(this), false );
-    // window.addEventListener( 'mouseup', this.clickRelease.bind(this), false );
+    $(window).on('keyup', this.handleEvents.bind(this));
+    $('#canvas').on('mousedown', this.click.bind(this));
+    $('#canvas').on('mouseup', this.clickRelease.bind(this));
     setInterval(this.triggerEvent.bind(this), 10);
   };
 
-  EventHandler.prototype.click = function click( event ) {
+  EventHandler.prototype.click = function click(event) {
     this.normal = undefined;
     this.mousex = event.clientX;
     this.mousey = event.clientY;
 
-    var mouse = new THREE.Vector2();
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    var canvasBox = renderer.domElement.getBoundingClientRect();
+    var canvasMouseX = event.clientX - canvasBox.left;
+    var canvasMouseY = event.clientY - canvasBox.top;
 
+    var mouse = new THREE.Vector2();
+    mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1;
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children);
 
-    if ( intersects.length > 0 ) {
+    if (intersects.length > 0) {
       var object = intersects[0];
       this.object = object.object;
-      this.normal = new THREE.Matrix4().extractRotation( this.object.matrixWorld ).multiplyVector3( object.face.normal.clone() );
+      this.normal = new THREE.Matrix4().extractRotation(this.object.matrixWorld)
+        .multiplyVector3(object.face.normal.clone());
     }
   };
 

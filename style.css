@@ -4,6 +4,7 @@
 }
 
 body {
+  z-index: -2;
   position: relative;
   margin: 0px;
   width: 100%;
