@@ -13,6 +13,7 @@
     this.scrambleMoves = [];
     this._scrambled = false;
     this._timing = false;
+    this._sampling = false;
 
     $(window).on('keyup', this.handleEvents.bind(this));
     $('#canvas').on('mousedown', this.click.bind(this));
@@ -180,10 +181,10 @@
   };
 
   EventHandler.prototype.sampleSolve = function () {
-    if (this.sampling) {
+    if (this._sampling) {
       return;
     }
-    this.sampling = true;
+    this._sampling = true;
 
     var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
     var solve = ' ;; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
@@ -204,7 +205,7 @@
     }
 
     this._eventLoop.push(function () {
-      this.sampling = false;
+      this._sampling = false;
     }.bind(this));
   };
 
