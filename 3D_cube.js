@@ -18,7 +18,7 @@
     this.cubes = cubes;
 
     // Create an internal cube to check if solved
-    this.virtualCube = new Game.VirtualCube();
+    this._virtualCube = new Game.VirtualCube();
     this.animating = false; // No simultaneous moves
 
     this.right = {
@@ -197,7 +197,7 @@
       return;
     }
     var face = window.Game.Cube.moveMap[name[0]];
-    this.virtualCube[name]();
+    this._virtualCube[name]();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < 9; i++) {
@@ -216,11 +216,11 @@
       this[face].cubes,
       this[face].axis,
       dir,
-      this.reset.bind(this, face, dir)
+      this._reset.bind(this, face, dir)
     );
   };
 
-  Cube.prototype.reset = function (face, dir) {
+  Cube.prototype._reset = function (face, dir) {
     // face is a string e.g. 'right'; referred to as 'this face'
     if (face === 'left' || face === 'down' || face === 'back') {
       dir *= -1;
@@ -264,7 +264,7 @@
   Cube.prototype.rotateCube = function (dir) {
     // dir is either 'left', 'right', 'up', or 'down'
     var seeMethod = 'see' + dir[0].toUpperCase() + dir.slice(1, dir.length);
-    this.virtualCube[seeMethod]();
+    this._virtualCube[seeMethod]();
     this.animating = true;
     var rubiksCube = new THREE.Object3D();
     for (var i = 0; i < this.cubes.length; i++) {
@@ -276,19 +276,19 @@
     if (dir === 'left') {
       axis = 'y';
       dir = 1;
-      callback = this.seeLeftCallback();
+      callback = this._seeLeftCallback();
     } else if (dir === 'right') {
       axis = 'y';
       dir = -1;
-      callback = this.seeRightCallback();
+      callback = this._seeRightCallback();
     } else if (dir === 'up') {
       axis = 'x';
       dir = 1;
-      callback = this.seeUpCallback();
+      callback = this._seeUpCallback();
     } else if (dir === 'down') {
       axis = 'x';
       dir = -1;
-      callback = this.seeDownCallback();
+      callback = this._seeDownCallback();
     }
 
     this.animate(rubiksCube, this.cubes, axis, dir, callback.bind(this));
@@ -298,7 +298,7 @@
     this.rotateCube('down');
   };
 
-  Cube.prototype.seeDownCallback = function () {
+  Cube.prototype._seeDownCallback = function () {
     return function () {
       var temp = this.up.cubes;
       this.up.cubes = this.front.cubes;
@@ -314,7 +314,7 @@
     this.rotateCube('left');
   };
 
-  Cube.prototype.seeLeftCallback = function () {
+  Cube.prototype._seeLeftCallback = function () {
     return function () {
       var frontFace = this.front.cubes;
       this.front.cubes = this.left.cubes;
@@ -330,7 +330,7 @@
     this.rotateCube('right');
   };
 
-  Cube.prototype.seeRightCallback = function () {
+  Cube.prototype._seeRightCallback = function () {
     return function () {
       var frontFace = this.front.cubes;
       this.front.cubes = this.right.cubes;
@@ -347,7 +347,7 @@
     this.rotateCube('up');
   };
 
-  Cube.prototype.seeUpCallback = function () {
+  Cube.prototype._seeUpCallback = function () {
     return function () {
       var temp = this.up.cubes;
       this.up.cubes = this.back.cubes.reverse();
@@ -360,6 +360,6 @@
   };
 
   Cube.prototype.solved = function () {
-    return this.virtualCube.solved();
+    return this._virtualCube.solved();
   };
 })();
