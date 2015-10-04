@@ -16,7 +16,7 @@
 
     $(window).on('keyup', this.handleEvents.bind(this));
     $('#canvas').on('mousedown', this.click.bind(this));
-    setInterval(this.triggerEvent.bind(this), 10);
+    this.interval = setInterval(this.triggerEvent.bind(this), 10);
   };
 
   EventHandler.prototype.click = function (event) {
@@ -180,28 +180,32 @@
   };
 
   EventHandler.prototype.sampleSolve = function () {
-    this._cube.isSolved = false;
+    if (this.sampling) {
+      return;
+    }
+    this.sampling = true;
+
     var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
-    var solve = ';; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
+    var solve = ' ;; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
     for (var i = 0; i < scramble.length; i++) {
-      this._eventLoop.push(this._cube.move.bind(
-        this._cube,
-        window.Game.Cube.inverseKeyMap[scramble[i]]
-      ));
+      this._eventLoop.push(
+        this._cube.move.bind(this._cube, Game.Cube.inverseKeyMap[scramble[i]])
+      );
     }
 
-    setTimeout(function () {
-      for (var i = 0; i < solve.length; i++) {
-        if (solve[i] === ' ') {
-          this._eventLoop.push(this._sleep.bind(this, 400));
-        } else {
-          this._eventLoop.push(this._cube.move.bind(
-            this._cube,
-            window.Game.Cube.inverseKeyMap[solve[i]]
-          ));
-        }
+    for (var i = 0; i < solve.length; i++) {
+      if (solve[i] === ' ') {
+        this._eventLoop.push(this._sleep.bind(this, 400));
+      } else {
+        this._eventLoop.push(
+          this._cube.move.bind(this._cube, Game.Cube.inverseKeyMap[solve[i]])
+        );
       }
-    }.bind(this), 5000);
+    }
+
+    this._eventLoop.push(function () {
+      this.sampling = false;
+    }.bind(this));
   };
 
   EventHandler.prototype.scramble = function () {
@@ -380,11 +384,9 @@
   };
 
   EventHandler.prototype._sleep = function (milli) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milli) {
-        break;
-      }
-    }
+    clearInterval(this.interval);
+    setTimeout(function () {
+      this.interval = setInterval(this.triggerEvent.bind(this), 10);
+    }.bind(this), milli);
   };
 })();
