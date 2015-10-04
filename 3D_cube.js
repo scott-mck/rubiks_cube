@@ -180,19 +180,12 @@
   };
 
   Cube.prototype.move = function (name) {
-    if (name === 'up') {
-      this.seeUp();
-      return;
-    } else if (name === 'down') {
-      this.seeDown();
-      return;
-    } else if (name === 'right') {
-      this.seeRight();
-      return;
-    } else if (name === 'left') {
-      this.seeLeft();
+    if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
+      var seeFn = 'see' + name[0].toUpperCase() + name.slice(1);
+      this[seeFn]();
       return;
     }
+    
     var face = window.Game.Cube.moveMap[name[0]];
     this._virtualCube[name]();
     this.animating = true;
