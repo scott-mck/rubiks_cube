@@ -154,29 +154,28 @@
     'u': 'up'
   }
 
-  Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
+  Cube.prototype.animate = function (rotatingFace, face, dir, callback) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
     var id = requestAnimationFrame(function () {
-      this.animate(rotatingFace, face, axis, dir, callback);
+      this.animate(rotatingFace, face, dir, callback);
     }.bind(this));
 
-    rotatingFace.rotation[axis] += dir * Math.PI / 16;
+    rotatingFace.rotation[face.axis] += dir * Math.PI / 16;
     renderer.render(scene, camera);
     renderer.render(scene, camera); // fixes strange rendering with box helper
 
-    function resetRotatingFace(face) {
-      for (var i = 0; i < face.length; i++) {
-        THREE.SceneUtils.detach(face[i], rotatingFace, scene);
+    function resetRotatingFace(cubes) {
+      for (var i = 0; i < cubes.length; i++) {
+        THREE.SceneUtils.detach(cubes[i], rotatingFace, scene);
       }
       scene.remove(rotatingFace);
-      rotatingFace = undefined;
     }
 
-    // when rotatingFace is done rotating, detach cubes and delete from memory
-    if (rotatingFace.rotation[axis] >= Math.PI / 2 ||
-          rotatingFace.rotation[axis] <= -Math.PI / 2) {
+    // when rotatingFace is done rotating, remove rotatingFace from scene
+    if (rotatingFace.rotation[face.axis] >= Math.PI / 2 ||
+          rotatingFace.rotation[face.axis] <= -Math.PI / 2) {
       cancelAnimationFrame(id);
-      resetRotatingFace(face);
+      resetRotatingFace(face.cubes);
       callback && callback();
       this.animating = false;
     }
@@ -209,13 +208,7 @@
     if (name.indexOf('Prime') > -1) {
       dir *= -1;
     }
-    this.animate(
-      rotatingFace,
-      this[face].cubes,
-      this[face].axis,
-      dir,
-      this._reset.bind(this, face, dir)
-    );
+    this.animate(rotatingFace, this[face], dir, this._reset.bind(this, face, dir));
   };
 
   Cube.prototype.randomMove = function () {
