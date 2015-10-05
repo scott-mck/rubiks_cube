@@ -19,6 +19,31 @@
     this.interval = setInterval(this.triggerEvent.bind(this), 10);
   };
 
+  Game.EventHandler.keyCodeMap = {
+    13: 'return',
+    32: 'space',
+    65: 'a',
+    67: 'c',
+    68: 'd',
+    69: 'e',
+    70: 'f',
+    71: 'g',
+    72: 'h',
+    73: 'i',
+    74: 'j',
+    75: 'k',
+    76: 'l',
+    77: 'm',
+    78: 'n',
+    80: 'q',
+    81: 'p',
+    82: 'r',
+    83: 's',
+    85: 'u',
+    89: 'y',
+    186: ';'
+  };
+
   EventHandler.prototype.click = function (event) {
     // Callbacks will be mutated depending on which cube face the user clicks on
     var callbacks = {
@@ -74,12 +99,13 @@
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.startTimer();
     }
+    var keyPressed = Game.EventHandler.keyCodeMap[key.keyCode];
 
-    switch (key.keyCode) {
-      case 13: // return
+    switch (keyPressed) {
+      case 'return':
         this.displaySolveMoves();
         break;
-      case 32: // space
+      case 'space':
         if ($('.scramble').hasClass('solve')) {
           $('.scramble').removeClass('solve');
           this.solve();
@@ -88,91 +114,91 @@
           this.scramble();
         }
         break;
-      case 65: // a
+      case 'a':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'left'));
         this.scrambleMoves.push('right');
         break;
-      case 67: // c
+      case 'c':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'r'));
         this.scrambleMoves.push('down');
         this.scrambleMoves.push('rPrime');
         break;
-      case 68: // d
+      case 'd':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
         this.scrambleMoves.push('lPrime');
         break;
-      case 69: // e
+      case 'e':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'lPrime'));
         this.scrambleMoves.push('l');
         break;
-      case 70: // f
+      case 'f':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'uPrime'));
         this.scrambleMoves.push('u');
         break;
-      case 71: // g
+      case 'g':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'fPrime'));
         this.scrambleMoves.push('f');
         break;
-      case 72: // h
+      case 'h':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'f'));
         this.scrambleMoves.push('fPrime');
         break;
-      case 73: // i
+      case 'i':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'r'));
         this.scrambleMoves.push('rPrime');
         break;
-      case 74: // j
+      case 'j':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'u'));
         this.scrambleMoves.push('uPrime');
         break;
-      case 75: // k
+      case 'k':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'rPrime'));
         this.scrambleMoves.push('r');
         break;
-      case 76: // l
+      case 'l':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'dPrime'));
         this.scrambleMoves.push('d');
         break;
-      case 77: // m
+      case 'm':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'lPrime'));
         this.scrambleMoves.push('down');
         this.scrambleMoves.push('l');
         break;
-      case 78: // n
+      case 'n':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this.scrambleMoves.push('down');
         break;
-      case 80: // q
+      case 'q':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'bPrime'));
         this.scrambleMoves.push('b');
         break;
-      case 81: // p
+      case 'p':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'b'));
         this.scrambleMoves.push('bPrime');
         break;
-      case 82: // r
+      case 'r':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'rPrime'));
         this.scrambleMoves.push('up');
         this.scrambleMoves.push('r');
         break;
-      case 83: // s
+      case 's':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'd'));
         this.scrambleMoves.push('dPrime');
         break;
-      case 85: // u
+      case 'u':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
         this.scrambleMoves.push('up');
         this.scrambleMoves.push('lPrime');
         break;
-      case 89: // y
+      case 'y':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this.scrambleMoves.push('up');
         break;
-      case 186: // semi-colon
+      case  ';':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'right'));
         this.scrambleMoves.push('left');
         break;
