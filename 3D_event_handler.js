@@ -1,6 +1,5 @@
 // TODO: Keep track of average solve times
 // TODO: Do not allow movement of cube while scrambling
-// TODO: Make title in THREE.js -- easier to move cube
 
 (function () {
   if (typeof window.Game === "undefined") {
