@@ -1,5 +1,6 @@
 // TODO: Keep track of average solve times
 // TODO: Do not allow movement of cube while scrambling
+// TODO: make more 'videos'
 
 (function () {
   if (typeof window.Game === "undefined") {
