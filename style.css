@@ -91,12 +91,15 @@ body {
   font-size: 8vh;
 }
 
-.solve-moves {
+.list {
   word-break: break-all;
   width: 200px;
   text-align: center;
   margin: auto;
   font-family: 'AMC', sans-serif;
-  font-size: 3.5vh;
-  color: white;
+  font-size: 3vh;
+}
+
+.undo-moves {
+  color: blue;
 }
