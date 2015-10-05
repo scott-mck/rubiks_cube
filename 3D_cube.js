@@ -288,47 +288,35 @@
     }
   };
 
-  Cube.prototype._getSeeCallback = function (dir) {
-    var facesToReset, clockwiseFace, counterClockwiseFace, startPos, endPos, inc;
+  Cube.prototype._getSeeCallback = function (name) {
+    var facesToReset, clockwiseFace, counterClockwiseFace;
     var reverseFaces = [];
-    if (dir === 'left') {
-      facesToReset = this.down.relativeFaces;
+    if (name === 'left') {
+      facesToReset = this.down.relativeFaces.slice().reverse();
       clockwiseFace = 'down';
       counterClockwiseFace = 'up';
-      startPos = facesToReset.length - 1;
-      endPos = 0;
-      inc = -1;
-    } else if (dir === 'right') {
+    } else if (name === 'right') {
       facesToReset = this.down.relativeFaces;
       clockwiseFace = 'up';
       counterClockwiseFace = 'down';
-      startPos = 0;
-      endPos = facesToReset.length - 1;
-      inc = 1;
-    } else if (dir === 'up') {
-      facesToReset = this.left.relativeFaces;
+    } else if (name === 'up') {
+      facesToReset = this.left.relativeFaces.slice().reverse();
       clockwiseFace = 'left';
       counterClockwiseFace = 'right';
-      startPos = facesToReset.length - 1;
-      endPos = 0;
-      inc = -1;
       reverseFaces = ['up', 'back'];
-    } else if (dir === 'down') {
+    } else if (name === 'down') {
       facesToReset = this.left.relativeFaces;
       clockwiseFace = 'right';
       counterClockwiseFace = 'left';
-      startPos = 0;
-      endPos = facesToReset.length - 1;
-      inc = 1;
       reverseFaces = ['back', 'down'];
     }
 
-    var tempFace = facesToReset[startPos].face;
+    var tempFace = facesToReset[0].face;
     var temp = this[tempFace].cubes;
-    for (var i = startPos; i !== endPos; i += inc) {
-      this[facesToReset[i].face].cubes = this[facesToReset[i + inc].face].cubes;
+    for (var i = 0; i < facesToReset.length - 1; i += 1) {
+      this[facesToReset[i].face].cubes = this[facesToReset[i + 1].face].cubes;
     }
-    this[facesToReset[endPos].face].cubes = temp;
+    this[facesToReset[facesToReset.length - 1].face].cubes = temp;
 
     this[clockwiseFace].cubes = this.rotateClockwise(this[clockwiseFace].cubes);
     this[counterClockwiseFace].cubes = this.rotateCounterClockwise(this[counterClockwiseFace].cubes);
