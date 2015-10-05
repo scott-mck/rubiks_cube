@@ -126,6 +126,10 @@
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.startTimer();
     }
+    if (this._cube.solved()) {
+      this.hideSolveMoves();
+    }
+
     var keyPressed = Game.EventHandler.keyCodeMap[key.keyCode];
     this.checkCorrectMove(keyPressed);
 
@@ -233,6 +237,12 @@
     }
   };
 
+  EventHandler.prototype.hideSolveMoves = function () {
+    $('.solve-moves').empty();
+    $('.undo-moves').empty();
+    this.displayedMoves = false;
+  };
+
   EventHandler.prototype.sampleSolve = function () {
     if (this._sampling) {
       return;
@@ -263,9 +273,7 @@
   };
 
   EventHandler.prototype.scramble = function () {
-    $('.solve-moves').empty();
-    $('.undo-moves').empty();
-    this.displayedMoves = false;
+    this.hideSolveMoves();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Solve');
 
@@ -279,6 +287,7 @@
         randMove = this._cube.randomMove();
       }
       this._eventLoop.push(this._cube.move.bind(this._cube, randMove));
+      prevMove = randMove;
 
       if (randMove.indexOf('Prime') > -1) {
         oppositeMove = randMove[0];
@@ -313,9 +322,6 @@
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time).css('color', 'green');
     $('.scramble').removeClass('solve').html('Scramble');
-    $('.solve-moves').empty();
-    $('.undo-moves').empty();
-    this.displayedMoves = false;
   };
 
   EventHandler.prototype.triggerEvent = function () {
@@ -329,10 +335,8 @@
       this._eventLoop.shift().call(this._cube);
     }
     if (this._cube.solved()) {
-      $('.solve-moves').empty();
-      $('.undo-moves').empty();
-      this.displayedMoves = false;
       this.scrambleMoves = [];
+      $('.solve-moves span').css('color', 'gold');
     }
   };
 
