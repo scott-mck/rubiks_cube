@@ -36,13 +36,31 @@
     76: 'l',
     77: 'm',
     78: 'n',
-    80: 'q',
-    81: 'p',
+    80: 'p',
+    81: 'q',
     82: 'r',
     83: 's',
     85: 'u',
     89: 'y',
     186: ';'
+  };
+
+  EventHandler.prototype.checkCorrectMove = function (keyPressed) {
+    if (['space', 'return'].indexOf(keyPressed) > -1 || !keyPressed || !this.displayedMoves) {
+      return;
+    }
+    if ($('.undo-moves').contents().length > 0) {
+      this._checkUndoMove(keyPressed);
+      return;
+    }
+
+    var letterToCheck = $('.white').eq(0);
+    if (letterToCheck.text() === keyPressed) {
+      letterToCheck.removeClass('white').css('color', 'green');
+    } else {
+      this._showCorrectMove(keyPressed);
+      letterToCheck.css('color', 'red');
+    }
   };
 
   EventHandler.prototype.click = function (event) {
@@ -87,10 +105,18 @@
     if (this._cube.solved()) {
       this.scrambleMoves = [];
     }
-    $('.solve-moves').empty();
+    if (this.displayedMoves) {
+      return;
+    }
+    this.displayedMoves = true;
+
     for (var i = 0; i < this.scrambleMoves.length; i++) {
-      var letter = window.Game.Cube.keyMap[this.scrambleMoves[this.scrambleMoves.length - i - 1]]
-      $('.solve-moves').append(letter);
+      var move = this.scrambleMoves[this.scrambleMoves.length - i - 1];
+      var key = Game.Cube.keyMap[move];
+
+      var $letter = $('<span>').addClass('white').css('color', 'white');
+      $letter.html(key);
+      $('.solve-moves').append($letter);
     }
   };
 
@@ -101,6 +127,7 @@
         this.startTimer();
     }
     var keyPressed = Game.EventHandler.keyCodeMap[key.keyCode];
+    this.checkCorrectMove(keyPressed);
 
     switch (keyPressed) {
       case 'return':
@@ -171,11 +198,11 @@
         this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this.scrambleMoves.push('down');
         break;
-      case 'q':
+      case 'p':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'bPrime'));
         this.scrambleMoves.push('b');
         break;
-      case 'p':
+      case 'q':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'b'));
         this.scrambleMoves.push('bPrime');
         break;
@@ -237,6 +264,8 @@
 
   EventHandler.prototype.scramble = function () {
     $('.solve-moves').empty();
+    $('.undo-moves').empty();
+    this.displayedMoves = false;
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Solve');
 
@@ -285,6 +314,8 @@
     $('.timer').text(time).css('color', 'green');
     $('.scramble').removeClass('solve').html('Scramble');
     $('.solve-moves').empty();
+    $('.undo-moves').empty();
+    this.displayedMoves = false;
   };
 
   EventHandler.prototype.triggerEvent = function () {
@@ -299,7 +330,18 @@
     }
     if (this._cube.solved()) {
       $('.solve-moves').empty();
+      $('.undo-moves').empty();
+      this.displayedMoves = false;
       this.scrambleMoves = [];
+    }
+  };
+
+  EventHandler.prototype._checkUndoMove = function (keyPressed) {
+    var letterToCheck = $('.undo-moves').children().last();
+    if (keyPressed === letterToCheck.text()) {
+      letterToCheck.remove();
+    } else {
+      this._showCorrectMove(keyPressed);
     }
   };
 
@@ -410,6 +452,28 @@
         this._cube.move.bind(this._cube, callbacks.upCallback)
       );
     }
+  };
+
+  EventHandler.prototype._showCorrectMove = function (keyPressed) {
+    var fn = Game.Cube.inverseKeyMap[keyPressed];
+    var oppFn = fn[0];
+    if (fn.indexOf('Prime') < 0) {
+      oppFn += 'Prime';
+    }
+
+    if (fn === 'right') {
+      oppFn = 'left';
+    } else if (fn === 'left') {
+      oppFn = 'right';
+    } else if (fn === 'up') {
+      oppFn = 'down';
+    } else if (fn === 'down') {
+      oppFn = 'up';
+    }
+
+    var oppLetter = Game.Cube.keyMap[oppFn];
+    var move = $('<span>').text(oppLetter);
+    $('.undo-moves').append(move);
   };
 
   EventHandler.prototype._sleep = function (milli) {
