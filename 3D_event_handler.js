@@ -56,7 +56,8 @@
 
     var letterToCheck = $('.white').eq(0);
     if (letterToCheck.text() === keyPressed) {
-      letterToCheck.removeClass('white').css('color', 'green');
+      letterToCheck.removeClass('white');
+      letterToCheck.css('color', 'green');
     } else {
       this._showCorrectMove(keyPressed);
       letterToCheck.css('color', 'red');
@@ -341,9 +342,15 @@
   };
 
   EventHandler.prototype._checkUndoMove = function (keyPressed) {
-    var letterToCheck = $('.undo-moves').children().last();
+    var letterToCheck = $('.undo-moves').children('.available').last();
     if (keyPressed === letterToCheck.text()) {
-      letterToCheck.remove();
+      letterToCheck.removeClass('available');
+      letterToCheck.css('opacity', 0);
+      letterToCheck.css('position', 'absolute');
+      letterToCheck.css('font-size', '4vh');
+      letterToCheck.one('transitionend', function () {
+        letterToCheck.remove();
+      });
     } else {
       this._showCorrectMove(keyPressed);
     }
@@ -476,7 +483,7 @@
     }
 
     var oppLetter = Game.Cube.keyMap[oppFn];
-    var move = $('<span>').text(oppLetter);
+    var move = $('<span>').addClass('available').text(oppLetter);
     $('.undo-moves').append(move);
   };
 
