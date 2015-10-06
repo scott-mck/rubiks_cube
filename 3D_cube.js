@@ -154,10 +154,10 @@
     'u': 'up'
   }
 
-  Cube.prototype.animate = function (rotatingFace, face, axis, dir, callback) {
+  Cube.prototype.animate = function (rotatingFace, axis, dir, callback) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
     var id = requestAnimationFrame(function () {
-      this.animate(rotatingFace, face, axis, dir, callback);
+      this.animate(rotatingFace, axis, dir, callback);
     }.bind(this));
 
     rotatingFace.rotation[axis] += dir * Math.PI / 16;
@@ -169,9 +169,14 @@
           rotatingFace.rotation[axis] <= -Math.PI / 2) {
       cancelAnimationFrame(id);
       // Remove rotatingFace from scene
-      for (var i = 0; i < face.length; i++) {
-        THREE.SceneUtils.detach(face[i], rotatingFace, scene);
+
+      while (rotatingFace.children.length > 0) {
+        THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
       }
+
+      // for (var i = 0; i < cubesToRotate.length; i++) {
+        // THREE.SceneUtils.detach(cubesToRotate[i], rotatingFace, scene);
+      // }
       scene.remove(rotatingFace);
       // Update cube data
       callback && callback();
@@ -215,12 +220,33 @@
     this._virtualCube[virtualCubeFn]();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
+    ///////////////////////////////////////////////////////////////////////////
+    capturedCubes = []
+    var pos = new THREE.Vector3(103, 103, 200);
+    var direction = new THREE.Vector3(0, 0, -1);
+    var raycaster = new THREE.Raycaster(pos, direction, 0, 1000);
+    capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
+    var pos = new THREE.Vector3(103, 0, 200);
+    var direction = new THREE.Vector3(0, 0, -1);
+    var raycaster = new THREE.Raycaster(pos, direction, 0, 1000);
+    capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
+    var pos = new THREE.Vector3(103, -103, 200);
+    var direction = new THREE.Vector3(0, 0, -1);
+    var raycaster = new THREE.Raycaster(pos, direction, 0, 1000);
+    capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
+
+    var cubesToRotate = [];
+    for (var i = 0; i < capturedCubes.length; i++) {
+      // check if captured object is a mesh and not already in rotatingFace
+      if (capturedCubes[i].object.name === "cubie" &&
+          cubesToRotate.indexOf(capturedCubes[i].object) === -1) {
+        cubesToRotate = cubesToRotate.concat(capturedCubes[i].object);
+        THREE.SceneUtils.attach(capturedCubes[i].object, scene, rotatingFace);
+      }
     }
     scene.add(rotatingFace);
 
-    this.animate(rotatingFace, cubesToRotate, axis, dir, resetCallback);
+    this.animate(rotatingFace, axis, dir, resetCallback);
   };
 
   Cube.prototype.oppositeMove = function (name) {
