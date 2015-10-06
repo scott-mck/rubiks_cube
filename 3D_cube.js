@@ -7,13 +7,6 @@
     window.Game = {};
   }
 
-  var RightIndices = [0,  1,  2,  3,  4,  5,  6,  7,  8];
-  var FrontIndices = [18, 9,  0,  21, 12, 3,  24, 15, 6];
-  var UpIndices    = [20, 11, 2,  19, 10, 1,  18, 9,  0];
-  var LeftIndices  = [20, 19, 18, 23, 22, 21, 26, 25, 24];
-  var DownIndices  = [24, 15, 6,  25, 16, 7,  26, 17, 8];
-  var BackIndices  = [2,  11, 20, 5,  14, 23, 8,  17, 26];
-
   var Cube = window.Game.Cube = function (scene, camera, cubes) {
     this.cubes = cubes;
 
@@ -21,35 +14,12 @@
     this._virtualCube = new Game.VirtualCube();
     this.animating = false; // No simultaneous moves
 
-      /*
-        RIGHT FACE:
-          // rotation axis
-          rotationAxis: 'x'
-
-          // When capturing objects, create 3 vectors that vary along this axis
-          vectorPosAxis --> 'y'
-
-          // Always -1, also set position.vectorDirAxis = 200
-          vectorDirAxis --> 'z'
-
-        UP FACE:
-          rotationAxis: 'y'
-          vectorPosAxis --> 'z'
-          vectorDirAxis --> 'x'
-      */
-
     this.right = {
       cubes: [],
       axis: 'x',
       vectorPosAxis: 'y',
       vectorDirAxis: 'z',
       dir: -1,
-      relativeFaces: [
-        { face: 'up',    indices: [8, 5, 2] },
-        { face: 'back',  indices: [0, 3, 6] },
-        { face: 'down',  indices: [2, 5, 8] },
-        { face: 'front', indices: [2, 5, 8] }
-      ]
     };
 
     this.left = {
@@ -58,12 +28,6 @@
       vectorPosAxis: 'y',
       vectorDirAxis: 'z',
       dir: 1,
-      relativeFaces: [
-        { face: 'up',    indices: [0, 3, 6] },
-        { face: 'front', indices: [0, 3, 6] },
-        { face: 'down',  indices: [6, 3, 0] },
-        { face: 'back',  indices: [2, 5, 8] }
-      ]
     };
 
     this.up = {
@@ -72,12 +36,6 @@
       vectorPosAxis: 'z',
       vectorDirAxis: 'x',
       dir: -1,
-      relativeFaces: [
-        { face: 'back',  indices: [2, 1, 0] },
-        { face: 'right', indices: [2, 1, 0] },
-        { face: 'front', indices: [0, 1, 2] },
-        { face: 'left',  indices: [0, 1, 2] }
-      ]
     };
 
     this.down = {
@@ -86,12 +44,6 @@
       vectorPosAxis: 'z',
       vectorDirAxis: 'x',
       dir: 1,
-      relativeFaces: [
-        { face: 'front', indices: [6, 7, 8] },
-        { face: 'right', indices: [6, 7, 8] },
-        { face: 'back',  indices: [8, 7, 6] },
-        { face: 'left',  indices: [8, 7, 6] }
-      ]
     };
 
     this.back = {
@@ -100,12 +52,6 @@
       vectorPosAxis: 'x',
       vectorDirAxis: 'y',
       dir: 1,
-      relativeFaces: [
-        { face: 'up',    indices: [2, 1, 0] },
-        { face: 'left',  indices: [0, 3, 6] },
-        { face: 'down',  indices: [8, 7, 6] },
-        { face: 'right', indices: [2, 5, 8] }
-      ]
     };
 
     this.front = {
@@ -114,22 +60,7 @@
       vectorPosAxis: 'x',
       vectorDirAxis: 'y',
       dir: -1,
-      relativeFaces: [
-        { face: 'up',    indices: [6, 7, 8] },
-        { face: 'right', indices: [0, 3, 6] },
-        { face: 'down',  indices: [0, 1, 2] },
-        { face: 'left',  indices: [2, 5, 8] }
-      ]
     };
-
-    for (var i = 0; i < 9; i++) {
-      this.right.cubes.push(cubes[RightIndices[i]]);
-      this.left.cubes.push(cubes[LeftIndices[i]]);
-      this.up.cubes.push(cubes[UpIndices[i]]);
-      this.down.cubes.push(cubes[DownIndices[i]]);
-      this.back.cubes.push(cubes[BackIndices[i]]);
-      this.front.cubes.push(cubes[FrontIndices[i]]);
-    }
 
     this.possibleMoves = ['r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd',
         'dPrime', 'f', 'fPrime', 'd', 'dPrime', 'b', 'bPrime'];
@@ -310,70 +241,5 @@
 
   Cube.prototype.solved = function () {
     return this._virtualCube.solved();
-  };
-
-  Cube.prototype._getSeeCallback = function (name) {
-    var facesToReset, clockwiseFace, counterClockwiseFace;
-    var reverseFaces = [];
-    if (name === 'left') {
-      facesToReset = this.down.relativeFaces.slice().reverse();
-      clockwiseFace = 'down';
-      counterClockwiseFace = 'up';
-    } else if (name === 'right') {
-      facesToReset = this.down.relativeFaces;
-      clockwiseFace = 'up';
-      counterClockwiseFace = 'down';
-    } else if (name === 'up') {
-      facesToReset = this.left.relativeFaces.slice().reverse();
-      clockwiseFace = 'left';
-      counterClockwiseFace = 'right';
-      reverseFaces = ['up', 'back'];
-    } else if (name === 'down') {
-      facesToReset = this.left.relativeFaces;
-      clockwiseFace = 'right';
-      counterClockwiseFace = 'left';
-      reverseFaces = ['back', 'down'];
-    }
-
-    var tempFace = facesToReset[0].face;
-    var temp = this[tempFace].cubes;
-    for (var i = 0; i < facesToReset.length - 1; i += 1) {
-      this[facesToReset[i].face].cubes = this[facesToReset[i + 1].face].cubes;
-    }
-    this[facesToReset[facesToReset.length - 1].face].cubes = temp;
-
-    this[clockwiseFace].cubes = this.rotateClockwise(this[clockwiseFace].cubes);
-    this[counterClockwiseFace].cubes = this.rotateCounterClockwise(this[counterClockwiseFace].cubes);
-
-    for (var i = 0; i < reverseFaces.length; i++) {
-      this[reverseFaces[i]].cubes.reverse();
-    }
-  };
-
-  Cube.prototype._reset = function (face, dir) {
-    // face is a string e.g. 'right'; referred to as 'this face'
-    if (face === 'left' || face === 'down' || face === 'back') {
-      dir *= -1;
-    }
-
-    if (dir == 1) {
-      this[face].cubes = this.rotateCounterClockwise(this[face].cubes);
-    } else if (dir == -1) {
-      this[face].cubes = this.rotateClockwise(this[face].cubes);
-    }
-
-    // indices of shared cubes on this face
-    var faceIndices = [ [0, 1, 2], [2, 5, 8], [6, 7, 8], [0, 3, 6] ];
-
-    // i represents each adjacent face for this face
-    for (var i = 0; i < 4; i++) {
-      var workingFace = this[face].relativeFaces[i].face;
-
-      // indices of shared cubes on adjacent face
-      var workingIndices = this[face].relativeFaces[i].indices;
-      for (var j = 0; j < 3; j++) {
-        this[workingFace].cubes[workingIndices[j]] = this[face].cubes[faceIndices[i][j]];
-      }
-    }
   };
 })();
