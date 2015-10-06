@@ -225,20 +225,6 @@
     return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
-  Cube.prototype.rotateClockwise = function(face) {
-    face = [face[6], face[3], face[0],
-            face[7], face[4], face[1],
-            face[8], face[5], face[2]];
-    return face;
-  };
-
-  Cube.prototype.rotateCounterClockwise = function(face) {
-    face = [face[2], face[5], face[8],
-            face[1], face[4], face[7],
-            face[0], face[3], face[6]];
-    return face;
-  };
-
   Cube.prototype.solved = function () {
     return this._virtualCube.solved();
   };
