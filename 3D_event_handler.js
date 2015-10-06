@@ -49,6 +49,7 @@
     if (['space', 'return'].indexOf(keyPressed) > -1 || !keyPressed || !this.displayedMoves) {
       return;
     }
+
     if ($('.undo-moves').contents().length > 0) {
       this._checkUndoMove(keyPressed);
       return;
@@ -129,6 +130,7 @@
     }
     if (this._cube.solved()) {
       this.hideSolveMoves();
+      $('.undo-moves').empty();
     }
 
     var keyPressed = Game.EventHandler.keyCodeMap[key.keyCode];
