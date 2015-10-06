@@ -146,6 +146,8 @@
 
     if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
       cubesToRotate = cubes;
+      virtualCubeFn = 'see' + name[0].toUpperCase() + name.slice(1);
+
       if (name === 'left') {
         axis = 'y';
         dir = 1;
@@ -159,7 +161,6 @@
         axis = 'x';
         dir = -1;
       }
-      virtualCubeFn = 'see' + name[0].toUpperCase() + name.slice(1);
     } else {
       virtualCubeFn = name;
       axis = this[face].axis;
@@ -167,19 +168,11 @@
       if (name.indexOf('Prime') > -1) {
         dir *= -1;
       }
-
-      var capturedCubes = this._captureCubes(face);
-      // de-nonsensify captured cubes
-      for (var i = 0; i < capturedCubes.length; i++) {
-        if (capturedCubes[i].object.name === "cubie" &&
-            cubesToRotate.indexOf(capturedCubes[i].object) === -1) {
-          cubesToRotate.push(capturedCubes[i].object);
-        }
-      }
+      cubesToRotate = this._captureCubes(face);
     }
 
-    this._virtualCube[virtualCubeFn]();
     this.animating = true;
+    this._virtualCube[virtualCubeFn]();
 
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < cubesToRotate.length; i++) {
@@ -190,7 +183,24 @@
     this.animate(rotatingFace, axis, dir);
   };
 
+  Cube.prototype.oppositeMove = function (name) {
+    var oppMove = name[0];
+    if (name.indexOf('Prime') < 0) {
+      oppMove += 'Prime';
+    }
+    return oppMove
+  };
+
+  Cube.prototype.randomMove = function () {
+    return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
+  };
+
+  Cube.prototype.solved = function () {
+    return this._virtualCube.solved();
+  };
+
   Cube.prototype._captureCubes = function (face) {
+    var allCaptures = [];
     var capturedCubes = [];
     var pos, direction, raycaster;
 
@@ -208,24 +218,15 @@
       direction[this[face].vectorDirAxis] = -1;
 
       raycaster = new THREE.Raycaster(pos, direction);
-      capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
+      allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
+    }
+
+    for (var i = 0; i < allCaptures.length; i++) {
+      if (allCaptures[i].object.name === "cubie" &&
+          capturedCubes.indexOf(allCaptures[i].object) === -1) {
+        capturedCubes.push(allCaptures[i].object);
+      }
     }
     return capturedCubes;
-  };
-
-  Cube.prototype.oppositeMove = function (name) {
-    var oppMove = name[0];
-    if (name.indexOf('Prime') < 0) {
-      oppMove += 'Prime';
-    }
-    return oppMove
-  };
-
-  Cube.prototype.randomMove = function () {
-    return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
-  };
-
-  Cube.prototype.solved = function () {
-    return this._virtualCube.solved();
   };
 })();
