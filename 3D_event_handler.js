@@ -50,12 +50,15 @@
       return;
     }
 
-    if ($('.undo-moves').contents().length > 0) {
+    if ($('.undo-moves').children('.available').length > 0) {
       this._checkUndoMove(keyPressed);
       return;
     }
 
     var letterToCheck = $('.white').eq(0);
+    console.log(keyPressed);
+    console.log(letterToCheck.text());
+
     if (letterToCheck.text() === keyPressed) {
       letterToCheck.removeClass('white');
       letterToCheck.css('color', 'green');
