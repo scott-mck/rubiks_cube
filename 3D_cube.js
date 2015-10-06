@@ -21,9 +21,28 @@
     this._virtualCube = new Game.VirtualCube();
     this.animating = false; // No simultaneous moves
 
+      /*
+        RIGHT FACE:
+          // rotation axis
+          rotationAxis: 'x'
+
+          // When capturing objects, create 3 vectors that vary along this axis
+          vectorPosAxis --> 'y'
+
+          // Always -1, also set position.vectorDirAxis = 200
+          vectorDirAxis --> 'z'
+
+        UP FACE:
+          rotationAxis: 'y'
+          vectorPosAxis --> 'z'
+          vectorDirAxis --> 'x'
+      */
+
     this.right = {
       cubes: [],
       axis: 'x',
+      vectorPosAxis: 'y',
+      vectorDirAxis: 'z',
       dir: -1,
       relativeFaces: [
         { face: 'up',    indices: [8, 5, 2] },
@@ -36,6 +55,8 @@
     this.left = {
       cubes: [],
       axis: 'x',
+      vectorPosAxis: 'y',
+      vectorDirAxis: 'z',
       dir: 1,
       relativeFaces: [
         { face: 'up',    indices: [0, 3, 6] },
@@ -48,6 +69,8 @@
     this.up = {
       cubes: [],
       axis: 'y',
+      vectorPosAxis: 'z',
+      vectorDirAxis: 'x',
       dir: -1,
       relativeFaces: [
         { face: 'back',  indices: [2, 1, 0] },
@@ -60,6 +83,8 @@
     this.down = {
       cubes: [],
       axis: 'y',
+      vectorPosAxis: 'z',
+      vectorDirAxis: 'x',
       dir: 1,
       relativeFaces: [
         { face: 'front', indices: [6, 7, 8] },
@@ -72,6 +97,8 @@
     this.back = {
       cubes: [],
       axis: 'z',
+      vectorPosAxis: 'x',
+      vectorDirAxis: 'y',
       dir: 1,
       relativeFaces: [
         { face: 'up',    indices: [2, 1, 0] },
@@ -84,6 +111,8 @@
     this.front = {
       cubes: [],
       axis: 'z',
+      vectorPosAxis: 'x',
+      vectorDirAxis: 'y',
       dir: -1,
       relativeFaces: [
         { face: 'up',    indices: [6, 7, 8] },
@@ -173,10 +202,6 @@
       while (rotatingFace.children.length > 0) {
         THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
       }
-
-      // for (var i = 0; i < cubesToRotate.length; i++) {
-        // THREE.SceneUtils.detach(cubesToRotate[i], rotatingFace, scene);
-      // }
       scene.remove(rotatingFace);
       // Update cube data
       callback && callback();
@@ -190,7 +215,6 @@
     var cubesToRotate, axis, dir, resetCallback;
 
     if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
-      cubesToRotate = this.cubes;
       if (name === 'left') {
         axis = 'y';
         dir = 1;
@@ -208,7 +232,6 @@
       resetCallback = this._getSeeCallback.bind(this, name);
     } else {
       virtualCubeFn = name;
-      cubesToRotate = this[face].cubes;
       axis = this[face].axis;
       dir = this[face].dir;
       if (name.indexOf('Prime') > -1) {
@@ -220,20 +243,24 @@
     this._virtualCube[virtualCubeFn]();
     this.animating = true;
     var rotatingFace = new THREE.Object3D();
-    ///////////////////////////////////////////////////////////////////////////
-    capturedCubes = []
-    var pos = new THREE.Vector3(103, 103, 200);
-    var direction = new THREE.Vector3(0, 0, -1);
-    var raycaster = new THREE.Raycaster(pos, direction, 0, 1000);
-    capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
-    var pos = new THREE.Vector3(103, 0, 200);
-    var direction = new THREE.Vector3(0, 0, -1);
-    var raycaster = new THREE.Raycaster(pos, direction, 0, 1000);
-    capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
-    var pos = new THREE.Vector3(103, -103, 200);
-    var direction = new THREE.Vector3(0, 0, -1);
-    var raycaster = new THREE.Raycaster(pos, direction, 0, 1000);
-    capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
+
+    var capturedCubes = []
+    var pos, direction, raycaster;
+
+    for (var i = 0; i < 3; i++) {
+      pos = new THREE.Vector3(103, 103, 103);
+      pos[this[face].vectorDirAxis] = 200;
+      // changes position between right and left, back and front, etc.
+      pos[this[face].axis] *= -this[face].dir;
+      // capture all cubes of a given face
+      pos[this[face].vectorPosAxis] -= 103 * i;
+
+      direction = new THREE.Vector3();
+      direction[this[face].vectorDirAxis] = -1;
+
+      raycaster = new THREE.Raycaster(pos, direction);
+      capturedCubes = capturedCubes.concat(raycaster.intersectObjects(scene.children));
+    }
 
     var cubesToRotate = [];
     for (var i = 0; i < capturedCubes.length; i++) {
