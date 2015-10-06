@@ -223,6 +223,14 @@
     this.animate(rotatingFace, cubesToRotate, axis, dir, resetCallback);
   };
 
+  Cube.prototype.oppositeMove = function (name) {
+    var oppMove = name[0];
+    if (name.indexOf('Prime') < 0) {
+      oppMove += 'Prime';
+    }
+    return oppMove
+  };
+
   Cube.prototype.randomMove = function () {
     return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
