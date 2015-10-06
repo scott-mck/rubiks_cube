@@ -279,6 +279,9 @@
   };
 
   EventHandler.prototype.scramble = function () {
+    if (this._sampling) {
+      return;
+    }
     this.hideSolveMoves();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Solve');
@@ -294,12 +297,8 @@
       }
       this._eventLoop.push(this._cube.move.bind(this._cube, randMove));
       prevMove = randMove;
+      oppositeMove = this._cube.oppositeMove(randMove);
 
-      if (randMove.indexOf('Prime') > -1) {
-        oppositeMove = randMove[0];
-      } else {
-        oppositeMove = randMove + 'Prime';
-      }
       this.scrambleMoves.push(oppositeMove);
     }
     this._scrambled = true;
@@ -455,27 +454,28 @@
       this._eventLoop.push(
         this._cube.move.bind(this._cube, callbacks.leftCallback)
       );
+      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.leftCallback));
     } else if (mouseUp.clientX < mouseDown.clientX - 40) {
       this._eventLoop.push(
         this._cube.move.bind(this._cube, callbacks.rightCallback)
       );
+      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.rightCallback));
     } else if (mouseUp.clientY > mouseDown.clientY + 40) {
       this._eventLoop.push(
         this._cube.move.bind(this._cube, callbacks.downCallback)
       );
+      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.downCallback));
     } else if (mouseUp.clientY < mouseDown.clientY - 40) {
       this._eventLoop.push(
         this._cube.move.bind(this._cube, callbacks.upCallback)
       );
+      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.upCallback));
     }
   };
 
   EventHandler.prototype._showCorrectMove = function (keyPressed) {
     var fn = Game.Cube.inverseKeyMap[keyPressed];
-    var oppFn = fn[0];
-    if (fn.indexOf('Prime') < 0) {
-      oppFn += 'Prime';
-    }
+    var oppFn = this._cube.oppositeMove(fn);
 
     if (fn === 'right') {
       oppFn = 'left';
