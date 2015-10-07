@@ -117,7 +117,7 @@
 
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var move = this.scrambleMoves[this.scrambleMoves.length - i - 1];
-      var key = Game.Cube.keyMap[move];
+      var key = Game.Cube.moveToKeyMap[move];
 
       var $letter = $('<span>').addClass('white').css('color', 'white');
       $letter.html(key);
@@ -259,7 +259,7 @@
     var solve = ' ;; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
     for (var i = 0; i < scramble.length; i++) {
       this._eventLoop.push(
-        this._cube.move.bind(this._cube, Game.Cube.inverseKeyMap[scramble[i]])
+        this._cube.move.bind(this._cube, Game.Cube.keyToMoveMap[scramble[i]])
       );
     }
 
@@ -268,7 +268,7 @@
         this._eventLoop.push(this._sleep.bind(this, 400));
       } else {
         this._eventLoop.push(
-          this._cube.move.bind(this._cube, Game.Cube.inverseKeyMap[solve[i]])
+          this._cube.move.bind(this._cube, Game.Cube.keyToMoveMap[solve[i]])
         );
       }
     }
@@ -474,7 +474,7 @@
   };
 
   EventHandler.prototype._showCorrectMove = function (keyPressed) {
-    var fn = Game.Cube.inverseKeyMap[keyPressed];
+    var fn = Game.Cube.keyToMoveMap[keyPressed];
     var oppFn = this._cube.oppositeMove(fn);
 
     if (fn === 'right') {
@@ -487,7 +487,7 @@
       oppFn = 'up';
     }
 
-    var oppLetter = Game.Cube.keyMap[oppFn];
+    var oppLetter = Game.Cube.moveToKeyMap[oppFn];
     var move = $('<span>').addClass('available').text(oppLetter);
     $('.undo-moves').append(move);
   };
