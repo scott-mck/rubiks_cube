@@ -110,9 +110,6 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    // if (this._cube.isSolved) {
-    //   this.scrambleMoves = [];
-    // }
     if (this.displayedMoves) {
       return;
     }
