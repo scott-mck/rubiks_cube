@@ -281,6 +281,11 @@
   };
 
   Cube.prototype.oppositeMove = function (name) {
+    if (name === 'left') return 'right';
+    if (name === 'right') return 'left';
+    if (name === 'up') return 'down';
+    if (name === 'down') return 'up';
+
     var oppMove = name[0];
     if (name.indexOf('Double') > -1) {
       oppMove += 'Double';
