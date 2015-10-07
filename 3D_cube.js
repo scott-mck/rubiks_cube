@@ -197,6 +197,43 @@
     return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
+  Cube.prototype.rightFaceIsSolved = function () {
+    var cubesToRotate = this._captureCubes('right');
+    var point = new THREE.Vector3(500, 0, 0);
+    var cube, dir, ray, intersects;
+    var firstColor, testColor;
+
+    for (var i = 0; i < cubesToRotate.length; i++) {
+      cube = cubesToRotate[i].position;
+      dir = cube.clone().sub(point).normalize();
+      ray = new THREE.Raycaster(point, dir);
+      intersects = ray.intersectObjects(scene.children);
+
+      if (i === 0) {
+        firstColor = intersects[0].face.color;
+      } else {
+        testColor = intersects[0].face.color;
+      }
+
+      if (!this._sameColor(firstColor, testColor)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  Cube.prototype._sameColor = function (color1, color2) {
+    if (!color1 || !color2) {
+      return true;
+    }
+    if (color1.r !== color2.r || color1.g !== color2.g || color1.b !== color2.b) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   Cube.prototype.solved = function () {
     return this._virtualCube.solved();
   };
