@@ -58,8 +58,10 @@
       dir: -1,
     };
 
-    this.possibleMoves = ['r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd',
-        'dPrime', 'f', 'fPrime', 'd', 'dPrime', 'b', 'bPrime'];
+    this.possibleMoves = [
+      'r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd', 'dPrime', 'f', 'fPrime',
+      'd', 'dPrime', 'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime'
+    ];
   };
 
   Game.Cube.moveToKeyMap = {
