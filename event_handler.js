@@ -491,27 +491,34 @@
   };
 
   EventHandler.prototype._mouseUpCallback = function (callbacks, mouseDown, mouseUp) {
-    var fnToPush, vertical, horizontal;
+    var verticalFn, horizontalFn, fnToPush;
+    var horizontalNull, verticalNull;
 
     if (mouseUp.clientY > mouseDown.clientY + 40) {
-      vertical = callbacks.downCallback;
+      verticalFn = callbacks.downCallback;
     } else if (mouseUp.clientY < mouseDown.clientY - 40) {
-      vertical = callbacks.upCallback;
+      verticalFn = callbacks.upCallback;
+    } else {
+      verticalNull = true;
     }
     if (mouseUp.clientX > mouseDown.clientX + 40) {
-      horizontal = callbacks.leftCallback;
+      horizontalFn = callbacks.leftCallback;
     } else if (mouseUp.clientX < mouseDown.clientX - 40) {
-      horizontal = callbacks.rightCallback;
+      horizontalFn = callbacks.rightCallback;
+    } else {
+      horizontalNull = true;
     }
+
+    if (verticalNull && horizontalNull) return;
 
     var horizontalDist = Math.abs(mouseUp.clientX - mouseDown.clientX);
     var verticalDist = Math.abs(mouseUp.clientY - mouseDown.clientY);
     if (horizontalDist > verticalDist) {
-      fnToPush = horizontal;
+      fnToPush = horizontalFn;
     } else if (horizontalDist < verticalDist) {
-      fnToPush = vertical;
+      fnToPush = verticalFn;
     } else {
-      fnToPush = vertical;
+      fnToPush = verticalFn;
     }
 
     this._eventLoop.push(
