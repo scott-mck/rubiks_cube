@@ -154,10 +154,8 @@
         this.scrambleMoves.push('right');
         break;
       case 'c':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'r'));
-        this.scrambleMoves.push('down');
-        this.scrambleMoves.push('rPrime');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'lDouble'));
+        this.scrambleMoves.push('lDoublePrime');
         break;
       case 'd':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
@@ -196,10 +194,8 @@
         this.scrambleMoves.push('d');
         break;
       case 'm':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'lPrime'));
-        this.scrambleMoves.push('down');
-        this.scrambleMoves.push('l');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'rDoublePrime'));
+        this.scrambleMoves.push('rDouble');
         break;
       case 'n':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
@@ -218,10 +214,8 @@
         this.scrambleMoves.push('bPrime');
         break;
       case 'r':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'rPrime'));
-        this.scrambleMoves.push('up');
-        this.scrambleMoves.push('r');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'lDoublePrime'));
+        this.scrambleMoves.push('lDouble');
         break;
       case 's':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'd'));
@@ -232,10 +226,8 @@
         this.scrambleMoves.push('mPrime');
         break;
       case 'u':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
-        this.scrambleMoves.push('up');
-        this.scrambleMoves.push('lPrime');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'rDouble'));
+        this.scrambleMoves.push('rDoublePrime');
         break;
       case 'v':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'mPrime'));
