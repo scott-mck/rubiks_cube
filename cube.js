@@ -171,11 +171,21 @@
 
   Cube.prototype.move = function (name) {
     this.isSolved = false;
-    
+
     var face = name[0];
-    if (face === 'm') face = 'r';
-    if (face === 'e') face = 'u';
-    if (face === 's') face = 'f';
+    var captureMiddles;
+    if (face === 'm') {
+      face = 'r';
+      captureMiddles = true;
+    }
+    if (face === 'e') {
+      face = 'u';
+      captureMiddles = true;
+    }
+    if (face === 's') {
+      face = 'f';
+      captureMiddles = true;
+    }
 
     var axis, dir, resetCallback;
     var cubesToRotate = [];
@@ -203,7 +213,10 @@
       if (name.indexOf('Prime') > -1) {
         dir *= -1;
       }
-      cubesToRotate = this._captureCubes(name[0]);
+      cubesToRotate = this._captureCubes(face, captureMiddles);
+      if (name.indexOf('Double') > -1) {
+        cubesToRotate = cubesToRotate.concat(this._captureCubes(face, true));
+      }
     }
 
     this.animating = true;
@@ -228,32 +241,21 @@
     return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
-  Cube.prototype._captureCubes = function (face) {
+  Cube.prototype._captureCubes = function (face, getMiddles) {
     var allCaptures = [];
     var capturedCubes = [];
     var pos, direction, raycaster;
-    var offsetFlag; // Offset vector position to get middle cubes
-
-    if (face === 'm') {
-      face = 'r';
-      offsetFlag = true;
-    } else if (face === 'e') {
-      face = 'u';
-      offsetFlag = true;
-    } else if (face === 's') {
-      face = 'f';
-      offsetFlag = true;
-    }
 
     for (var i = 0; i < 3; i++) {
       pos = new THREE.Vector3(103, 103, 103);
-      if (offsetFlag) {
-        pos[this[face].axis] -= 103;
-      }
       pos[this[face].vectorDirAxis] = 200;
 
       // changes position between right and left, back and front, etc.
       pos[this[face].axis] *= -this[face].dir;
+
+      if (getMiddles) {
+        pos[this[face].axis] += (103 * this[face].dir);
+      }
 
       // capture all cubes of a given face
       pos[this[face].vectorPosAxis] -= 103 * i;
