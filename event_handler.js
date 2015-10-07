@@ -222,16 +222,16 @@
         this.scrambleMoves.push('dPrime');
         break;
       case 't':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'm'));
-        this.scrambleMoves.push('mPrime');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'mPrime'));
+        this.scrambleMoves.push('m');
         break;
       case 'u':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'rDouble'));
         this.scrambleMoves.push('rDoublePrime');
         break;
       case 'v':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'mPrime'));
-        this.scrambleMoves.push('m');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'm'));
+        this.scrambleMoves.push('mPrime');
         break;
       case 'w':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'sPrime'));
