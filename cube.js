@@ -231,7 +231,7 @@
 
     for (var i = 0; i < 3; i++) {
       pos = new THREE.Vector3(103, 103, 103);
-      if (getMiddles) {
+      if (offsetFlag) {
         pos[this[face].axis] -= 103;
       }
       pos[this[face].vectorDirAxis] = 200;
