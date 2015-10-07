@@ -48,6 +48,7 @@
     89: 'y',
     90: 'z',
     186: ';',
+    188: ',',
     191: '/'
   };
 
@@ -150,110 +151,136 @@
         }
         break;
       case 'a':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'left'));
-        this.scrambleMoves.push('right');
+        var fn = 'left';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'c':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'lDouble'));
-        this.scrambleMoves.push('lDoublePrime');
+        var fn = 'lDouble';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'd':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
-        this.scrambleMoves.push('lPrime');
+        var fn = 'l';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'e':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'lPrime'));
-        this.scrambleMoves.push('l');
+        var fn = 'lPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'f':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'uPrime'));
-        this.scrambleMoves.push('u');
+        var fn = 'uPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'g':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'fPrime'));
-        this.scrambleMoves.push('f');
+        var fn = 'fPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'h':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'f'));
-        this.scrambleMoves.push('fPrime');
+        var fn = 'f';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'i':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'r'));
-        this.scrambleMoves.push('rPrime');
+        var fn = 'r';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'j':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'u'));
-        this.scrambleMoves.push('uPrime');
+        var fn = 'u';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'k':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'rPrime'));
-        this.scrambleMoves.push('r');
+        var fn = 'rPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'l':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'dPrime'));
-        this.scrambleMoves.push('d');
+        var fn = 'dPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'm':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'rDoublePrime'));
-        this.scrambleMoves.push('rDouble');
+        var fn = 'rDoublePrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'n':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
-        this.scrambleMoves.push('down');
+        var fn = 'up';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'o':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 's'));
-        this.scrambleMoves.push('sPrime');
+        var fn = 's';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'p':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'bPrime'));
-        this.scrambleMoves.push('b');
+        var fn = 'bPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'q':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'b'));
-        this.scrambleMoves.push('bPrime');
+        var fn = 'b';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'r':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'lDoublePrime'));
-        this.scrambleMoves.push('lDouble');
+        var fn = 'lDoublePrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 's':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'd'));
-        this.scrambleMoves.push('dPrime');
+        var fn = 'd';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 't':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'mPrime'));
-        this.scrambleMoves.push('m');
+        var fn = 'mPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'u':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'rDouble'));
-        this.scrambleMoves.push('rDoublePrime');
+        var fn = 'rDouble';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'v':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'm'));
-        this.scrambleMoves.push('mPrime');
+        var fn = 'm';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'w':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'sPrime'));
-        this.scrambleMoves.push('s');
+        var fn = 'sPrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'y':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
-        this.scrambleMoves.push('up');
+        var fn = 'down';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case 'z':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'e'));
-        this.scrambleMoves.push('ePrime');
+        var fn = 'e';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case ';':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'right'));
-        this.scrambleMoves.push('left');
+        var fn = 'right';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
       case '/':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'ePrime'));
-        this.scrambleMoves.push('e');
+        var fn = 'ePrime';
+        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+        this.scrambleMoves.push(this._cube.oppositeMove(fn));
         break;
-    }
+      }
     this.checkCorrectMove(keyPressed);
   };
 
