@@ -8,6 +8,7 @@
   var Cube = window.Game.Cube = function (scene, camera, cubes) {
     this.cubes = cubes;
     this.animating = false;
+    this.isSolved = false;
 
     this.right = {
       cubes: [],
@@ -161,6 +162,7 @@
     }
     scene.remove(rotatingFace);
     this.animating = false;
+    this.isSolved = this._isSolved();
   };
 
   Cube.prototype.move = function (name) {
@@ -216,15 +218,6 @@
     return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
-  Cube.prototype.solved = function () {
-    if (this.animating) {
-      return false;
-    }
-    if (this.faceIsSolved('right') && this.faceIsSolved('front') && this.faceIsSolved('up')) {
-      return true;
-    }
-  };
-
   Cube.prototype._captureCubes = function (face) {
     var allCaptures = [];
     var capturedCubes = [];
@@ -255,6 +248,15 @@
       }
     }
     return capturedCubes;
+  };
+
+  Cube.prototype._isSolved = function () {
+    if (this.animating) {
+      return false;
+    }
+    if (this.faceIsSolved('right') && this.faceIsSolved('front') && this.faceIsSolved('up')) {
+      return true;
+    }
   };
 
   Cube.prototype._sameColor = function (color1, color2) {

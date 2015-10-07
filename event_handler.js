@@ -107,7 +107,7 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    if (this._cube.solved()) {
+    if (this._cube.isSolved) {
       this.scrambleMoves = [];
     }
     if (this.displayedMoves) {
@@ -131,7 +131,7 @@
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.startTimer();
     }
-    if (this._cube.solved()) {
+    if (this._cube.isSolved) {
       this.hideSolveMoves();
       $('.undo-moves').empty();
     }
@@ -330,8 +330,7 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
-    // TODO: only call cube.solve() after a move is made
-    if (this._cube.solved() && this._timing) {
+    if (this._cube.isSolved && this._timing) {
       this.stopTimer();
       this._eventLoop = [];
       this.scrambleMoves = [];
@@ -340,7 +339,7 @@
     if (!this._cube.animating && this._eventLoop.length > 0) {
       this._eventLoop.shift().call(this._cube);
     }
-    if (this._cube.solved()) {
+    if (this._cube.isSolved) {
       this.scrambleMoves = [];
       $('.solve-moves span').css('color', 'gold');
     }
