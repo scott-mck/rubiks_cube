@@ -187,7 +187,7 @@
       renderer.render(scene, camera);
     }.bind(this));
 
-    rotatingFace.rotation[axis] += dir * Math.PI / 16;
+    rotatingFace.rotation[axis] += dir * (Math.PI / 2) / 8;
     renderer.render(scene, camera);
 
     if (rotatingFace.rotation[axis] >= Math.PI / 2 ||
