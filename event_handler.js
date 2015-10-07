@@ -56,9 +56,6 @@
     }
 
     var letterToCheck = $('.white').eq(0);
-    console.log(keyPressed);
-    console.log(letterToCheck.text());
-
     if (letterToCheck.text() === keyPressed) {
       letterToCheck.removeClass('white');
       letterToCheck.css('color', 'green');
