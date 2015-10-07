@@ -1,6 +1,5 @@
-// TODO: Possibly refacter #animate
 // TODO: Do not store a virtual cube
-// TODO: Write moves to change middles
+// TODO: Enable moving middle faces
 
 (function () {
   if (typeof window.Game === "undefined") {
@@ -66,7 +65,7 @@
         'dPrime', 'f', 'fPrime', 'd', 'dPrime', 'b', 'bPrime'];
   };
 
-  window.Game.Cube.keyMap = {
+  Game.Cube.moveToKeyMap = {
     'r': 'i',
     'rPrime': 'k',
     'u': 'j',
@@ -85,7 +84,7 @@
     'down': 'y'
   };
 
-  window.Game.Cube.inverseKeyMap = {
+  Game.Cube.keyToMoveMap = {
     'i': 'r',
     'k': 'rPrime',
     'j': 'u',
@@ -105,7 +104,7 @@
   };
 
 
-  window.Game.Cube.moveMap = {
+  Game.Cube.moveToFaceMap = {
     'r': 'right',
     'l': 'left',
     'f': 'front',
@@ -118,28 +117,31 @@
     // rotatingFace is an Object3D parent containing all cubes on a given face
     var id = requestAnimationFrame(function () {
       this.animate(rotatingFace, axis, dir);
+      renderer.render(scene, camera);
     }.bind(this));
 
     rotatingFace.rotation[axis] += dir * Math.PI / 16;
     renderer.render(scene, camera);
-    renderer.render(scene, camera); // fixes strange rendering with box helper
 
-    // When done rotating
     if (rotatingFace.rotation[axis] >= Math.PI / 2 ||
-          rotatingFace.rotation[axis] <= -Math.PI / 2) {
-      cancelAnimationFrame(id);
-
-      // Remove rotatingFace from scene
-      while (rotatingFace.children.length > 0) {
-        THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
-      }
-      scene.remove(rotatingFace);
-      this.animating = false;
+        rotatingFace.rotation[axis] <= -Math.PI / 2) {
+      this.finishAnimation(rotatingFace, id);
     }
   };
 
+  Cube.prototype.finishAnimation = function (rotatingFace, id) {
+    cancelAnimationFrame(id);
+
+    // Detach cubes from rotatingFace before removing rotatingFace from scene
+    while (rotatingFace.children.length > 0) {
+      THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
+    }
+    scene.remove(rotatingFace);
+    this.animating = false;
+  };
+
   Cube.prototype.move = function (name) {
-    var face = window.Game.Cube.moveMap[name[0]];
+    var face = window.Game.Cube.moveToFaceMap[name[0]];
     var virtualCubeFn;
     var axis, dir, resetCallback;
     var cubesToRotate = [];
@@ -161,6 +163,7 @@
         axis = 'x';
         dir = -1;
       }
+
     } else {
       virtualCubeFn = name;
       axis = this[face].axis;
@@ -179,7 +182,6 @@
       THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
     }
     scene.add(rotatingFace);
-
     this.animate(rotatingFace, axis, dir);
   };
 
@@ -222,6 +224,7 @@
     }
 
     for (var i = 0; i < allCaptures.length; i++) {
+      // make sure captured object is a 'cubie', no duplicates
       if (allCaptures[i].object.name === "cubie" &&
           capturedCubes.indexOf(allCaptures[i].object) === -1) {
         capturedCubes.push(allCaptures[i].object);
