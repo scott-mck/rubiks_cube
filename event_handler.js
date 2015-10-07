@@ -491,27 +491,33 @@
   };
 
   EventHandler.prototype._mouseUpCallback = function (callbacks, mouseDown, mouseUp) {
-    if (mouseUp.clientX > mouseDown.clientX + 40) {
-      this._eventLoop.push(
-        this._cube.move.bind(this._cube, callbacks.leftCallback)
-      );
-      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.leftCallback));
-    } else if (mouseUp.clientX < mouseDown.clientX - 40) {
-      this._eventLoop.push(
-        this._cube.move.bind(this._cube, callbacks.rightCallback)
-      );
-      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.rightCallback));
-    } else if (mouseUp.clientY > mouseDown.clientY + 40) {
-      this._eventLoop.push(
-        this._cube.move.bind(this._cube, callbacks.downCallback)
-      );
-      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.downCallback));
+    var fnToPush, vertical, horizontal;
+
+    if (mouseUp.clientY > mouseDown.clientY + 40) {
+      vertical = callbacks.downCallback;
     } else if (mouseUp.clientY < mouseDown.clientY - 40) {
-      this._eventLoop.push(
-        this._cube.move.bind(this._cube, callbacks.upCallback)
-      );
-      this.scrambleMoves.push(this._cube.oppositeMove(callbacks.upCallback));
+      vertical = callbacks.upCallback;
     }
+    if (mouseUp.clientX > mouseDown.clientX + 40) {
+      horizontal = callbacks.leftCallback;
+    } else if (mouseUp.clientX < mouseDown.clientX - 40) {
+      horizontal = callbacks.rightCallback;
+    }
+
+    var horizontalDist = Math.abs(mouseUp.clientX - mouseDown.clientX);
+    var verticalDist = Math.abs(mouseUp.clientY - mouseDown.clientY);
+    if (horizontalDist > verticalDist) {
+      fnToPush = horizontal;
+    } else if (horizontalDist < verticalDist) {
+      fnToPush = vertical;
+    } else {
+      fnToPush = vertical;
+    }
+
+    this._eventLoop.push(
+      this._cube.move.bind(this._cube, fnToPush)
+    );
+    this.scrambleMoves.push(this._cube.oppositeMove(fnToPush));
   };
 
   EventHandler.prototype._showCorrectMove = function (keyPressed) {
