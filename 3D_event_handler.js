@@ -330,6 +330,7 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
+    // TODO: only call cube.solve() after a move is made
     if (this._cube.solved() && this._timing) {
       this.stopTimer();
       this._eventLoop = [];
