@@ -110,9 +110,9 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    if (this._cube.isSolved) {
-      this.scrambleMoves = [];
-    }
+    // if (this._cube.isSolved) {
+    //   this.scrambleMoves = [];
+    // }
     if (this.displayedMoves) {
       return;
     }
@@ -136,12 +136,9 @@
     }
     if (this._cube.isSolved) {
       this.hideSolveMoves();
-      $('.undo-moves').empty();
     }
 
     var keyPressed = Game.EventHandler.keyCodeMap[key.keyCode];
-    this.checkCorrectMove(keyPressed);
-
     switch (keyPressed) {
       case 'return':
         this.displaySolveMoves();
@@ -268,6 +265,7 @@
         this.scrambleMoves.push('e');
         break;
     }
+    this.checkCorrectMove(keyPressed);
   };
 
   EventHandler.prototype.hideSolveMoves = function () {
