@@ -1,4 +1,3 @@
-// TODO: Do not store a virtual cube
 // TODO: Enable moving middle faces
 
 (function () {
@@ -8,10 +7,7 @@
 
   var Cube = window.Game.Cube = function (scene, camera, cubes) {
     this.cubes = cubes;
-
-    // Create an internal cube to check if solved
-    this._virtualCube = new Game.VirtualCube();
-    this.animating = false; // No simultaneous moves
+    this.animating = false;
 
     this.right = {
       cubes: [],
@@ -129,77 +125,10 @@
     }
   };
 
-  Cube.prototype.finishAnimation = function (rotatingFace, id) {
-    cancelAnimationFrame(id);
-
-    // Detach cubes from rotatingFace before removing rotatingFace from scene
-    while (rotatingFace.children.length > 0) {
-      THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
-    }
-    scene.remove(rotatingFace);
-    this.animating = false;
-  };
-
-  Cube.prototype.move = function (name) {
-    var face = window.Game.Cube.moveToFaceMap[name[0]];
-    var virtualCubeFn;
-    var axis, dir, resetCallback;
-    var cubesToRotate = [];
-
-    if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
-      cubesToRotate = cubes;
-      virtualCubeFn = 'see' + name[0].toUpperCase() + name.slice(1);
-
-      if (name === 'left') {
-        axis = 'y';
-        dir = 1;
-      } else if (name === 'right') {
-        axis = 'y';
-        dir = -1;
-      } else if (name === 'up') {
-        axis = 'x';
-        dir = 1;
-      } else if (name === 'down') {
-        axis = 'x';
-        dir = -1;
-      }
-
-    } else {
-      virtualCubeFn = name;
-      axis = this[face].axis;
-      dir = this[face].dir;
-      if (name.indexOf('Prime') > -1) {
-        dir *= -1;
-      }
-      cubesToRotate = this._captureCubes(face);
-    }
-
-    this.animating = true;
-    this._virtualCube[virtualCubeFn]();
-
-    var rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
-    }
-    scene.add(rotatingFace);
-    this.animate(rotatingFace, axis, dir);
-  };
-
-  Cube.prototype.oppositeMove = function (name) {
-    var oppMove = name[0];
-    if (name.indexOf('Prime') < 0) {
-      oppMove += 'Prime';
-    }
-    return oppMove
-  };
-
-  Cube.prototype.randomMove = function () {
-    return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
-  };
-
-  Cube.prototype.rightFaceIsSolved = function () {
-    var cubesToRotate = this._captureCubes('right');
-    var point = new THREE.Vector3(500, 0, 0);
+  Cube.prototype.faceIsSolved = function (face) {
+    var cubesToRotate = this._captureCubes(face);
+    var point = new THREE.Vector3();
+    point[this[face].axis] = 500;
     var cube, dir, ray, intersects;
     var firstColor, testColor;
 
@@ -223,19 +152,77 @@
     return true;
   };
 
-  Cube.prototype._sameColor = function (color1, color2) {
-    if (!color1 || !color2) {
-      return true;
+  Cube.prototype.finishAnimation = function (rotatingFace, id) {
+    cancelAnimationFrame(id);
+
+    // Detach cubes from rotatingFace before removing rotatingFace from scene
+    while (rotatingFace.children.length > 0) {
+      THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
     }
-    if (color1.r !== color2.r || color1.g !== color2.g || color1.b !== color2.b) {
-      return false;
+    scene.remove(rotatingFace);
+    this.animating = false;
+  };
+
+  Cube.prototype.move = function (name) {
+    var face = window.Game.Cube.moveToFaceMap[name[0]];
+    var axis, dir, resetCallback;
+    var cubesToRotate = [];
+
+    if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
+      cubesToRotate = cubes;
+
+      if (name === 'left') {
+        axis = 'y';
+        dir = 1;
+      } else if (name === 'right') {
+        axis = 'y';
+        dir = -1;
+      } else if (name === 'up') {
+        axis = 'x';
+        dir = 1;
+      } else if (name === 'down') {
+        axis = 'x';
+        dir = -1;
+      }
+
     } else {
-      return true;
+      axis = this[face].axis;
+      dir = this[face].dir;
+      if (name.indexOf('Prime') > -1) {
+        dir *= -1;
+      }
+      cubesToRotate = this._captureCubes(face);
     }
+
+    this.animating = true;
+
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < cubesToRotate.length; i++) {
+      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
+    }
+    scene.add(rotatingFace);
+    this.animate(rotatingFace, axis, dir);
+  };
+
+  Cube.prototype.oppositeMove = function (name) {
+    var oppMove = name[0];
+    if (name.indexOf('Prime') < 0) {
+      oppMove += 'Prime';
+    }
+    return oppMove
+  };
+
+  Cube.prototype.randomMove = function () {
+    return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
   Cube.prototype.solved = function () {
-    return this._virtualCube.solved();
+    if (this.animating) {
+      return false;
+    }
+    if (this.faceIsSolved('right') && this.faceIsSolved('front') && this.faceIsSolved('up')) {
+      return true;
+    }
   };
 
   Cube.prototype._captureCubes = function (face) {
@@ -268,5 +255,16 @@
       }
     }
     return capturedCubes;
+  };
+
+  Cube.prototype._sameColor = function (color1, color2) {
+    if (!color1 || !color2) {
+      return true;
+    }
+    if (color1.r !== color2.r || color1.g !== color2.g || color1.b !== color2.b) {
+      return false;
+    } else {
+      return true;
+    }
   };
 })();
