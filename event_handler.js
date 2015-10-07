@@ -256,16 +256,16 @@
         this.scrambleMoves.push('up');
         break;
       case 'z':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'ePrime'));
-        this.scrambleMoves.push('e');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'e'));
+        this.scrambleMoves.push('ePrime');
         break;
       case ';':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'right'));
         this.scrambleMoves.push('left');
         break;
       case '/':
-        this._eventLoop.push(this._cube.move.bind(this._cube, 'e'));
-        this.scrambleMoves.push('ePrime');
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'ePrime'));
+        this.scrambleMoves.push('e');
         break;
     }
   };
