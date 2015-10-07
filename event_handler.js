@@ -74,10 +74,10 @@
   EventHandler.prototype.click = function (event) {
     // Callbacks will be mutated depending on which cube face the user clicks on
     var callbacks = {
-      leftCallback: 'leftCallbackString',
-      rightCallback: 'rightCallbackString',
-      upCallback: 'upCallbackString',
-      downCallback: 'downCallbackString'
+      leftCallback: 'callbackString',
+      rightCallback: 'callbackString',
+      upCallback: 'callbackString',
+      downCallback: 'callbackString'
     };
     var intersects = this._getIntersects(event);
 
@@ -391,6 +391,9 @@
     if (~~cubeX > 0) {
       callbacks.upCallback = 'r';
       callbacks.downCallback = 'rPrime';
+    } else if (~~cubeX === 0) {
+      callbacks.upCallback = 'm';
+      callbacks.downCallback = 'mPrime';
     } else if (~~cubeX < 0) {
       callbacks.upCallback = 'lPrime';
       callbacks.downCallback = 'l';
@@ -400,6 +403,9 @@
     if (~~cubeY > 0) {
       callbacks.leftCallback = 'uPrime';
       callbacks.rightCallback = 'u';
+    } else if (~~cubeY === 0) {
+      callbacks.leftCallback = 'ePrime';
+      callbacks.rightCallback = 'e';
     } else if (~~cubeY < 0) {
       callbacks.leftCallback = 'd';
       callbacks.rightCallback = 'dPrime';
@@ -427,6 +433,9 @@
     if (~~cubeY > 0) {
       callbacks.leftCallback = 'uPrime';
       callbacks.rightCallback = 'u';
+    } else if (~~cubeY === 0) {
+      callbacks.leftCallback = 'ePrime';
+      callbacks.rightCallback = 'e';
     } else if (~~cubeY < 0) {
       callbacks.leftCallback = 'd';
       callbacks.rightCallback = 'dPrime';
@@ -436,6 +445,9 @@
     if (~~cubeZ > 0) {
       callbacks.upCallback = 'fPrime';
       callbacks.downCallback = 'f';
+    } else if (~~cubeZ === 0) {
+      callbacks.upCallback = 'sPrime';
+      callbacks.downCallback = 's';
     } else if (~~cubeZ < 0) {
       callbacks.upCallback = 'b';
       callbacks.downCallback = 'bPrime';
@@ -457,6 +469,9 @@
     if (~~cubeX > 0) {
       callbacks.upCallback = 'r';
       callbacks.downCallback = 'rPrime';
+    } else if (~~cubeX === 0) {
+      callbacks.upCallback = 'm';
+      callbacks.downCallback = 'mPrime';
     } else if (~~cubeX < 0) {
       callbacks.upCallback = 'lPrime';
       callbacks.downCallback = 'l';
@@ -466,6 +481,9 @@
     if (~~cubeZ > 0) {
       callbacks.leftCallback = 'f';
       callbacks.rightCallback = 'fPrime';
+    } else if (~~cubeZ === 0) {
+      callbacks.leftCallback = 's';
+      callbacks.rightCallback = 'sPrime';
     } else if (~~cubeZ < 0) {
       callbacks.leftCallback = 'bPrime';
       callbacks.rightCallback = 'b';
