@@ -259,7 +259,6 @@
 
     } else {
       var face = name[0];
-      var captureMiddles;
       axis = this[face].axis;
       dir = this[face].dir;
       if (name.indexOf('Prime') > -1) {
@@ -283,6 +282,9 @@
 
   Cube.prototype.oppositeMove = function (name) {
     var oppMove = name[0];
+    if (name.indexOf('Double') > -1) {
+      oppMove += 'Double';
+    }
     if (name.indexOf('Prime') < 0) {
       oppMove += 'Prime';
     }
