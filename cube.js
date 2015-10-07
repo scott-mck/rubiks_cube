@@ -10,7 +10,7 @@
     this.animating = false;
     this.isSolved = false;
 
-    this.right = {
+    this.r = {
       cubes: [],
       axis: 'x',
       vectorPosAxis: 'y',
@@ -18,7 +18,7 @@
       dir: -1,
     };
 
-    this.left = {
+    this.l = {
       cubes: [],
       axis: 'x',
       vectorPosAxis: 'y',
@@ -26,7 +26,7 @@
       dir: 1,
     };
 
-    this.up = {
+    this.u = {
       cubes: [],
       axis: 'y',
       vectorPosAxis: 'z',
@@ -34,7 +34,7 @@
       dir: -1,
     };
 
-    this.down = {
+    this.d = {
       cubes: [],
       axis: 'y',
       vectorPosAxis: 'z',
@@ -42,7 +42,7 @@
       dir: 1,
     };
 
-    this.back = {
+    this.b = {
       cubes: [],
       axis: 'z',
       vectorPosAxis: 'x',
@@ -50,7 +50,7 @@
       dir: 1,
     };
 
-    this.front = {
+    this.f = {
       cubes: [],
       axis: 'z',
       vectorPosAxis: 'x',
@@ -99,16 +99,6 @@
     'y': 'down',
     'n': 'up'
   };
-
-
-  Game.Cube.moveToFaceMap = {
-    'r': 'right',
-    'l': 'left',
-    'f': 'front',
-    'b': 'back',
-    'd': 'down',
-    'u': 'up'
-  }
 
   Cube.prototype.animate = function (rotatingFace, axis, dir) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
@@ -166,7 +156,11 @@
   };
 
   Cube.prototype.move = function (name) {
-    var face = window.Game.Cube.moveToFaceMap[name[0]];
+    var face = name[0];
+    if (face === 'm') face = 'r';
+    if (face === 'e') face = 'u';
+    if (face === 's') face = 'f';
+
     var axis, dir, resetCallback;
     var cubesToRotate = [];
 
@@ -193,7 +187,7 @@
       if (name.indexOf('Prime') > -1) {
         dir *= -1;
       }
-      cubesToRotate = this._captureCubes(face);
+      cubesToRotate = this._captureCubes(name[0]);
     }
 
     this.animating = true;
@@ -222,9 +216,24 @@
     var allCaptures = [];
     var capturedCubes = [];
     var pos, direction, raycaster;
+    var offsetFlag; // Offset vector position to get middle cubes
+
+    if (face === 'm') {
+      face = 'r';
+      offsetFlag = true;
+    } else if (face === 'e') {
+      face = 'u';
+      offsetFlag = true;
+    } else if (face === 's') {
+      face = 'f';
+      offsetFlag = true;
+    }
 
     for (var i = 0; i < 3; i++) {
       pos = new THREE.Vector3(103, 103, 103);
+      if (getMiddles) {
+        pos[this[face].axis] -= 103;
+      }
       pos[this[face].vectorDirAxis] = 200;
 
       // changes position between right and left, back and front, etc.
@@ -254,7 +263,7 @@
     if (this.animating) {
       return false;
     }
-    if (this.faceIsSolved('right') && this.faceIsSolved('front') && this.faceIsSolved('up')) {
+    if (this.faceIsSolved('r') && this.faceIsSolved('f') && this.faceIsSolved('u')) {
       return true;
     }
   };
