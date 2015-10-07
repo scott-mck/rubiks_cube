@@ -11,7 +11,7 @@
     this._cube = cube;
     this._eventLoop = [];
     this.scrambleMoves = [];
-    this._scrambled = false;
+    this.scrambled = false;
     this._timing = false;
     this._sampling = false;
 
@@ -129,7 +129,7 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-    if ( this._scrambled &&
+    if ( this.scrambled &&
       ((key.keyCode >= 67 && key.keyCode <= 77) ||
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.startTimer();
@@ -328,11 +328,12 @@
 
       this.scrambleMoves.push(oppositeMove);
     }
-    this._scrambled = true;
+    this.scrambled = true;
+    this._cube.isSolved = false;
   };
 
   EventHandler.prototype.solve = function () {
-    this._scrambled = false;
+    this.scrambled = false;
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
       this._eventLoop.push(this._cube.move.bind(this._cube, fn));
@@ -344,7 +345,7 @@
   EventHandler.prototype.startTimer = function () {
     $('.timer').css('color', 'red');
     this.timeId = setInterval(this.displayElapsedTime.bind(this), 60/1000);
-    this._scrambled = false;
+    this.scrambled = false;
     this._timing = true;
   };
 
@@ -364,7 +365,7 @@
       this.startTime = undefined;
     }
     if (!this._cube.animating && this._eventLoop.length > 0) {
-      this._eventLoop.shift().call(this._cube);
+      this._eventLoop.shift()();
     }
     if (this._cube.isSolved) {
       this.scrambleMoves = [];
