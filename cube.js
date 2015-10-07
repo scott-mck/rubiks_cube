@@ -166,10 +166,12 @@
     }
     scene.remove(rotatingFace);
     this.animating = false;
-    this.isSolved = this._isSolved();
+    this._updateSolveState();
   };
 
   Cube.prototype.move = function (name) {
+    this.isSolved = false;
+    
     var face = name[0];
     if (face === 'm') face = 'r';
     if (face === 'e') face = 'u';
@@ -273,12 +275,12 @@
     return capturedCubes;
   };
 
-  Cube.prototype._isSolved = function () {
+  Cube.prototype._updateSolveState = function () {
     if (this.animating) {
-      return false;
+      this.isSolved = false;
     }
     if (this.faceIsSolved('r') && this.faceIsSolved('f') && this.faceIsSolved('u')) {
-      return true;
+      this.isSolved = true;
     }
   };
 
