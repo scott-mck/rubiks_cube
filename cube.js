@@ -13,105 +13,171 @@
     this.r = {
       cubes: [],
       axis: 'x',
-      vectorPosAxis: 'y',
-      vectorDirAxis: 'z',
+      vector: {
+        startPos: 1,
+        changePosAxis: 'y',
+        dirAxis: 'z'
+      },
       dir: -1,
+      middle: 'm'
     };
 
     this.l = {
       cubes: [],
       axis: 'x',
-      vectorPosAxis: 'y',
-      vectorDirAxis: 'z',
+      vector: {
+        startPos: -1,
+        changePosAxis: 'y',
+        dirAxis: 'z'
+      },
       dir: 1,
+      middle: 'm'
     };
 
     this.u = {
       cubes: [],
       axis: 'y',
-      vectorPosAxis: 'z',
-      vectorDirAxis: 'x',
+      vector: {
+        startPos: 1,
+        changePosAxis: 'z',
+        dirAxis: 'x'
+      },
       dir: -1,
+      middle: 'e'
     };
 
     this.d = {
       cubes: [],
       axis: 'y',
-      vectorPosAxis: 'z',
-      vectorDirAxis: 'x',
+      vector: {
+        startPos: -1,
+        changePosAxis: 'z',
+        dirAxis: 'x'
+      },
       dir: 1,
+      middle: 'e'
     };
 
     this.b = {
       cubes: [],
       axis: 'z',
-      vectorPosAxis: 'x',
-      vectorDirAxis: 'y',
+      vector: {
+        startPos: -1,
+        changePosAxis: 'x',
+        dirAxis: 'y'
+      },
       dir: 1,
+      middle: 's'
     };
 
     this.f = {
       cubes: [],
       axis: 'z',
-      vectorPosAxis: 'x',
-      vectorDirAxis: 'y',
+      vector: {
+        startPos: 1,
+        changePosAxis: 'x',
+        dirAxis: 'y'
+      },
+      dir: -1,
+      middle: 's'
+    };
+
+    this.m = {
+      cubes: [],
+      axis: 'x',
+      vector: {
+        startPos: 0,
+        changePosAxis: 'y',
+        dirAxis: 'z'
+      },
+      dir: 1,
+    };
+
+    this.e = {
+      cubes: [],
+      axis: 'y',
+      vector: {
+        startPos: 0,
+        changePosAxis: 'z',
+        dirAxis: 'x'
+      },
+      dir: 1,
+    };
+
+    this.s = {
+      cubes: [],
+      axis: 'z',
+      vector: {
+        startPos: 0,
+        changePosAxis: 'x',
+        dirAxis: 'y'
+      },
       dir: -1,
     };
 
     this.possibleMoves = [
       'r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd', 'dPrime', 'f', 'fPrime',
-      'd', 'dPrime', 'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime'
+      'd', 'dPrime', 'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime',
+      'rDouble', 'rDoublePrime', 'lDouble', 'lDoublePrime'
     ];
   };
 
   Game.Cube.moveToKeyMap = {
-    'r': 'i',
-    'rPrime': 'k',
-    'u': 'j',
-    'uPrime': 'f',
-    'l': 'd',
-    'lPrime': 'e',
-    'f': 'h',
-    'fPrime': 'g',
-    'd': 's',
-    'dPrime': 'l',
-    'b': 'q',
-    'bPrime': 'p',
-    'm': 't',
-    'mPrime': 'v',
-    'e': 'z',
-    'ePrime': '/',
-    's': 'o',
-    'sPrime': 'w',
-    'left': 'a',
-    'right': ';',
-    'up': 'n',
-    'down': 'y'
+    b:            'q',
+    bPrime:       'p',
+    d:            's',
+    down:         'y',
+    dPrime:       'l',
+    e:            'z',
+    ePrime:       '/',
+    f:            'h',
+    fPrime:       'g',
+    l:            'd',
+    lDouble:      'c',
+    lDoublePrime: 'r',
+    left:         'a',
+    lPrime:       'e',
+    m:            'v',
+    mPrime:       't',
+    r:            'i',
+    rDouble:      'u',
+    rDoublePrime: 'm',
+    right:        ';',
+    rPrime:       'k',
+    u:            'j',
+    up:           'n',
+    uPrime:       'f',
+    s:            'o',
+    sPrime:       'w'
   };
 
   Game.Cube.keyToMoveMap = {
-    'i': 'r',
-    'k': 'rPrime',
-    'j': 'u',
-    'f': 'uPrime',
-    'd': 'l',
-    'e': 'lPrime',
-    'h': 'f',
-    'g': 'fPrime',
-    's': 'd',
-    'l': 'dPrime',
-    'q': 'b',
-    'p': 'bPrime',
-    't': 'm',
-    'v': 'mPrime',
-    'z': 'e',
-    '/': 'ePrime',
-    'w': 'sPrime',
-    'o': 's',
+    a:   'left',
+    c:   'lDouble',
+    d:   'l',
+    e:   'lPrime',
+    f:   'uPrime',
+    g:   'fPrime',
+    h:   'f',
+    i:   'r',
+    j:   'u',
+    k:   'rPrime',
+    l:   'dPrime',
+    m:   'rDoublePrime',
+    n:   'up',
+    o:   's',
+    p:   'bPrime',
+    q:   'b',
+    r:   'lDoublePrime',
+    s:   'd',
+    t:   'mPrime',
+    u:   'rDouble',
+    v:   'm',
+    w:   'sPrime',
+    y:   'down',
+    z:   'e',
     ';': 'right',
-    'a': 'left',
-    'y': 'down',
-    'n': 'up'
+    '/': 'ePrime'
   };
 
   Cube.prototype.animate = function (rotatingFace, axis, dir) {
@@ -172,22 +238,8 @@
   Cube.prototype.move = function (name) {
     this.isSolved = false;
 
-    var face = name[0];
-    var captureMiddles;
-    if (face === 'm') {
-      face = 'r';
-      captureMiddles = true;
-    }
-    if (face === 'e') {
-      face = 'u';
-      captureMiddles = true;
-    }
-    if (face === 's') {
-      face = 'f';
-      captureMiddles = true;
-    }
-
-    var axis, dir, resetCallback;
+    var axis, resetCallback;
+    var dir = 1;
     var cubesToRotate = [];
 
     if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
@@ -195,27 +247,27 @@
 
       if (name === 'left') {
         axis = 'y';
-        dir = 1;
       } else if (name === 'right') {
         axis = 'y';
         dir = -1;
       } else if (name === 'up') {
         axis = 'x';
-        dir = 1;
       } else if (name === 'down') {
         axis = 'x';
         dir = -1;
       }
 
     } else {
+      var face = name[0];
+      var captureMiddles;
       axis = this[face].axis;
       dir = this[face].dir;
       if (name.indexOf('Prime') > -1) {
         dir *= -1;
       }
-      cubesToRotate = this._captureCubes(face, captureMiddles);
+      cubesToRotate = this._captureCubes(face);
       if (name.indexOf('Double') > -1) {
-        cubesToRotate = cubesToRotate.concat(this._captureCubes(face, true));
+        cubesToRotate = cubesToRotate.concat(this._captureCubes(this[face].middle));
       }
     }
 
@@ -241,27 +293,22 @@
     return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
-  Cube.prototype._captureCubes = function (face, getMiddles) {
+  Cube.prototype._captureCubes = function (face) {
     var allCaptures = [];
     var capturedCubes = [];
     var pos, direction, raycaster;
 
     for (var i = 0; i < 3; i++) {
-      pos = new THREE.Vector3(103, 103, 103);
-      pos[this[face].vectorDirAxis] = 200;
-
-      // changes position between right and left, back and front, etc.
-      pos[this[face].axis] *= -this[face].dir;
-
-      if (getMiddles) {
-        pos[this[face].axis] += (103 * this[face].dir);
-      }
+      pos = new THREE.Vector3();
+      pos[this[face].axis] = 103 * this[face].vector.startPos;
+      pos[this[face].vector.changePosAxis] = 103;
+      pos[this[face].vector.dirAxis] = 200;
 
       // capture all cubes of a given face
-      pos[this[face].vectorPosAxis] -= 103 * i;
+      pos[this[face].vector.changePosAxis] -= 103 * i;
 
       direction = new THREE.Vector3();
-      direction[this[face].vectorDirAxis] = -1;
+      direction[this[face].vector.dirAxis] = -1;
 
       raycaster = new THREE.Raycaster(pos, direction);
       allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
