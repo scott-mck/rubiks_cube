@@ -36,13 +36,19 @@
     76: 'l',
     77: 'm',
     78: 'n',
+    79: 'o',
     80: 'p',
     81: 'q',
     82: 'r',
     83: 's',
+    84: 't',
     85: 'u',
+    86: 'v',
+    87: 'w',
     89: 'y',
-    186: ';'
+    90: 'z',
+    186: ';',
+    191: '/'
   };
 
   EventHandler.prototype.checkCorrectMove = function (keyPressed) {
@@ -205,6 +211,10 @@
         this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
         this.scrambleMoves.push('down');
         break;
+      case 'o':
+        this._eventLoop.push(this._cube.move.bind(this._cube, 's'));
+        this.scrambleMoves.push('sPrime');
+        break;
       case 'p':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'bPrime'));
         this.scrambleMoves.push('b');
@@ -223,19 +233,39 @@
         this._eventLoop.push(this._cube.move.bind(this._cube, 'd'));
         this.scrambleMoves.push('dPrime');
         break;
+      case 't':
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'm'));
+        this.scrambleMoves.push('mPrime');
+        break;
       case 'u':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this._eventLoop.push(this._cube.move.bind(this._cube, 'l'));
         this.scrambleMoves.push('up');
         this.scrambleMoves.push('lPrime');
         break;
+      case 'v':
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'mPrime'));
+        this.scrambleMoves.push('m');
+        break;
+      case 'w':
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'sPrime'));
+        this.scrambleMoves.push('s');
+        break;
       case 'y':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
         this.scrambleMoves.push('up');
         break;
-      case  ';':
+      case 'z':
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'ePrime'));
+        this.scrambleMoves.push('e');
+        break;
+      case ';':
         this._eventLoop.push(this._cube.move.bind(this._cube, 'right'));
         this.scrambleMoves.push('left');
+        break;
+      case '/':
+        this._eventLoop.push(this._cube.move.bind(this._cube, 'e'));
+        this.scrambleMoves.push('ePrime');
         break;
     }
   };
