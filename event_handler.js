@@ -411,8 +411,8 @@
       callbacks.upCallback = 'r';
       callbacks.downCallback = 'rPrime';
     } else if (~~cubeX === 0) {
-      callbacks.upCallback = 'm';
-      callbacks.downCallback = 'mPrime';
+      callbacks.upCallback = 'mPrime';
+      callbacks.downCallback = 'm';
     } else if (~~cubeX < 0) {
       callbacks.upCallback = 'lPrime';
       callbacks.downCallback = 'l';
@@ -423,8 +423,8 @@
       callbacks.leftCallback = 'uPrime';
       callbacks.rightCallback = 'u';
     } else if (~~cubeY === 0) {
-      callbacks.leftCallback = 'ePrime';
-      callbacks.rightCallback = 'e';
+      callbacks.leftCallback = 'e';
+      callbacks.rightCallback = 'ePrime';
     } else if (~~cubeY < 0) {
       callbacks.leftCallback = 'd';
       callbacks.rightCallback = 'dPrime';
@@ -453,8 +453,8 @@
       callbacks.leftCallback = 'uPrime';
       callbacks.rightCallback = 'u';
     } else if (~~cubeY === 0) {
-      callbacks.leftCallback = 'ePrime';
-      callbacks.rightCallback = 'e';
+      callbacks.leftCallback = 'e';
+      callbacks.rightCallback = 'ePrime';
     } else if (~~cubeY < 0) {
       callbacks.leftCallback = 'd';
       callbacks.rightCallback = 'dPrime';
@@ -489,8 +489,8 @@
       callbacks.upCallback = 'r';
       callbacks.downCallback = 'rPrime';
     } else if (~~cubeX === 0) {
-      callbacks.upCallback = 'm';
-      callbacks.downCallback = 'mPrime';
+      callbacks.upCallback = 'mPrime';
+      callbacks.downCallback = 'm';
     } else if (~~cubeX < 0) {
       callbacks.upCallback = 'lPrime';
       callbacks.downCallback = 'l';
