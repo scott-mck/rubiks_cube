@@ -196,6 +196,15 @@
     }
   };
 
+  Cube.prototype.colorToString = function (color) {
+    if (color.equals(new THREE.Color(1, 1, 1)))  return 'w';
+    if (color.equals(new THREE.Color(1, 0, 0)))  return 'r';
+    if (color.equals(new THREE.Color(0, 1, 0)))  return 'g';
+    if (color.equals(new THREE.Color(0, 0, 1)))  return 'b';
+    if (color.equals(new THREE.Color(1, .5, 0))) return 'o';
+    if (color.equals(new THREE.Color(1, 1, 0)))  return 'y';
+  };
+
   Cube.prototype.finishAnimation = function (rotatingFace, id) {
     cancelAnimationFrame(id);
 
