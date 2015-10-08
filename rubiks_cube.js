@@ -196,6 +196,7 @@
     }
   };
 
+  // TODO: prototypify this on THREE.Color
   Cube.prototype.colorToString = function (color) {
     if (color.equals(new THREE.Color(1, 1, 1)))  return 'w';
     if (color.equals(new THREE.Color(1, 0, 0)))  return 'r';
