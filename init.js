@@ -19,23 +19,23 @@
 
       // Color each individual cube:
       // Color right face RED
-      geometry.faces[0].color.setRGB(255/255,0/255,0/255);
-      geometry.faces[1].color.setRGB(255/255,0/255,0/255);
+      geometry.faces[0].color.setRGB(1, 0, 0);
+      geometry.faces[1].color.setRGB(1, 0, 0);
       // Color left face ORANGE
-      geometry.faces[2].color.setRGB(255/255,101/255,0/255);
-      geometry.faces[3].color.setRGB(255/255,101/255,0/255);
+      geometry.faces[2].color.setRGB(1, .5, 0);
+      geometry.faces[3].color.setRGB(1, .5, 0);
       // Color top face YELLOW
-      geometry.faces[4].color.setRGB(255/255,255/255,0/255);
-      geometry.faces[5].color.setRGB(255/255,255/255,0/255);
+      geometry.faces[4].color.setRGB(1, 1, 0);
+      geometry.faces[5].color.setRGB(1, 1, 0);
       // Color down face WHITE
-      geometry.faces[6].color.setRGB(255/255,255/255,255/255);
-      geometry.faces[7].color.setRGB(255/255,255/255,255/255);
+      geometry.faces[6].color.setRGB(1, 1, 1);
+      geometry.faces[7].color.setRGB(1, 1, 1);
       // Color front face BLUE
-      geometry.faces[8].color.setRGB(0/255,0/255,255/255);
-      geometry.faces[9].color.setRGB(0/255,0/255,255/255);
+      geometry.faces[8].color.setRGB(0, 0, 1);
+      geometry.faces[9].color.setRGB(0, 0, 1);
       // Color back face GREEN
-      geometry.faces[10].color.setRGB(0/255,255/255,0/255);
-      geometry.faces[11].color.setRGB(0/255,255/255,0/255);
+      geometry.faces[10].color.setRGB(0, 1, 0);
+      geometry.faces[11].color.setRGB(0, 1, 0);
 
       // Create 3 mini-cubes and position along z-axis
       for (var k = 0; k < 3; k++) {
