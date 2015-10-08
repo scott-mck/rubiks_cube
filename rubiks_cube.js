@@ -5,7 +5,7 @@
     window.Game = {};
   }
 
-  var Cube = window.Game.Cube = function (scene, camera, cubes) {
+  var rubiksCube = window.Game.Cube = function (scene, camera, cubes) {
     this.cubes = cubes;
     this.animating = false;
     this.isSolved = false;
@@ -180,7 +180,7 @@
     '/': 'ePrime'
   };
 
-  Cube.prototype.animate = function (rotatingFace, axis, dir) {
+  rubiksCube.prototype.animate = function (rotatingFace, axis, dir) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
     var id = requestAnimationFrame(function () {
       this.animate(rotatingFace, axis, dir);
@@ -197,16 +197,16 @@
   };
 
   // TODO: prototypify this on THREE.Color
-  Cube.prototype.colorToString = function (color) {
-    if (color.equals(new THREE.Color(1, 1, 1)))  return 'w';
-    if (color.equals(new THREE.Color(1, 0, 0)))  return 'r';
-    if (color.equals(new THREE.Color(0, 1, 0)))  return 'g';
-    if (color.equals(new THREE.Color(0, 0, 1)))  return 'b';
-    if (color.equals(new THREE.Color(1, .5, 0))) return 'o';
-    if (color.equals(new THREE.Color(1, 1, 0)))  return 'y';
+  rubiksCube.prototype.colorToString = function (color) {
+    if (color.equals(new THREE.Color(1, 1, 1)))  return 'U';
+    if (color.equals(new THREE.Color(1, 0, 0)))  return 'R';
+    if (color.equals(new THREE.Color(0, 1, 0)))  return 'F';
+    if (color.equals(new THREE.Color(0, 0, 1)))  return 'D';
+    if (color.equals(new THREE.Color(1, .5, 0))) return 'L';
+    if (color.equals(new THREE.Color(1, 1, 0)))  return 'B';
   };
 
-  Cube.prototype.finishAnimation = function (rotatingFace, id) {
+  rubiksCube.prototype.finishAnimation = function (rotatingFace, id) {
     cancelAnimationFrame(id);
 
     // Detach cubes from rotatingFace before removing rotatingFace from scene
@@ -218,7 +218,7 @@
     this._updateSolveState();
   };
 
-  Cube.prototype.getColorsOfFace = function (face) {
+  rubiksCube.prototype.getColorsOfFace = function (face) {
     var cubesToRotate = this._captureCubes(face);
     var point = new THREE.Vector3();
     var cube, dir, ray, intersects;
@@ -236,7 +236,7 @@
     return colors;
   };
 
-  Cube.prototype.move = function (name) {
+  rubiksCube.prototype.move = function (name) {
     this.isSolved = false;
     this.animating = true;
 
@@ -280,7 +280,7 @@
     this.animate(rotatingFace, axis, dir);
   };
 
-  Cube.prototype.oppositeMove = function (name) {
+  rubiksCube.prototype.oppositeMove = function (name) {
     if (name === 'left') return 'right';
     if (name === 'right') return 'left';
     if (name === 'up') return 'down';
@@ -296,11 +296,42 @@
     return oppMove
   };
 
-  Cube.prototype.randomMove = function () {
+  rubiksCube.prototype.randomMove = function () {
     return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
-  Cube.prototype._captureCubes = function (face) {
+  rubiksCube.prototype.solve = function () {
+    return Cube.fromString(this.stringifyFaces());
+    return cube.solve();
+  };
+
+  rubiksCube.prototype.stringifyFaces = function () {
+    var u = this.getColorsOfFace('u');
+    var r = this.getColorsOfFace('r');
+    var f = this.getColorsOfFace('f');
+    var d = this.getColorsOfFace('d');
+    var l = this.getColorsOfFace('l');
+    var b = this.getColorsOfFace('b');
+
+    var uString = '';
+    var rString = '';
+    var fString = '';
+    var dString = '';
+    var lString = '';
+    var bString = '';
+
+    for (var i = 0; i < u.length; i++) {
+      uString += this.colorToString(u[i]);
+      rString += this.colorToString(r[i]);
+      fString += this.colorToString(f[i]);
+      dString += this.colorToString(d[i]);
+      lString += this.colorToString(l[i]);
+      bString += this.colorToString(b[i]);
+    }
+    return uString + rString + fString + dString + lString + bString;
+  };
+
+  rubiksCube.prototype._captureCubes = function (face) {
     var allCaptures = [];
     var capturedCubes = [];
     var dir = this[face].vector.direction;
@@ -325,7 +356,7 @@
     return capturedCubes;
   };
 
-  Cube.prototype._updateSolveState = function () {
+  rubiksCube.prototype._updateSolveState = function () {
     if (this.animating) {
       this.isSolved = false;
     }
@@ -340,7 +371,7 @@
     }
   };
 
-  Cube.prototype._colorsAreSame = function (colors) {
+  rubiksCube.prototype._colorsAreSame = function (colors) {
     var firstColor = colors[0];
     var testColor;
     for (var i = 1; i < colors.length; i++) {
