@@ -228,6 +228,7 @@
 
   Cube.prototype.move = function (name) {
     this.isSolved = false;
+    this.animating = true;
 
     var axis, resetCallback;
     var dir = 1;
@@ -260,8 +261,6 @@
         cubesToRotate = cubesToRotate.concat(this._captureCubes(this[face].middle));
       }
     }
-
-    this.animating = true;
 
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < cubesToRotate.length; i++) {
@@ -343,9 +342,7 @@
     for (var i = 1; i < colors.length; i++) {
       testColor = colors[i];
 
-      if (testColor.r !== firstColor.r ||
-          testColor.g !== firstColor.g ||
-          testColor.b !== firstColor.b) {
+      if (!firstColor.equals(colors[i])) {
         return false;
       }
     }
