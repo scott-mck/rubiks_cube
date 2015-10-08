@@ -28,7 +28,7 @@
       vector: {
         startPos: new THREE.Vector3(-103, 103, -200),
         direction: new THREE.Vector3(0, 0, 1),
-        changePosAxis: ['y', 1]
+        changePosAxis: ['y', -1]
       },
       dir: 1,
       middle: 'm'
@@ -216,7 +216,7 @@
 
     for (var i = 0; i < cubesToRotate.length; i++) {
       cube = cubesToRotate[i].position;
-      point[this[face].axis] = 500 * this[face].vector.startPos;
+      point[this[face].axis] = 500 * -  this[face].dir;
       dir = cube.clone().sub(point).normalize();
       ray = new THREE.Raycaster(point, dir);
       intersects = ray.intersectObjects(scene.children);
@@ -294,7 +294,7 @@
     var allCaptures = [];
     var capturedCubes = [];
     var dir = this[face].vector.direction;
-    var pos = this[face].vector.startPos;
+    var pos = this[face].vector.startPos.clone();
     var raycaster;
 
     for (var i = 0; i < 3; i++) {
