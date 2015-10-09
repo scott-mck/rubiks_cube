@@ -117,8 +117,7 @@
 
     this.possibleMoves = [
       'r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd', 'dPrime', 'f', 'fPrime',
-      'd', 'dPrime', 'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime',
-      'rDouble', 'rDoublePrime', 'lDouble', 'lDoublePrime'
+      'd', 'dPrime', 'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime'
     ];
   };
 
