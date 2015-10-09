@@ -73,6 +73,7 @@
   };
 
   EventHandler.prototype.click = function (event) {
+    // TODO: refactor using vectors
     // Callbacks will be mutated depending on which cube face the user clicks on
     var callbacks = {
       leftCallback: 'callbackString',
