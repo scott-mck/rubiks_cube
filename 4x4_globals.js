@@ -9,4 +9,5 @@
   middle = 20;
 
   doubleInclusive = false;
+  sizeSpecificScrambles = ['rDouble', 'rDoublePrime', 'lDouble', 'lDoublePrime'];
 })();
