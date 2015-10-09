@@ -1,6 +1,12 @@
-## [Live](http://scott-mck.github.io/rubiks_cube/)
-
 # Rubik's cube
+
+## Live
+* [3x3][3x3]
+* [4x4][4x4] (in progress)
+
+[3x3]: http://scott-mck.github.io/rubiks_cube/
+[4x4]: http://scott-mck.github.io/rubiks_cube/4x4.html
+
 ## Features
 * Uses THREE.js to build, render, and mutate 3D objects
 * Move faces by using keyboard or by clicking, dragging, and releasing
