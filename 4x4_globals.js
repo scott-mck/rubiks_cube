@@ -1,4 +1,5 @@
 (function () {
+  // TODO: make clicking work
   cubieSize = 70;
   cubieOffset = 2;
   cubeDimensions = 4;
