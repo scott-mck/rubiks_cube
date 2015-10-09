@@ -1,6 +1,6 @@
 (function () {
-  cubieSize = 100;
-  cubieOffset = 3;
+  cubieSize = 70;
+  cubieOffset = 2;
   cubeDimensions = 4;
   rightSideStartPos = (3/2) * (cubieSize + cubieOffset);
   cameraX = 250;
