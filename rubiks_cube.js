@@ -14,7 +14,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(103, 103, 200),
+        startPos: new THREE.Vector3((rightSideStartPos), (rightSideStartPos), 200),
         direction: new THREE.Vector3(0, 0, -1),
         changePosAxis: ['y', -1]
       },
@@ -26,7 +26,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(-103, 103, -200),
+        startPos: new THREE.Vector3(-(rightSideStartPos), (rightSideStartPos), -200),
         direction: new THREE.Vector3(0, 0, 1),
         changePosAxis: ['y', -1]
       },
@@ -38,7 +38,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-200, 103, -103),
+        startPos: new THREE.Vector3(-200, (rightSideStartPos), -(rightSideStartPos)),
         direction: new THREE.Vector3(1, 0, 0),
         changePosAxis: ['z', 1]
       },
@@ -50,7 +50,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-200, -103, 103),
+        startPos: new THREE.Vector3(-200, -(rightSideStartPos), (rightSideStartPos)),
         direction: new THREE.Vector3(1, 0, 0),
         changePosAxis: ['z', -1]
       },
@@ -62,7 +62,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3(200, 103, -103),
+        startPos: new THREE.Vector3(200, (rightSideStartPos), -(rightSideStartPos)),
         direction: new THREE.Vector3(-1, 0, 0),
         changePosAxis: ['y', -1]
       },
@@ -74,7 +74,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3(-200, 103, 103),
+        startPos: new THREE.Vector3(-200, (rightSideStartPos), (rightSideStartPos)),
         direction: new THREE.Vector3(1, 0, 0),
         changePosAxis: ['y', -1]
       },
@@ -86,7 +86,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(0, 103, 200),
+        startPos: new THREE.Vector3(0, (rightSideStartPos), 200),
         direction: new THREE.Vector3(0, 0, -1),
         changePosAxis: ['y', -1]
       },
@@ -97,7 +97,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-103, 0, 200),
+        startPos: new THREE.Vector3(-(rightSideStartPos), 0, 200),
         direction: new THREE.Vector3(0, 0, -1),
         changePosAxis: ['x', 1]
       },
@@ -108,7 +108,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3(200, 103, 0),
+        startPos: new THREE.Vector3(200, (rightSideStartPos), 0),
         direction: new THREE.Vector3(-1, 0, 0),
         changePosAxis: ['y', -1]
       },
@@ -225,7 +225,7 @@
 
     for (var i = 0; i < cubesToRotate.length; i++) {
       cube = cubesToRotate[i].position;
-      point[this[face].axis] = 500 * -  this[face].dir;
+      point[this[face].axis] = (rightSideStartPos + 300) * -  this[face].dir;
       dir = cube.clone().sub(point).normalize();
       ray = new THREE.Raycaster(point, dir);
       intersects = ray.intersectObjects(scene.children);
@@ -337,11 +337,11 @@
     var pos = this[face].vector.startPos.clone();
     var raycaster;
 
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < cubeDimensions; i++) {
       raycaster = new THREE.Raycaster(pos, dir);
       allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
 
-      var newPos = 103 * this[face].vector.changePosAxis[1];
+      var newPos = (cubieSize + cubieOffset) * this[face].vector.changePosAxis[1];
       pos[this[face].vector.changePosAxis[0]] += newPos;
     }
 
