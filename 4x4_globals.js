@@ -7,4 +7,6 @@
   cameraY = 300;
   cameraZ = -100;
   middle = 20;
+
+  doubleInclusive = false;
 })();
