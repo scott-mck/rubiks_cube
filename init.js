@@ -14,8 +14,8 @@
     scene = new THREE.Scene();
 
     // Make individual cube geometry
-    for (var j = 0; j < 16; j++) {
-      var geometry = new THREE.BoxGeometry( 100, 100, 100 );
+    for (var i = 0; i < cubeDimensions * cubeDimensions; i++) {
+      var geometry = new THREE.BoxGeometry(cubieSize, cubieSize, cubieSize);
 
       // Color each individual cube:
       // Color right face RED
@@ -38,7 +38,7 @@
       geometry.faces[11].color.setRGB(0, 1, 0);
 
       // Create 3 mini-cubes and position along z-axis
-      for (var k = 0; k < 4; k++) {
+      for (var j = 0; j < cubeDimensions; j++) {
         var material = new THREE.MeshBasicMaterial({
           color: 0xffffff,
           vertexColors: THREE.FaceColors
@@ -46,9 +46,9 @@
 
         var mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(
-          103 -103 * ~~(j / 4),
-          103 -103 * (j % 4),
-          103 - 103 * k
+          (cubieSize + 3 + centerOffset) -(cubieSize + 3) * ~~(i / cubeDimensions),
+          (cubieSize + 3 + centerOffset) -(cubieSize + 3) * (i % cubeDimensions),
+          (cubieSize + 3 + centerOffset) -(cubieSize + 3) * j
         );
         mesh.name = "cubie"; // easy for id-ing when raycasting
 
