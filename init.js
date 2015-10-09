@@ -46,9 +46,9 @@
 
         var mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(
-          (cubieSize + 3 + centerOffset) -(cubieSize + 3) * ~~(i / cubeDimensions),
-          (cubieSize + 3 + centerOffset) -(cubieSize + 3) * (i % cubeDimensions),
-          (cubieSize + 3 + centerOffset) -(cubieSize + 3) * j
+          (rightSideStartPos) -(cubieSize + cubieOffset) * ~~(i / cubeDimensions),
+          (rightSideStartPos) -(cubieSize + cubieOffset) * (i % cubeDimensions),
+          (rightSideStartPos) -(cubieSize + cubieOffset) * j
         );
         mesh.name = "cubie"; // easy for id-ing when raycasting
 
@@ -62,10 +62,10 @@
       }
     }
 
-    camera.position.x += 250;
-    camera.position.y += 300;
-    camera.position.z += 100;
-    camera.lookAt(cubes[13].position); // look at middle of Rubik's Cube
+    camera.position.x += cameraX;
+    camera.position.y += cameraY;
+    camera.position.z += cameraZ;
+    camera.lookAt(cubes[middle].position); // look at middle of Rubik's Cube
 
     rubiksCube = new Game.Cube(scene, camera, cubes);
     eventHandler = new Game.EventHandler(rubiksCube, 'game');

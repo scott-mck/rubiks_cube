@@ -1,10 +1,10 @@
 (function () {
   cubieSize = 100;
   cubieOffset = 3;
-  cubeDimensions = 3;
-  rightSideStartPos = cubieSize + cubieOffset;
+  cubeDimensions = 4;
+  rightSideStartPos = (3/2) * (cubieSize + cubieOffset);
   cameraX = 250;
   cameraY = 300;
   cameraZ = -100;
-  middle = 13;
+  middle = 20;
 })();
