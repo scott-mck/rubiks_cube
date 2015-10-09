@@ -90,7 +90,7 @@
         direction: new THREE.Vector3(0, 0, -1),
         changePosAxis: ['y', -1]
       },
-      dir: 1,
+      dir: 1
     };
 
     this.e = {
@@ -101,7 +101,7 @@
         direction: new THREE.Vector3(0, 0, -1),
         changePosAxis: ['x', 1]
       },
-      dir: 1,
+      dir: 1
     };
 
     this.s = {
@@ -112,7 +112,7 @@
         direction: new THREE.Vector3(-1, 0, 0),
         changePosAxis: ['y', -1]
       },
-      dir: -1,
+      dir: -1
     };
 
     this.possibleMoves = [
@@ -265,10 +265,24 @@
       if (name.indexOf('Prime') > -1) {
         dir *= -1;
       }
-      cubesToRotate = this._captureCubes(face);
-      if (name.indexOf('Double') > -1) {
-        cubesToRotate = cubesToRotate.concat(this._captureCubes(this[face].middle));
+
+      if (['m', 'e', 's'].indexOf(face) > -1 && cubieSize % 2 === 0) {
+        cubesToRotate = this._captureCubes(face, cubieSize / 2);
+        moreCubesToRotate = this._captureCubes(face, -cubieSize / 2);
+        cubesToRotate = cubesToRotate.concat(moreCubesToRotate);
+      } else {
+        cubesToRotate = this._captureCubes(face);
+        var doubleCubes;
+        if (name.indexOf('Double') > -1) {
+          doubleCubes = this._captureCubes(face, cubieSize);
+          if (doubleInclusive) {
+            cubesToRotate = cubesToRotate.concat(doubleCubes);
+          } else {
+            cubesToRotate = doubleCubes;
+          }
+        }
       }
+
     }
 
     var rotatingFace = new THREE.Object3D();
@@ -330,11 +344,13 @@
     return uString + rString + fString + dString + lString + bString;
   };
 
-  rubiksCube.prototype._captureCubes = function (face) {
+  rubiksCube.prototype._captureCubes = function (face, offsetMag) {
+    offsetMag = offsetMag || 0;
     var allCaptures = [];
     var capturedCubes = [];
     var dir = this[face].vector.direction;
     var pos = this[face].vector.startPos.clone();
+    pos[this[face].axis] += offsetMag * this[face].dir;
     var raycaster;
 
     for (var i = 0; i < cubeDimensions; i++) {
