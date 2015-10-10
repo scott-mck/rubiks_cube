@@ -195,6 +195,29 @@
     }
   };
 
+  rubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
+    var allCaptures = [];
+    var capturedCubes = [];
+    var raycaster;
+
+    for (var i = 0; i < cubeDimensions; i++) {
+      raycaster = new THREE.Raycaster(startPos, rayDir);
+      allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
+
+      var newPos = (cubieSize + cubieOffset) * sliceDir.mag;
+      startPos[sliceDir.axis] += newPos;
+    }
+
+    for (var i = 0; i < allCaptures.length; i++) {
+      // make sure captured object is a 'cubie', no duplicates
+      if (allCaptures[i].object.name === "cubie" &&
+          capturedCubes.indexOf(allCaptures[i].object) === -1) {
+        capturedCubes.push(allCaptures[i].object);
+      }
+    }
+    return capturedCubes;
+  };
+
   // TODO: prototypify this on THREE.Color
   rubiksCube.prototype.colorToString = function (color) {
     if (color.equals(new THREE.Color(1, 1, 1)))  return 'U';
@@ -224,13 +247,16 @@
       this[face].vector.sliceDir
     );
     var point = new THREE.Vector3();
-    var cube, dir, ray, intersects;
+    point[this[face].axis] = (cubeStartPos + 300) * -this[face].dir;
+    var cubePos, dir, ray, intersects;
     var colors = [];
 
     for (var i = 0; i < cubesToRotate.length; i++) {
-      cube = cubesToRotate[i].position;
-      point[this[face].axis] = (cubeStartPos + 300) * -  this[face].dir;
-      dir = cube.clone().sub(point).normalize();
+      cubePos = cubesToRotate[i].position.clone();
+      // point the ray at a cubie, but at a point slightly closer to scene center
+      // this seems to avoid hitting edge helpers
+      cubePos.sub(cubePos.clone().normalize().multiplyScalar(10));
+      dir = cubePos.sub(point).normalize();
       ray = new THREE.Raycaster(point, dir);
       intersects = ray.intersectObjects(scene.children);
       colors.push(intersects[0].face.color);
@@ -368,29 +394,6 @@
       bString += this.colorToString(b[i]);
     }
     return uString + rString + fString + dString + lString + bString;
-  };
-
-  rubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
-    var allCaptures = [];
-    var capturedCubes = [];
-    var raycaster;
-
-    for (var i = 0; i < cubeDimensions; i++) {
-      raycaster = new THREE.Raycaster(startPos, rayDir);
-      allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
-
-      var newPos = (cubieSize + cubieOffset) * sliceDir.mag;
-      startPos[sliceDir.axis] += newPos;
-    }
-
-    for (var i = 0; i < allCaptures.length; i++) {
-      // make sure captured object is a 'cubie', no duplicates
-      if (allCaptures[i].object.name === "cubie" &&
-          capturedCubes.indexOf(allCaptures[i].object) === -1) {
-        capturedCubes.push(allCaptures[i].object);
-      }
-    }
-    return capturedCubes;
   };
 
   rubiksCube.prototype._updateSolveState = function () {
