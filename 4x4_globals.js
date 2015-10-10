@@ -1,5 +1,5 @@
 (function () {
-  cubieSize = 70;
+  cubieSize = 80;
   cubieOffset = 2;
   cubeDimensions = 4;
   cubeStartPos = (3/2) * (cubieSize + cubieOffset);
