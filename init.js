@@ -65,6 +65,7 @@
     camera.position.x += cameraX;
     camera.position.y += cameraY;
     camera.position.z += cameraZ;
+    var middle = ~~(Math.pow(cubeDimensions, 3) / 2);
     camera.lookAt(cubes[middle].position); // look at middle of Rubik's Cube
 
     rubiksCube = new Game.Cube(scene, camera, cubes);

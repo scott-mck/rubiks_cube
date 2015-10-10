@@ -1,5 +1,4 @@
 (function () {
-  // TODO: make clicking work
   cubieSize = 70;
   cubieOffset = 2;
   cubeDimensions = 4;
@@ -7,7 +6,6 @@
   cameraX = 250;
   cameraY = 300;
   cameraZ = -100;
-  middle = 20;
 
   doubleInclusive = false;
   sizeSpecificScrambles = [
