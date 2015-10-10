@@ -325,7 +325,7 @@
     var prevMove = ''; // no two scramble moves are the same
     var oppositeMove = ''; // no two scramble moves cancel out
 
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < scrambleLength; i++) {
       // Get random move, make sure no two in a row are the same
       var randMove = this._cube.randomMove();
       while (randMove === oppositeMove || randMove === prevMove) {
@@ -429,7 +429,7 @@
       if (normal === 'y') rotationDir *= -1;
     } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
                mouseUp.clientY < mouseDown.clientY - 40) {
-      startPos[axes[1]] += 200;
+      startPos[axes[1]] = cubeStartPos + 200;
       rayDir[axes[1]] = -1;
       rotationAxis = axes[0];
       if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
