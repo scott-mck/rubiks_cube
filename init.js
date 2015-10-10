@@ -46,9 +46,9 @@
 
         var mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(
-          (startPos) -(cubieSize + cubieOffset) * ~~(i / cubeDimensions),
-          (startPos) -(cubieSize + cubieOffset) * (i % cubeDimensions),
-          (startPos) -(cubieSize + cubieOffset) * j
+          (cubeStartPos) -(cubieSize + cubieOffset) * ~~(i / cubeDimensions),
+          (cubeStartPos) -(cubieSize + cubieOffset) * (i % cubeDimensions),
+          (cubeStartPos) -(cubieSize + cubieOffset) * j
         );
         mesh.name = "cubie"; // easy for id-ing when raycasting
 
