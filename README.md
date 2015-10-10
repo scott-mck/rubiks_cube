@@ -2,7 +2,7 @@
 
 ## Live
 * [3x3][3x3]
-* [4x4][4x4] (in progress)
+* [4x4][4x4]
 
 [3x3]: http://scott-mck.github.io/rubiks_cube/
 [4x4]: http://scott-mck.github.io/rubiks_cube/4x4.html
