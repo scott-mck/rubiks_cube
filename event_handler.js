@@ -331,7 +331,7 @@
     var prevMove = ''; // no two scramble moves are the same
     var oppositeMove = ''; // no two scramble moves cancel out
 
-    for (var i = 0; i < 30; i++) {
+    for (var i = 0; i < 50; i++) {
       // Get random move, make sure no two in a row are the same
       var randMove = this._cube.randomMove();
       while (randMove === oppositeMove || randMove === prevMove) {
