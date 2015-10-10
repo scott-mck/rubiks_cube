@@ -6,6 +6,7 @@
 
 [3x3]: http://scott-mck.github.io/rubiks_cube/
 [4x4]: http://scott-mck.github.io/rubiks_cube/4x4.html
+[5x5]: http://scott-mck.github.io/rubiks_cube/5x5.html
 
 ## Features
 * Uses THREE.js to build, render, and mutate 3D objects
