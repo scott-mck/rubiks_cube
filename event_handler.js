@@ -72,36 +72,34 @@
     }
   };
 
-  EventHandler.prototype.click = function (event) {
-    // TODO: refactor using vectors
-    // Callbacks will be mutated depending on which cube face the user clicks on
-    var callbacks = {
-      leftCallback: 'callbackString',
-      rightCallback: 'callbackString',
-      upCallback: 'callbackString',
-      downCallback: 'callbackString'
-    };
-    var intersects = this._getIntersects(event);
-
+  EventHandler.prototype.click = function (mouseDown) {
+    var intersects = this._getIntersects(mouseDown);
     if (intersects.length === 0) {
-      this._getRotateCallbacks(callbacks);
-      $('#canvas').one('mouseup', this._mouseUpCallback.bind(this, callbacks, event));
+      $('#canvas').one(
+        'mouseup',
+        this._rotateCube.bind(this, mouseDown)
+      );
     } else {
       var clickedCube = intersects[0].object;
       var normal = new THREE.Matrix4().extractRotation(clickedCube.matrixWorld)
         .multiplyVector3(intersects[0].face.normal.clone());
 
-      if (normal.x === 1) {
-        this._getRightCallbacks(clickedCube, normal, callbacks);
+      if (normal.z === 1) {
+        $('#canvas').one(
+          'mouseup',
+          this._clickFrontFace.bind(this, clickedCube, mouseDown)
+        );
+      } else if (normal.x === 1) {
+        $('#canvas').one(
+          'mouseup',
+          this._clickRightFace.bind(this, clickedCube, mouseDown)
+        );
       } else if (normal.y === 1) {
-        this._getUpCallbacks(clickedCube, normal, callbacks);
-      } else if (normal.z === 1) {
-        this._getFrontCallbacks(clickedCube, normal, callbacks);
+        $('#canvas').one(
+          'mouseup',
+          this._clickUpFace.bind(this, clickedCube, mouseDown)
+        );
       }
-
-      // When user releases mouse, this function is called and is passed the set
-      // of possible callbacks, the mousedown event, and the mouseup event
-      $('#canvas').one('mouseup', this._mouseUpCallback.bind(this, callbacks, event));
     }
   };
 
@@ -403,33 +401,77 @@
     }
   };
 
-  EventHandler.prototype._getFrontCallbacks = function (clickedCube, normal, callbacks) {
-    var cubeX = clickedCube.position.x;
-    var cubeY = clickedCube.position.y;
+  EventHandler.prototype._clickFrontFace = function (clickedCube, mouseDown, mouseUp) {
+    var startPos, rayDir, cubesToRotate, rotatingFace, rotationAxis;
+    var sliceDir = { axis: 'z', mag: -1 }
+    var rotationDir = 1;
 
-    // Get possible vertical moves
-    if (~~cubeX > 0) {
-      callbacks.upCallback = 'r';
-      callbacks.downCallback = 'rPrime';
-    } else if (~~cubeX === 0) {
-      callbacks.upCallback = 'mPrime';
-      callbacks.downCallback = 'm';
-    } else if (~~cubeX < 0) {
-      callbacks.upCallback = 'lPrime';
-      callbacks.downCallback = 'l';
+    if (mouseUp.clientX > mouseDown.clientX + 40 ||
+        mouseUp.clientX < mouseDown.clientX - 40) {
+      startPos = new THREE.Vector3(
+        cubeStartPos + 200,
+        clickedCube.position.y,
+        clickedCube.position.z
+      );
+      rayDir = new THREE.Vector3(-1, 0, 0);
+      rotationAxis = 'y';
+      rotationDir = 1;
+      if (mouseUp.clientX < mouseDown.clientX - 40) rotationDir *= -1;
+    } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
+               mouseUp.clientY < mouseDown.clientY - 40) {
+      startPos = new THREE.Vector3(
+        clickedCube.position.x,
+        cubeStartPos + 200,
+        cubeStartPos
+      );
+      rayDir = new THREE.Vector3(0, -1, 0);
+      rotationAxis = 'x';
+      if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
     }
 
-    // Get possible horizontal moves
-    if (~~cubeY > 0) {
-      callbacks.leftCallback = 'uPrime';
-      callbacks.rightCallback = 'u';
-    } else if (~~cubeY === 0) {
-      callbacks.leftCallback = 'e';
-      callbacks.rightCallback = 'ePrime';
-    } else if (~~cubeY < 0) {
-      callbacks.leftCallback = 'd';
-      callbacks.rightCallback = 'dPrime';
+    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
+    rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < cubesToRotate.length; i++) {
+      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
     }
+    scene.add(rotatingFace);
+    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
+  };
+
+  EventHandler.prototype._clickRightFace = function (clickedCube, mouseDown, mouseUp) {
+    var startPos, rayDir, cubesToRotate, rotatingFace, rotationAxis;
+    var sliceDir = { axis: 'x', mag: -1 }
+    var rotationDir = -1;
+
+    if (mouseUp.clientX > mouseDown.clientX + 40 ||
+        mouseUp.clientX < mouseDown.clientX - 40) {
+      startPos = new THREE.Vector3(
+        clickedCube.position.x,
+        clickedCube.position.y,
+        cubeStartPos + 200
+      );
+      rayDir = new THREE.Vector3(0, 0, -1);
+      rotationAxis = 'y';
+      if (mouseUp.clientX > mouseDown.clientX + 40) rotationDir *= -1;
+    } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
+               mouseUp.clientY < mouseDown.clientY - 40) {
+      startPos = new THREE.Vector3(
+        clickedCube.position.x,
+        cubeStartPos + 200,
+        clickedCube.position.z
+      );
+      rayDir = new THREE.Vector3(0, -1, 0);
+      rotationAxis = 'z';
+      if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
+    }
+
+    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
+    rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < cubesToRotate.length; i++) {
+      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
+    }
+    scene.add(rotatingFace);
+    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
   };
 
   EventHandler.prototype._getIntersects = function (event) {
@@ -445,106 +487,55 @@
     return raycaster.intersectObjects(scene.children);
   };
 
-  EventHandler.prototype._getRightCallbacks = function (clickedCube, normal, callbacks) {
-    var cubeY = clickedCube.position.y;
-    var cubeZ = clickedCube.position.z;
-
-    // Get possible vertical moves
-    if (~~cubeY > 0) {
-      callbacks.leftCallback = 'uPrime';
-      callbacks.rightCallback = 'u';
-    } else if (~~cubeY === 0) {
-      callbacks.leftCallback = 'e';
-      callbacks.rightCallback = 'ePrime';
-    } else if (~~cubeY < 0) {
-      callbacks.leftCallback = 'd';
-      callbacks.rightCallback = 'dPrime';
-    }
-
-    // Get possible horizontal moves
-    if (~~cubeZ > 0) {
-      callbacks.upCallback = 'fPrime';
-      callbacks.downCallback = 'f';
-    } else if (~~cubeZ === 0) {
-      callbacks.upCallback = 'sPrime';
-      callbacks.downCallback = 's';
-    } else if (~~cubeZ < 0) {
-      callbacks.upCallback = 'b';
-      callbacks.downCallback = 'bPrime';
-    }
-  };
-
-  EventHandler.prototype._getRotateCallbacks = function (callbacks) {
-    callbacks.leftCallback = 'left';
-    callbacks.rightCallback = 'right';
-    callbacks.upCallback = 'down';
-    callbacks.downCallback = 'up';
-  };
-
-  EventHandler.prototype._getUpCallbacks = function (clickedCube, normal, callbacks) {
-    var cubeX = clickedCube.position.x;
-    var cubeZ = clickedCube.position.z;
-
-    // Get possible vertical moves
-    if (~~cubeX > 0) {
-      callbacks.upCallback = 'r';
-      callbacks.downCallback = 'rPrime';
-    } else if (~~cubeX === 0) {
-      callbacks.upCallback = 'mPrime';
-      callbacks.downCallback = 'm';
-    } else if (~~cubeX < 0) {
-      callbacks.upCallback = 'lPrime';
-      callbacks.downCallback = 'l';
-    }
-
-    // Get possible horizontal moves
-    if (~~cubeZ > 0) {
-      callbacks.leftCallback = 'f';
-      callbacks.rightCallback = 'fPrime';
-    } else if (~~cubeZ === 0) {
-      callbacks.leftCallback = 's';
-      callbacks.rightCallback = 'sPrime';
-    } else if (~~cubeZ < 0) {
-      callbacks.leftCallback = 'bPrime';
-      callbacks.rightCallback = 'b';
-    }
-  };
-
-  EventHandler.prototype._mouseUpCallback = function (callbacks, mouseDown, mouseUp) {
-    var verticalFn, horizontalFn, fnToPush;
-    var horizontalNull, verticalNull;
-
-    if (mouseUp.clientY > mouseDown.clientY + 40) {
-      verticalFn = callbacks.downCallback;
-    } else if (mouseUp.clientY < mouseDown.clientY - 40) {
-      verticalFn = callbacks.upCallback;
-    } else {
-      verticalNull = true;
+  EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
+    if (mouseUp.clientX < mouseDown.clientX - 40) {
+      this._eventLoop.push(this._cube.move.bind(this._cube, 'right'));
     }
     if (mouseUp.clientX > mouseDown.clientX + 40) {
-      horizontalFn = callbacks.leftCallback;
-    } else if (mouseUp.clientX < mouseDown.clientX - 40) {
-      horizontalFn = callbacks.rightCallback;
-    } else {
-      horizontalNull = true;
+      this._eventLoop.push(this._cube.move.bind(this._cube, 'left'));
+    }
+    if (mouseUp.clientY > mouseDown.clientY + 40) {
+      this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
+    }
+    if (mouseUp.clientY < mouseDown.clientY - 40) {
+      this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
+    }
+  };
+
+  EventHandler.prototype._clickUpFace = function (clickedCube, mouseDown, mouseUp) {
+    var startPos, rayDir, cubesToRotate, rotatingFace, rotationAxis;
+    var sliceDir = { axis: 'y', mag: -1 }
+    var rotationDir = -1;
+
+    if (mouseUp.clientX > mouseDown.clientX + 40 ||
+        mouseUp.clientX < mouseDown.clientX - 40) {
+      startPos = new THREE.Vector3(
+        cubeStartPos + 200,
+        clickedCube.position.y,
+        clickedCube.position.z
+      );
+      rayDir = new THREE.Vector3(-1, 0, 0);
+      rotationAxis = 'z';
+      if (mouseUp.clientX < mouseDown.clientX - 40) rotationDir *= -1;
+    } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
+               mouseUp.clientY < mouseDown.clientY - 40) {
+      startPos = new THREE.Vector3(
+        clickedCube.position.x,
+        clickedCube.position.y,
+        cubeStartPos + 200
+      );
+      rayDir = new THREE.Vector3(0, 0, -1);
+      rotationAxis = 'x';
+      if (mouseUp.clientY > mouseDown.clientY + 40) rotationDir *= -1;
     }
 
-    if (verticalNull && horizontalNull) return;
-
-    var horizontalDist = Math.abs(mouseUp.clientX - mouseDown.clientX);
-    var verticalDist = Math.abs(mouseUp.clientY - mouseDown.clientY);
-    if (horizontalDist > verticalDist) {
-      fnToPush = horizontalFn;
-    } else if (horizontalDist < verticalDist) {
-      fnToPush = verticalFn;
-    } else {
-      fnToPush = verticalFn;
+    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
+    rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < cubesToRotate.length; i++) {
+      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
     }
-
-    this._eventLoop.push(
-      this._cube.move.bind(this._cube, fnToPush)
-    );
-    this.scrambleMoves.push(this._cube.oppositeMove(fnToPush));
+    scene.add(rotatingFace);
+    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
   };
 
   EventHandler.prototype._showCorrectMove = function (keyPressed) {
