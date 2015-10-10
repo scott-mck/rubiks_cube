@@ -74,33 +74,29 @@
 
   EventHandler.prototype.click = function (mouseDown) {
     var intersects = this._getIntersects(mouseDown);
+    var mouseUpFn;
     if (intersects.length === 0) {
-      $('#canvas').one(
-        'mouseup',
-        this._rotateCube.bind(this, mouseDown)
-      );
+      mouseUpFn = function (mouseUp) {
+        this._rotateCube(mouseDown, mouseUp);
+      };
     } else {
       var clickedCube = intersects[0].object;
-      var normal = new THREE.Matrix4().extractRotation(clickedCube.matrixWorld)
+      var normalVector = new THREE.Matrix4().extractRotation(clickedCube.matrixWorld)
         .multiplyVector3(intersects[0].face.normal.clone());
-
-      if (normal.z === 1) {
-        $('#canvas').one(
-          'mouseup',
-          this._clickFrontFace.bind(this, clickedCube, mouseDown)
-        );
-      } else if (normal.x === 1) {
-        $('#canvas').one(
-          'mouseup',
-          this._clickRightFace.bind(this, clickedCube, mouseDown)
-        );
-      } else if (normal.y === 1) {
-        $('#canvas').one(
-          'mouseup',
-          this._clickUpFace.bind(this, clickedCube, mouseDown)
-        );
+      var normal;
+      if (normalVector.x === 1) {
+        normal = 'x';
+      } else if (normalVector.y === 1) {
+        normal = 'y'
+      } else if (normalVector.z === 1) {
+        normal = 'z';
       }
+      mouseUpFn = function (mouseUp) {
+        this._mouseUp(clickedCube, normal, mouseDown, mouseUp);
+      };
     }
+
+    $('#canvas').one('mouseup', mouseUpFn.bind(this));
   };
 
   EventHandler.prototype.displayElapsedTime = function () {
@@ -401,79 +397,6 @@
     }
   };
 
-  EventHandler.prototype._clickFrontFace = function (clickedCube, mouseDown, mouseUp) {
-    var startPos, rayDir, cubesToRotate, rotatingFace, rotationAxis;
-    var sliceDir = { axis: 'z', mag: -1 }
-    var rotationDir = 1;
-
-    if (mouseUp.clientX > mouseDown.clientX + 40 ||
-        mouseUp.clientX < mouseDown.clientX - 40) {
-      startPos = new THREE.Vector3(
-        cubeStartPos + 200,
-        clickedCube.position.y,
-        clickedCube.position.z
-      );
-      rayDir = new THREE.Vector3(-1, 0, 0);
-      rotationAxis = 'y';
-      rotationDir = 1;
-      if (mouseUp.clientX < mouseDown.clientX - 40) rotationDir *= -1;
-    } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
-               mouseUp.clientY < mouseDown.clientY - 40) {
-      startPos = new THREE.Vector3(
-        clickedCube.position.x,
-        cubeStartPos + 200,
-        cubeStartPos
-      );
-      rayDir = new THREE.Vector3(0, -1, 0);
-      rotationAxis = 'x';
-      if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
-    }
-
-    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
-    rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
-    }
-    scene.add(rotatingFace);
-    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
-  };
-
-  EventHandler.prototype._clickRightFace = function (clickedCube, mouseDown, mouseUp) {
-    var startPos, rayDir, cubesToRotate, rotatingFace, rotationAxis;
-    var sliceDir = { axis: 'x', mag: -1 }
-    var rotationDir = -1;
-
-    if (mouseUp.clientX > mouseDown.clientX + 40 ||
-        mouseUp.clientX < mouseDown.clientX - 40) {
-      startPos = new THREE.Vector3(
-        clickedCube.position.x,
-        clickedCube.position.y,
-        cubeStartPos + 200
-      );
-      rayDir = new THREE.Vector3(0, 0, -1);
-      rotationAxis = 'y';
-      if (mouseUp.clientX > mouseDown.clientX + 40) rotationDir *= -1;
-    } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
-               mouseUp.clientY < mouseDown.clientY - 40) {
-      startPos = new THREE.Vector3(
-        clickedCube.position.x,
-        cubeStartPos + 200,
-        clickedCube.position.z
-      );
-      rayDir = new THREE.Vector3(0, -1, 0);
-      rotationAxis = 'z';
-      if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
-    }
-
-    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
-    rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
-    }
-    scene.add(rotatingFace);
-    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
-  };
-
   EventHandler.prototype._getIntersects = function (event) {
     var canvasBox = renderer.domElement.getBoundingClientRect();
     var canvasMouseX = event.clientX - canvasBox.left;
@@ -485,6 +408,41 @@
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
     return raycaster.intersectObjects(scene.children);
+  };
+
+  EventHandler.prototype._mouseUp = function (clickedCube, normal, mouseDown, mouseUp) {
+    var axes = ['x', 'z', 'y'];
+    axes.splice(axes.indexOf(normal), 1);
+
+    var startPos = clickedCube.position.clone();
+    var rayDir = new THREE.Vector3();
+    var sliceDir = { axis: normal, mag: -1 }
+    var rotationDir = 1;
+    var cubesToRotate, rotatingFace, rotationAxis;
+
+    if (mouseUp.clientX > mouseDown.clientX + 40 ||
+        mouseUp.clientX < mouseDown.clientX - 40) {
+      startPos[axes[0]] = cubeStartPos + 200;
+      rayDir[axes[0]] = -1;
+      rotationAxis = axes[1];
+      if (mouseUp.clientX < mouseDown.clientX - 40) rotationDir *= -1;
+      if (normal === 'y') rotationDir *= -1;
+    } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
+               mouseUp.clientY < mouseDown.clientY - 40) {
+      startPos[axes[1]] += 200;
+      rayDir[axes[1]] = -1;
+      rotationAxis = axes[0];
+      if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
+      if (normal === 'x') rotationDir *= -1;
+    }
+
+    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
+    rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < cubesToRotate.length; i++) {
+      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
+    }
+    scene.add(rotatingFace);
+    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
@@ -500,42 +458,6 @@
     if (mouseUp.clientY < mouseDown.clientY - 40) {
       this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
     }
-  };
-
-  EventHandler.prototype._clickUpFace = function (clickedCube, mouseDown, mouseUp) {
-    var startPos, rayDir, cubesToRotate, rotatingFace, rotationAxis;
-    var sliceDir = { axis: 'y', mag: -1 }
-    var rotationDir = -1;
-
-    if (mouseUp.clientX > mouseDown.clientX + 40 ||
-        mouseUp.clientX < mouseDown.clientX - 40) {
-      startPos = new THREE.Vector3(
-        cubeStartPos + 200,
-        clickedCube.position.y,
-        clickedCube.position.z
-      );
-      rayDir = new THREE.Vector3(-1, 0, 0);
-      rotationAxis = 'z';
-      if (mouseUp.clientX < mouseDown.clientX - 40) rotationDir *= -1;
-    } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
-               mouseUp.clientY < mouseDown.clientY - 40) {
-      startPos = new THREE.Vector3(
-        clickedCube.position.x,
-        clickedCube.position.y,
-        cubeStartPos + 200
-      );
-      rayDir = new THREE.Vector3(0, 0, -1);
-      rotationAxis = 'x';
-      if (mouseUp.clientY > mouseDown.clientY + 40) rotationDir *= -1;
-    }
-
-    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
-    rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
-    }
-    scene.add(rotatingFace);
-    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
   };
 
   EventHandler.prototype._showCorrectMove = function (keyPressed) {
