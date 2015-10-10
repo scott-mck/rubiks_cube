@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Rubik's Cube</title>
+		<link rel=StyleSheet href="style.css" type="text/css">
+		<script src="./jquery-2.1.4.min.js"></script>
+		<script src="./three.min.js"></script>
+		<script type="application/javascript" src="5x5_globals.js"></script>
+		<script type="application/javascript" src="init.js"></script>
+		<script type="application/javascript" src="addEvents.js"></script>
+		<script type="application/javascript" src="rubiks_cube.js"></script>
+		<script type="application/javascript" src="event_handler.js"></script>
+	</head>
+	<body>
+		<div id="canvas"></div>
+
+		<div id="sidebar">
+			<div class="title">
+				Rubik's Cube
+			</div>
+			<div class="instructions">
+
+				<div class="section">MOUSE INSTRUCTIONS</div>
+				Click and Drag.
+
+				<div class="section">KEYBOARD INSTRUCTIONS</div>
+				<p><div class="left">i, k</div>-- move right face</p>
+				<p><div class="left">f, j</div>-- move up face</p>
+				<p><div class="left">e, d</div>-- move left face</p>
+				<p><div class="left">s, l</div>-- move down face</p>
+				<p><div class="left">g, h</div>-- move front face</p>
+				<p><div class="left">q, p</div>-- move back face</p>
+				<p><div class="left">u, m</div>-- move middle right face</p>
+				<p><div class="left">r, c</div>-- move middle left face</p>
+				<p><div class="left">a</div>-- look left</p>
+				<p><div class="left">;</div>-- look right</p>
+				<p><div class="left">y</div>-- look down</p>
+				<p><div class="left">n</div>-- look up</p>
+
+				<br>
+				<p><div class="left">Space</div> -- scramble / solve</p>
+				<p><div class="left">Enter</div> -- display solve moves</p>
+			</div>
+
+			<div class="scramble button">Scramble</div>
+			<!-- <div class="sample button">Example solve</div> -->
+			<div class="timer">0.00</div>
+
+			<div class="solve-moves list"></div>
+			<div class="undo-moves list"></div>
+		</div>
+
+		<script>
+			var canvasWidth = $('#canvas').width();
+			var canvasHeight = $('#canvas').height();
+			var camera, scene, renderer;
+			var cubes = [];
+			var rubiksCube, eventHandler;
+
+			init();
+			addEvents();
+			animate();
+			function animate () {
+				requestAnimationFrame(animate);
+				renderer.render(scene, camera);
+			}
+		</script>
+	</body>
+</html>
