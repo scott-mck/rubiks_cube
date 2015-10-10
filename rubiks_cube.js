@@ -15,8 +15,8 @@
       axis: 'x',
       vector: {
         startPos: new THREE.Vector3(startPos, startPos, (startPos + 100)),
-        direction: new THREE.Vector3(0, 0, -1),
-        changePosAxis: ['y', -1]
+        rayDir: new THREE.Vector3(0, 0, -1),
+        sliceDir: { axis: 'y', mag: -1 } // TODO: make this a vector
       },
       dir: -1,
       middle: 'm'
@@ -27,8 +27,8 @@
       axis: 'x',
       vector: {
         startPos: new THREE.Vector3(-startPos, startPos, -(startPos + 100)),
-        direction: new THREE.Vector3(0, 0, 1),
-        changePosAxis: ['y', -1]
+        rayDir: new THREE.Vector3(0, 0, 1),
+        sliceDir: { axis: 'y', mag: -1 }
       },
       dir: 1,
       middle: 'm'
@@ -39,8 +39,8 @@
       axis: 'y',
       vector: {
         startPos: new THREE.Vector3(-(startPos + 100), startPos, -startPos),
-        direction: new THREE.Vector3(1, 0, 0),
-        changePosAxis: ['z', 1]
+        rayDir: new THREE.Vector3(1, 0, 0),
+        sliceDir: { axis: 'z', mag: 1 }
       },
       dir: -1,
       middle: 'e'
@@ -51,8 +51,8 @@
       axis: 'y',
       vector: {
         startPos: new THREE.Vector3(-(startPos + 100), -startPos, startPos),
-        direction: new THREE.Vector3(1, 0, 0),
-        changePosAxis: ['z', -1]
+        rayDir: new THREE.Vector3(1, 0, 0),
+        sliceDir: { axis: 'z', mag: -1 }
       },
       dir: 1,
       middle: 'e'
@@ -63,8 +63,8 @@
       axis: 'z',
       vector: {
         startPos: new THREE.Vector3((startPos + 100), startPos, -startPos),
-        direction: new THREE.Vector3(-1, 0, 0),
-        changePosAxis: ['y', -1]
+        rayDir: new THREE.Vector3(-1, 0, 0),
+        sliceDir: { axis: 'y', mag: -1 }
       },
       dir: 1,
       middle: 's'
@@ -75,8 +75,8 @@
       axis: 'z',
       vector: {
         startPos: new THREE.Vector3(-(startPos + 100), startPos, startPos),
-        direction: new THREE.Vector3(1, 0, 0),
-        changePosAxis: ['y', -1]
+        rayDir: new THREE.Vector3(1, 0, 0),
+        sliceDir: { axis: 'y', mag: -1 }
       },
       dir: -1,
       middle: 's'
@@ -87,8 +87,8 @@
       axis: 'x',
       vector: {
         startPos: new THREE.Vector3(0, startPos, (startPos + 100)),
-        direction: new THREE.Vector3(0, 0, -1),
-        changePosAxis: ['y', -1]
+        rayDir: new THREE.Vector3(0, 0, -1),
+        sliceDir: { axis: 'y', mag: -1 }
       },
       dir: 1
     };
@@ -98,8 +98,8 @@
       axis: 'y',
       vector: {
         startPos: new THREE.Vector3(-startPos, 0, (startPos + 100)),
-        direction: new THREE.Vector3(0, 0, -1),
-        changePosAxis: ['x', 1]
+        rayDir: new THREE.Vector3(0, 0, -1),
+        sliceDir: { axis: 'x', mag: 1 }
       },
       dir: 1
     };
@@ -109,8 +109,8 @@
       axis: 'z',
       vector: {
         startPos: new THREE.Vector3((startPos + 100), startPos, 0),
-        direction: new THREE.Vector3(-1, 0, 0),
-        changePosAxis: ['y', -1]
+        rayDir: new THREE.Vector3(-1, 0, 0),
+        sliceDir: { axis: 'y', mag: -1 }
       },
       dir: -1
     };
@@ -218,7 +218,7 @@
   };
 
   rubiksCube.prototype.getColorsOfFace = function (face) {
-    var cubesToRotate = this._captureCubes(face);
+    var cubesToRotate = this.captureCubes(face);
     var point = new THREE.Vector3();
     var cube, dir, ray, intersects;
     var colors = [];
@@ -267,14 +267,37 @@
       }
 
       if (['m', 'e', 's'].indexOf(face) > -1 && cubieSize % 2 === 0) {
-        cubesToRotate = this._captureCubes(face, cubieSize / 2);
-        moreCubesToRotate = this._captureCubes(face, -cubieSize / 2);
+        var rightMiddle = this[face].vector.startPos.clone();
+        var leftMiddle = this[face].vector.startPos.clone();
+        rightMiddle[this[face].axis] += cubieSize * this[face].dir;
+        leftMiddle[this[face].axis] -= cubieSize * this[face].dir;
+
+        cubesToRotate = this.captureCubes(
+          rightMiddle,
+          this[face].vector.rayDir,
+          this[face].vector.sliceDir
+        );
+        moreCubesToRotate = this.captureCubes(
+          leftMiddle,
+          this[face].vector.rayDir,
+          this[face].vector.sliceDir
+        );
         cubesToRotate = cubesToRotate.concat(moreCubesToRotate);
       } else {
-        cubesToRotate = this._captureCubes(face);
-        var doubleCubes;
+        cubesToRotate = this.captureCubes(
+          this[face].vector.startPos.clone(),
+          this[face].vector.rayDir,
+          this[face].vector.sliceDir
+        );
         if (name.indexOf('Double') > -1) {
-          doubleCubes = this._captureCubes(face, cubieSize);
+          var startPos = this[face].vector.startPos.clone();
+          startPos[this[face].axis] += cubieSize * this[face].dir;
+          var doubleCubes = this.captureCubes(
+            startPos,
+            this[face].vector.rayDir,
+            this[face].vector.sliceDir
+          );
+
           if (doubleInclusive) {
             cubesToRotate = cubesToRotate.concat(doubleCubes);
           } else {
@@ -282,7 +305,6 @@
           }
         }
       }
-
     }
 
     var rotatingFace = new THREE.Object3D();
@@ -344,21 +366,17 @@
     return uString + rString + fString + dString + lString + bString;
   };
 
-  rubiksCube.prototype._captureCubes = function (face, offsetMag) {
-    offsetMag = offsetMag || 0;
+  rubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
     var allCaptures = [];
     var capturedCubes = [];
-    var dir = this[face].vector.direction;
-    var pos = this[face].vector.startPos.clone();
-    pos[this[face].axis] += offsetMag * this[face].dir;
     var raycaster;
 
     for (var i = 0; i < cubeDimensions; i++) {
-      raycaster = new THREE.Raycaster(pos, dir);
+      raycaster = new THREE.Raycaster(startPos, rayDir);
       allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
 
-      var newPos = (cubieSize + cubieOffset) * this[face].vector.changePosAxis[1];
-      pos[this[face].vector.changePosAxis[0]] += newPos;
+      var newPos = (cubieSize + cubieOffset) * sliceDir.mag;
+      startPos[sliceDir.axis] += newPos;
     }
 
     for (var i = 0; i < allCaptures.length; i++) {
