@@ -253,13 +253,15 @@
 
     for (var i = 0; i < cubesToRotate.length; i++) {
       cubePos = cubesToRotate[i].position.clone();
-      // point the ray at a cubie, but at a point slightly closer to scene center
-      // this seems to avoid hitting edge helpers
       cubePos.sub(cubePos.clone().normalize().multiplyScalar(10));
       dir = cubePos.sub(point).normalize();
       ray = new THREE.Raycaster(point, dir);
       intersects = ray.intersectObjects(scene.children);
-      colors.push(intersects[0].face.color);
+
+      for (var j = 0; j < intersects.length; j++) {
+        if (intersects[0].object.name === "cubie")
+        colors.push(intersects[0].face.color);
+      }
     }
 
     return colors;
