@@ -261,6 +261,7 @@
       for (var j = 0; j < intersects.length; j++) {
         if (intersects[0].object.name === "cubie")
         colors.push(intersects[0].face.color);
+        break;
       }
     }
 
