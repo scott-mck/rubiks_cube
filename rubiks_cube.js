@@ -218,7 +218,11 @@
   };
 
   rubiksCube.prototype.getColorsOfFace = function (face) {
-    var cubesToRotate = this.captureCubes(face);
+    var cubesToRotate = this.captureCubes(
+      this[face].vector.startPos.clone(),
+      this[face].vector.rayDir,
+      this[face].vector.sliceDir
+    );
     var point = new THREE.Vector3();
     var cube, dir, ray, intersects;
     var colors = [];
