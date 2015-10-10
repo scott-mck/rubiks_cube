@@ -14,7 +14,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(startPos, startPos, (startPos + 100)),
+        startPos: new THREE.Vector3(cubeStartPos, cubeStartPos, (cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, -1),
         sliceDir: { axis: 'y', mag: -1 } // TODO: make this a vector
       },
@@ -26,7 +26,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(-startPos, startPos, -(startPos + 100)),
+        startPos: new THREE.Vector3(-cubeStartPos, cubeStartPos, -(cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, 1),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -38,7 +38,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-(startPos + 100), startPos, -startPos),
+        startPos: new THREE.Vector3(-(cubeStartPos + 100), cubeStartPos, -cubeStartPos),
         rayDir: new THREE.Vector3(1, 0, 0),
         sliceDir: { axis: 'z', mag: 1 }
       },
@@ -50,7 +50,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-(startPos + 100), -startPos, startPos),
+        startPos: new THREE.Vector3(-(cubeStartPos + 100), -cubeStartPos, cubeStartPos),
         rayDir: new THREE.Vector3(1, 0, 0),
         sliceDir: { axis: 'z', mag: -1 }
       },
@@ -62,7 +62,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3((startPos + 100), startPos, -startPos),
+        startPos: new THREE.Vector3((cubeStartPos + 100), cubeStartPos, -cubeStartPos),
         rayDir: new THREE.Vector3(-1, 0, 0),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -74,7 +74,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3(-(startPos + 100), startPos, startPos),
+        startPos: new THREE.Vector3(-(cubeStartPos + 100), cubeStartPos, cubeStartPos),
         rayDir: new THREE.Vector3(1, 0, 0),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -86,7 +86,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(0, startPos, (startPos + 100)),
+        startPos: new THREE.Vector3(0, cubeStartPos, (cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, -1),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -97,7 +97,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-startPos, 0, (startPos + 100)),
+        startPos: new THREE.Vector3(-cubeStartPos, 0, (cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, -1),
         sliceDir: { axis: 'x', mag: 1 }
       },
@@ -108,7 +108,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3((startPos + 100), startPos, 0),
+        startPos: new THREE.Vector3((cubeStartPos + 100), cubeStartPos, 0),
         rayDir: new THREE.Vector3(-1, 0, 0),
         sliceDir: { axis: 'y', mag: -1 }
       },
