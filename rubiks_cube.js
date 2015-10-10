@@ -270,7 +270,7 @@
         dir *= -1;
       }
 
-      if (['m', 'e', 's'].indexOf(face) > -1 && cubieSize % 2 === 0) {
+      if (['m', 'e', 's'].indexOf(face) > -1 && cubeDimensions % 2 === 0) {
         var rightMiddle = this[face].vector.startPos.clone();
         var leftMiddle = this[face].vector.startPos.clone();
         rightMiddle[this[face].axis] += cubieSize * this[face].dir;
