@@ -14,4 +14,5 @@
     'rDouble', 'rDoublePrime', 'lDouble', 'lDoublePrime',
     'right', 'left', 'up', 'down'
   ];
+  scrambleLength = 50;
 })();
