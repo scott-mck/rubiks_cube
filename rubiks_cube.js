@@ -229,7 +229,7 @@
 
     for (var i = 0; i < cubesToRotate.length; i++) {
       cube = cubesToRotate[i].position;
-      point[this[face].axis] = (startPos + 300) * -  this[face].dir;
+      point[this[face].axis] = (cubeStartPos + 300) * -  this[face].dir;
       dir = cube.clone().sub(point).normalize();
       ray = new THREE.Raycaster(point, dir);
       intersects = ray.intersectObjects(scene.children);
