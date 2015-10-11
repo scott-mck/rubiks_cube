@@ -8,9 +8,5 @@
   cameraZ = -100;
 
   doubleInclusive = true;
-  sizeSpecificScrambles = [
-    'rDouble', 'rDoublePrime', 'lDouble', 'lDoublePrime',
-    'right', 'left', 'up', 'down'
-  ];
   scrambleLength = 70;
 })();

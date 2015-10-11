@@ -114,11 +114,6 @@
       },
       dir: -1
     };
-
-    this.possibleMoves = [
-      'r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd', 'dPrime', 'f', 'fPrime',
-      'd', 'dPrime', 'b', 'bPrime'
-    ].concat(sizeSpecificScrambles);
   };
 
   Game.Cube.moveToKeyMap = {
