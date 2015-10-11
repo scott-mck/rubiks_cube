@@ -1,8 +1,8 @@
 (function () {
-  cubieSize = 100;
+  cubieSize = 40;
   cubieOffset = 3;
   cubeDimensions = 3;
-  cubeStartPos = (2/2) * (cubieSize + cubieOffset);
+  cubeStartPos = ((cubeDimensions - 1)/2) * (cubieSize + cubieOffset);
   cameraX = 250;
   cameraY = 300;
   cameraZ = -100;
