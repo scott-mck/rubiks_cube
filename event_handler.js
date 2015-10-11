@@ -139,7 +139,11 @@
           this.solve();
         } else {
           $('.scramble').addClass('solve');
-          this.scramble();
+          if (cubeDimensions <= 5) {
+            this.scramble();
+          } else {
+            this.scrambleForBigCubes();
+          }
         }
         break;
       case 'a':
@@ -312,6 +316,33 @@
   };
 
   EventHandler.prototype.scramble = function () {
+    if (this._sampling) {
+      return;
+    }
+    this.hideSolveMoves();
+    $('.timer').text('0.00').css('color', 'white');
+    $('.scramble').addClass('solve').html('Solve');
+
+    var prevMove = ''; // no two scramble moves are the same
+    var oppositeMove = ''; // no two scramble moves cancel out
+
+    for (var i = 0; i < scrambleLength; i++) {
+      // Get random move, make sure no two in a row are the same
+      var randMove = this.cube.randomMove();
+      while (randMove === oppositeMove || randMove === prevMove) {
+        randMove = this.cube.randomMove();
+      }
+      this._eventLoop.push(this.cube.move.bind(this.cube, randMove));
+      prevMove = randMove;
+      oppositeMove = this.cube.oppositeMove(randMove);
+
+      this.scrambleMoves.push(oppositeMove);
+    }
+    this.scrambled = true;
+    this.cube.isSolved = false;
+  };
+
+  EventHandler.prototype.scrambleForBigCubes = function () {
     if (this._sampling) {
       return;
     }
