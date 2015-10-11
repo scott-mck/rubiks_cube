@@ -8,7 +8,7 @@
   }
 
   var EventHandler = window.Game.EventHandler = function (cube) {
-    this._cube = cube;
+    this.cube = cube;
     this._eventLoop = [];
     this.scrambleMoves = [];
     this.scrambled = false;
@@ -84,13 +84,10 @@
       var normalVector = new THREE.Matrix4().extractRotation(clickedCube.matrixWorld)
         .multiplyVector3(intersects[0].face.normal.clone());
       var normal;
-      if (normalVector.x === 1) {
-        normal = 'x';
-      } else if (normalVector.y === 1) {
-        normal = 'y'
-      } else if (normalVector.z === 1) {
-        normal = 'z';
-      }
+      if (normalVector.x === 1) normal = 'x';
+      else if (normalVector.y === 1) normal = 'y';
+      else if (normalVector.z === 1) normal = 'z';
+
       mouseUpFn = function (mouseUp) {
         this._mouseUp(clickedCube, normal, mouseDown, mouseUp);
       };
@@ -127,7 +124,7 @@
       (key.keyCode >= 80 && key.keyCode <= 85)) ) {
         this.startTimer();
     }
-    if (this._cube.isSolved) {
+    if (this.cube.isSolved) {
       this.hideSolveMoves();
     }
 
@@ -147,133 +144,133 @@
         break;
       case 'a':
         var fn = 'left';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'c':
         var fn = 'lDouble';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'd':
         var fn = 'l';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'e':
         var fn = 'lPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'f':
         var fn = 'uPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'g':
         var fn = 'fPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'h':
         var fn = 'f';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'i':
         var fn = 'r';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'j':
         var fn = 'u';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'k':
         var fn = 'rPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'l':
         var fn = 'dPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'm':
         var fn = 'rDoublePrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'n':
         var fn = 'up';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'o':
         var fn = 's';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'p':
         var fn = 'bPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'q':
         var fn = 'b';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'r':
         var fn = 'lDoublePrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 's':
         var fn = 'd';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 't':
         var fn = 'mPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'u':
         var fn = 'rDouble';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'v':
         var fn = 'm';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'w':
         var fn = 'sPrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'y':
         var fn = 'down';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case 'z':
         var fn = 'e';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case ';':
         var fn = 'right';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       case '/':
         var fn = 'ePrime';
-        this._eventLoop.push(this._cube.move.bind(this._cube, fn));
-        this.scrambleMoves.push(this._cube.oppositeMove(fn));
+        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+        this.scrambleMoves.push(this.cube.oppositeMove(fn));
         break;
       }
     this.checkCorrectMove(keyPressed);
@@ -295,7 +292,7 @@
     var solve = ' ;; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
     for (var i = 0; i < scramble.length; i++) {
       this._eventLoop.push(
-        this._cube.move.bind(this._cube, Game.Cube.keyToMoveMap[scramble[i]])
+        this.cube.move.bind(this.cube, Game.Cube.keyToMoveMap[scramble[i]])
       );
     }
 
@@ -304,7 +301,7 @@
         this._eventLoop.push(this._sleep.bind(this, 400));
       } else {
         this._eventLoop.push(
-          this._cube.move.bind(this._cube, Game.Cube.keyToMoveMap[solve[i]])
+          this.cube.move.bind(this.cube, Game.Cube.keyToMoveMap[solve[i]])
         );
       }
     }
@@ -318,34 +315,25 @@
     if (this._sampling) {
       return;
     }
+    this.scrambled = true;
+    this.cube.isSolved = false;
     this.hideSolveMoves();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Solve');
 
-    var prevMove = ''; // no two scramble moves are the same
-    var oppositeMove = ''; // no two scramble moves cancel out
-
+    // TODO: don't allow moves that cancel each other out
     for (var i = 0; i < scrambleLength; i++) {
-      // Get random move, make sure no two in a row are the same
-      var randMove = this._cube.randomMove();
-      while (randMove === oppositeMove || randMove === prevMove) {
-        randMove = this._cube.randomMove();
-      }
-      this._eventLoop.push(this._cube.move.bind(this._cube, randMove));
-      prevMove = randMove;
-      oppositeMove = this._cube.oppositeMove(randMove);
-
-      this.scrambleMoves.push(oppositeMove);
+      this._eventLoop.push(function () {
+        this.cube.randomMove();
+      }.bind(this));
     }
-    this.scrambled = true;
-    this._cube.isSolved = false;
   };
 
   EventHandler.prototype.solve = function () {
     this.scrambled = false;
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
-      this._eventLoop.push(this._cube.move.bind(this._cube, fn));
+      this._eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
     this.scrambleMoves = [];
     $('.scramble').removeClass('solve').html('Scramble');
@@ -367,16 +355,16 @@
   };
 
   EventHandler.prototype.triggerEvent = function () {
-    if (this._cube.isSolved && this._timing) {
+    if (this.cube.isSolved && this._timing) {
       this.stopTimer();
       this._eventLoop = [];
       this.scrambleMoves = [];
       this.startTime = undefined;
     }
-    if (!this._cube.animating && this._eventLoop.length > 0) {
+    if (!this.cube.animating && this._eventLoop.length > 0) {
       this._eventLoop.shift()();
     }
-    if (this._cube.isSolved) {
+    if (this.cube.isSolved) {
       this.scrambleMoves = [];
       $('.solve-moves span').css('color', 'gold');
     }
@@ -436,33 +424,33 @@
       if (normal === 'x') rotationDir *= -1;
     }
 
-    cubesToRotate = this._cube.captureCubes(startPos, rayDir, sliceDir);
+    cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
     rotatingFace = new THREE.Object3D();
     for (var i = 0; i < cubesToRotate.length; i++) {
       THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
     }
     scene.add(rotatingFace);
-    this._cube.animate(rotatingFace, rotationAxis, rotationDir);
+    this.cube.animate(rotatingFace, rotationAxis, rotationDir);
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
     if (mouseUp.clientX < mouseDown.clientX - 40) {
-      this._eventLoop.push(this._cube.move.bind(this._cube, 'right'));
+      this._eventLoop.push(this.cube.move.bind(this.cube, 'right'));
     }
     if (mouseUp.clientX > mouseDown.clientX + 40) {
-      this._eventLoop.push(this._cube.move.bind(this._cube, 'left'));
+      this._eventLoop.push(this.cube.move.bind(this.cube, 'left'));
     }
     if (mouseUp.clientY > mouseDown.clientY + 40) {
-      this._eventLoop.push(this._cube.move.bind(this._cube, 'up'));
+      this._eventLoop.push(this.cube.move.bind(this.cube, 'up'));
     }
     if (mouseUp.clientY < mouseDown.clientY - 40) {
-      this._eventLoop.push(this._cube.move.bind(this._cube, 'down'));
+      this._eventLoop.push(this.cube.move.bind(this.cube, 'down'));
     }
   };
 
   EventHandler.prototype._showCorrectMove = function (keyPressed) {
     var fn = Game.Cube.keyToMoveMap[keyPressed];
-    var oppFn = this._cube.oppositeMove(fn);
+    var oppFn = this.cube.oppositeMove(fn);
 
     if (fn === 'right') {
       oppFn = 'left';
