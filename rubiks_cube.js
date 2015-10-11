@@ -114,6 +114,12 @@
       },
       dir: -1
     };
+
+    this.possibleMoves = [
+      'r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd', 'dPrime', 'f', 'fPrime',
+      'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime', 'rDouble',
+      'rDoublePrime', 'lDouble', 'lDoublePrime'
+    ];
   };
 
   Game.Cube.moveToKeyMap = {
@@ -362,6 +368,10 @@
   };
 
   rubiksCube.prototype.randomMove = function () {
+    if (cubeDimensions <= 5) {
+      var randIndex = ~~(Math.random() * (this.possibleMoves.length - 1));
+      return this.possibleMoves[randIndex];
+    }
     var sliceDir, cubesToRotate, rotatingFace, rotationAxis, rotationDir;
     var axes = ['x', 'z', 'y'];
     var startPos = new THREE.Vector3();
@@ -390,7 +400,6 @@
     scene.add(rotatingFace);
     rotationDir = Math.random() < .5 ? -1 : 1;
     this.animate(rotatingFace, rotationAxis, rotationDir);
-    // return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
   rubiksCube.prototype.solve = function () {
