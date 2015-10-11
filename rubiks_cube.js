@@ -181,6 +181,7 @@
 
   rubiksCube.prototype.animate = function (rotatingFace, axis, dir) {
     // rotatingFace is an Object3D parent containing all cubes on a given face
+    this.animating = true;
     var id = requestAnimationFrame(function () {
       this.animate(rotatingFace, axis, dir);
       renderer.render(scene, camera);
@@ -196,6 +197,8 @@
   };
 
   rubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
+    startPos = startPos.clone();
+    rayDir = rayDir.clone();
     var allCaptures = [];
     var capturedCubes = [];
     var raycaster;
@@ -270,7 +273,6 @@
 
   rubiksCube.prototype.move = function (name) {
     this.isSolved = false;
-    this.animating = true;
 
     var axis, resetCallback;
     var dir = 1;
@@ -365,7 +367,35 @@
   };
 
   rubiksCube.prototype.randomMove = function () {
-    return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
+    var sliceDir, cubesToRotate, rotatingFace, rotationAxis, rotationDir;
+    var axes = ['x', 'z', 'y'];
+    var startPos = new THREE.Vector3();
+    var rayDir = new THREE.Vector3();
+
+    var randNormal = axes[~~(Math.random() * axes.length)]; // 'z'
+    axes.splice(axes.indexOf(randNormal), 1);
+    sliceDir = { axis: randNormal, mag: -1 }
+
+    var randAxis = axes[~~(Math.random() * axes.length)]; // 'y'
+    axes.splice(axes.indexOf(randAxis), 1);
+    rayDir[axes[0]] = -1;
+    rotationAxis = randAxis;
+
+    // ray starts at a cubie position
+    var randCubie = ~~(Math.random() * cubeDimensions); // 0, 1, 2, etc.
+    startPos[randAxis] = (cubeStartPos) - (randCubie * (cubieSize + cubieOffset));
+    startPos[axes[0]] = cubeStartPos + 200;
+    startPos[randNormal] = cubeStartPos;
+
+    cubesToRotate = this.captureCubes(startPos, rayDir, sliceDir);
+    rotatingFace = new THREE.Object3D();
+    for (var j = 0; j < cubesToRotate.length; j++) {
+      THREE.SceneUtils.attach(cubesToRotate[j], scene, rotatingFace);
+    }
+    scene.add(rotatingFace);
+    rotationDir = Math.random() < .5 ? -1 : 1;
+    this.animate(rotatingFace, rotationAxis, rotationDir);
+    // return this.possibleMoves[~~(Math.random() * this.possibleMoves.length)];
   };
 
   rubiksCube.prototype.solve = function () {
