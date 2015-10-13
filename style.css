@@ -1,8 +1,3 @@
-@font-face {
-  font-family: "AMC";
-  src: url("./AMC.ttf") format("truetype");
-}
-
 body {
   z-index: -2;
   position: relative;
@@ -11,6 +6,55 @@ body {
   height: 100%;
   background-color: #000000;
   overflow: hidden;
+}
+
+.backdrop {
+  z-index: 100;
+  transition: 300ms;
+  position: absolute;
+  width: 3000px;
+  height: 3000px;
+  background-color: black;
+  opacity: 0;
+}
+
+.backdrop.transition {
+  opacity: .5;
+}
+
+.select {
+  opacity: 0;
+  transition: 300ms;
+  z-index: 1000;
+  position: absolute;
+  width: 400px;
+  background: white;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 2px;
+  font-family: 'AMC', sans-serif;
+  text-align: center;
+}
+
+.select.show {
+  opacity: 1;
+  margin-top: 30px;
+}
+
+.select .cube-size {
+  width: 100px;
+  margin: 10px auto;
+  font-size: 3.5vh;
+  list-style-type: none;
+  padding: 10px;
+}
+
+.select .cube-size:hover {
+  cursor: pointer;
+  background-color: gainsboro;
+  border-radius: 3px;
 }
 
 #canvas {
