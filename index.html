@@ -5,13 +5,25 @@
 		<link rel=StyleSheet href="style.css" type="text/css">
 		<script src="./jquery-2.1.4.min.js"></script>
 		<script src="./three.min.js"></script>
-		<script type="application/javascript" src="3x3_globals.js"></script>
 		<script type="application/javascript" src="init.js"></script>
 		<script type="application/javascript" src="addEvents.js"></script>
 		<script type="application/javascript" src="rubiks_cube.js"></script>
 		<script type="application/javascript" src="event_handler.js"></script>
 	</head>
 	<body>
+		<div class="backdrop"></div>
+		<div class="select">
+			<h1>Select cube size</h1>
+				<div id="2" class="cube-size">2x2x2</div>
+				<div id="3" class="cube-size">3x3x3</div>
+				<div id="4" class="cube-size">4x4x4</div>
+				<div id="5" class="cube-size">5x5x5</div>
+				<div id="6" class="cube-size">6x6x6</div>
+				<div id="7" class="cube-size">7x7x7</div>
+				<div id="8" class="cube-size">8x8x8</div>
+				<div id="9" class="cube-size">9x9x9</div>
+		</div>
+
 		<div id="canvas"></div>
 
 		<div id="sidebar">
@@ -49,19 +61,26 @@
 		</div>
 
 		<script>
-			var canvasWidth = $('#canvas').width();
-			var canvasHeight = $('#canvas').height();
-			var camera, scene, renderer;
-			var cubes = [];
-			var rubiksCube, eventHandler;
+			$(document).ready(function () {
+				setTimeout(function () {
+					$('.backdrop').addClass('transition');
+					$('.select').addClass('show');
+				}, 200);
 
-			init();
-			addEvents();
-			animate();
-			function animate () {
-				requestAnimationFrame(animate);
-				renderer.render(scene, camera);
-			}
+				$('.cube-size').click(function (event) {
+					$('.select').removeClass('show');
+					$('.select').one('transitionend', function () {
+						$('.select').remove();
+						$('.backdrop').removeClass('transition');
+						$('.backdrop').one('transitionend', function () {
+							$('.backdrop').remove();
+						});
+					});
+
+					var dimensions = parseInt($(event.currentTarget).attr('id'));
+					init(dimensions);
+				});
+			});
 		</script>
 	</body>
 </html>
