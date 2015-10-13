@@ -7,8 +7,11 @@
     window.Game = {};
   }
 
-  var EventHandler = window.Game.EventHandler = function (cube) {
+  var EventHandler = window.Game.EventHandler = function (scene, camera, cube, renderer) {
+    this.scene = scene;
+    this.camera = camera;
     this.cube = cube;
+    this.renderer = renderer;
     this._eventLoop = [];
     this.scrambleMoves = [];
     this.scrambled = false;
@@ -326,7 +329,7 @@
     var prevMove = ''; // no two scramble moves are the same
     var oppositeMove = ''; // no two scramble moves cancel out
 
-    for (var i = 0; i < scrambleLength; i++) {
+    for (var i = 0; i < window.scrambleLength; i++) {
       // Get random move, make sure no two in a row are the same
       var randMove = this.cube.randomMove();
       while (randMove === oppositeMove || randMove === prevMove) {
@@ -353,7 +356,7 @@
     $('.scramble').addClass('solve').html('Solve');
 
     // TODO: don't allow moves that cancel each other out
-    for (var i = 0; i < scrambleLength; i++) {
+    for (var i = 0; i < window.scrambleLength; i++) {
       this._eventLoop.push(function () {
         this.cube.randomMove();
       }.bind(this));
@@ -417,16 +420,16 @@
   };
 
   EventHandler.prototype._getIntersects = function (event) {
-    var canvasBox = renderer.domElement.getBoundingClientRect();
+    var canvasBox = this.renderer.domElement.getBoundingClientRect();
     var canvasMouseX = event.clientX - canvasBox.left;
     var canvasMouseY = event.clientY - canvasBox.top;
 
     var mouse = new THREE.Vector2();
-    mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1;
+    mouse.x = (canvasMouseX / this.renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(canvasMouseY / this.renderer.domElement.clientHeight) * 2 + 1;
     var raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, camera);
-    return raycaster.intersectObjects(scene.children);
+    raycaster.setFromCamera(mouse, this.camera);
+    return raycaster.intersectObjects(this.scene.children);
   };
 
   EventHandler.prototype._mouseUp = function (clickedCube, normal, mouseDown, mouseUp) {
@@ -441,14 +444,14 @@
 
     if (mouseUp.clientX > mouseDown.clientX + 40 ||
         mouseUp.clientX < mouseDown.clientX - 40) {
-      startPos[axes[0]] = cubeStartPos + 200;
+      startPos[axes[0]] = window.cubeStartPos + 200;
       rayDir[axes[0]] = -1;
       rotationAxis = axes[1];
       if (mouseUp.clientX < mouseDown.clientX - 40) rotationDir *= -1;
       if (normal === 'y') rotationDir *= -1;
     } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
                mouseUp.clientY < mouseDown.clientY - 40) {
-      startPos[axes[1]] = cubeStartPos + 200;
+      startPos[axes[1]] = window.cubeStartPos + 200;
       rayDir[axes[1]] = -1;
       rotationAxis = axes[0];
       if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
@@ -458,9 +461,9 @@
     cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
     rotatingFace = new THREE.Object3D();
     for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
+      THREE.SceneUtils.attach(cubesToRotate[i], this.scene, rotatingFace);
     }
-    scene.add(rotatingFace);
+    this.scene.add(rotatingFace);
     this.cube.animate(rotatingFace, rotationAxis, rotationDir);
   };
 
