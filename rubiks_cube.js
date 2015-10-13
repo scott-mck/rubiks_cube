@@ -5,8 +5,11 @@
     window.Game = {};
   }
 
-  var rubiksCube = window.Game.Cube = function (scene, camera, cubes) {
+  var rubiksCube = window.Game.Cube = function (scene, camera, cubes, renderer) {
+    this.scene = scene;
+    this.camera = camera;
     this.cubes = cubes;
+    this.renderer = renderer;
     this.animating = false;
     this.isSolved = false;
 
@@ -14,7 +17,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(cubeStartPos, cubeStartPos, (cubeStartPos + 100)),
+        startPos: new THREE.Vector3(window.cubeStartPos, window.cubeStartPos, (window.cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, -1),
         sliceDir: { axis: 'y', mag: -1 } // TODO: make this a vector
       },
@@ -26,7 +29,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(-cubeStartPos, cubeStartPos, -(cubeStartPos + 100)),
+        startPos: new THREE.Vector3(-window.cubeStartPos, window.cubeStartPos, -(window.cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, 1),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -38,7 +41,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-(cubeStartPos + 100), cubeStartPos, -cubeStartPos),
+        startPos: new THREE.Vector3(-(window.cubeStartPos + 100), window.cubeStartPos, -window.cubeStartPos),
         rayDir: new THREE.Vector3(1, 0, 0),
         sliceDir: { axis: 'z', mag: 1 }
       },
@@ -50,7 +53,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-(cubeStartPos + 100), -cubeStartPos, cubeStartPos),
+        startPos: new THREE.Vector3(-(window.cubeStartPos + 100), -window.cubeStartPos, window.cubeStartPos),
         rayDir: new THREE.Vector3(1, 0, 0),
         sliceDir: { axis: 'z', mag: -1 }
       },
@@ -62,7 +65,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3((cubeStartPos + 100), cubeStartPos, -cubeStartPos),
+        startPos: new THREE.Vector3((window.cubeStartPos + 100), window.cubeStartPos, -window.cubeStartPos),
         rayDir: new THREE.Vector3(-1, 0, 0),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -74,7 +77,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3(-(cubeStartPos + 100), cubeStartPos, cubeStartPos),
+        startPos: new THREE.Vector3(-(window.cubeStartPos + 100), window.cubeStartPos, window.cubeStartPos),
         rayDir: new THREE.Vector3(1, 0, 0),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -86,7 +89,7 @@
       cubes: [],
       axis: 'x',
       vector: {
-        startPos: new THREE.Vector3(0, cubeStartPos, (cubeStartPos + 100)),
+        startPos: new THREE.Vector3(0, window.cubeStartPos, (window.cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, -1),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -97,7 +100,7 @@
       cubes: [],
       axis: 'y',
       vector: {
-        startPos: new THREE.Vector3(-cubeStartPos, 0, (cubeStartPos + 100)),
+        startPos: new THREE.Vector3(-window.cubeStartPos, 0, (window.cubeStartPos + 100)),
         rayDir: new THREE.Vector3(0, 0, -1),
         sliceDir: { axis: 'x', mag: 1 }
       },
@@ -108,7 +111,7 @@
       cubes: [],
       axis: 'z',
       vector: {
-        startPos: new THREE.Vector3((cubeStartPos + 100), cubeStartPos, 0),
+        startPos: new THREE.Vector3((window.cubeStartPos + 100), window.cubeStartPos, 0),
         rayDir: new THREE.Vector3(-1, 0, 0),
         sliceDir: { axis: 'y', mag: -1 }
       },
@@ -185,11 +188,11 @@
     this.animating = true;
     var id = requestAnimationFrame(function () {
       this.animate(rotatingFace, axis, dir);
-      renderer.render(scene, camera);
+      this.renderer.render(this.scene, this.camera);
     }.bind(this));
 
     rotatingFace.rotation[axis] += dir * (Math.PI / 2) / 8;
-    renderer.render(scene, camera);
+    this.renderer.render(this.scene, this.camera);
 
     if (rotatingFace.rotation[axis] >= Math.PI / 2 ||
         rotatingFace.rotation[axis] <= -Math.PI / 2) {
@@ -204,11 +207,11 @@
     var capturedCubes = [];
     var raycaster;
 
-    for (var i = 0; i < cubeDimensions; i++) {
+    for (var i = 0; i < window.cubeDimensions; i++) {
       raycaster = new THREE.Raycaster(startPos, rayDir);
-      allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
+      allCaptures = allCaptures.concat(raycaster.intersectObjects(this.scene.children));
 
-      var newPos = (cubieSize + cubieOffset) * sliceDir.mag;
+      var newPos = (window.cubieSize + window.cubieOffset) * sliceDir.mag;
       startPos[sliceDir.axis] += newPos;
     }
 
@@ -237,9 +240,9 @@
 
     // Detach cubes from rotatingFace before removing rotatingFace from scene
     while (rotatingFace.children.length > 0) {
-      THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
+      THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, this.scene);
     }
-    scene.remove(rotatingFace);
+    this.scene.remove(rotatingFace);
     this.animating = false;
     this._updateSolveState();
   };
@@ -251,7 +254,7 @@
       this[face].vector.sliceDir
     );
     var point = new THREE.Vector3();
-    point[this[face].axis] = (cubeStartPos + 300) * -this[face].dir;
+    point[this[face].axis] = (window.cubeStartPos + 300) * -this[face].dir;
     var cubePos, dir, ray, intersects;
     var colors = [];
 
@@ -260,7 +263,7 @@
       cubePos.sub(cubePos.clone().normalize().multiplyScalar(10));
       dir = cubePos.sub(point).normalize();
       ray = new THREE.Raycaster(point, dir);
-      intersects = ray.intersectObjects(scene.children);
+      intersects = ray.intersectObjects(this.scene.children);
 
       for (var j = 0; j < intersects.length; j++) {
         if (intersects[0].object.name === "cubie")
@@ -280,7 +283,7 @@
     var cubesToRotate = [];
 
     if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
-      cubesToRotate = cubes;
+      cubesToRotate = this.cubes;
 
       if (name === 'left') {
         axis = 'y';
@@ -302,11 +305,11 @@
         dir *= -1;
       }
 
-      if (['m', 'e', 's'].indexOf(face) > -1 && cubeDimensions % 2 === 0) {
+      if (['m', 'e', 's'].indexOf(face) > -1 && window.cubeDimensions % 2 === 0) {
         var rightMiddle = this[face].vector.startPos.clone();
         var leftMiddle = this[face].vector.startPos.clone();
-        rightMiddle[this[face].axis] += cubieSize * this[face].dir;
-        leftMiddle[this[face].axis] -= cubieSize * this[face].dir;
+        rightMiddle[this[face].axis] += window.cubieSize * this[face].dir;
+        leftMiddle[this[face].axis] -= window.cubieSize * this[face].dir;
 
         cubesToRotate = this.captureCubes(
           rightMiddle,
@@ -327,27 +330,23 @@
         );
         if (name.indexOf('Double') > -1) {
           var startPos = this[face].vector.startPos.clone();
-          startPos[this[face].axis] += cubieSize * this[face].dir;
+          startPos[this[face].axis] += window.cubieSize * this[face].dir;
           var doubleCubes = this.captureCubes(
             startPos,
             this[face].vector.rayDir,
             this[face].vector.sliceDir
           );
 
-          if (doubleInclusive) {
-            cubesToRotate = cubesToRotate.concat(doubleCubes);
-          } else {
-            cubesToRotate = doubleCubes;
-          }
+          cubesToRotate = cubesToRotate.concat(doubleCubes);
         }
       }
     }
 
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], scene, rotatingFace);
+      THREE.SceneUtils.attach(cubesToRotate[i], this.scene, rotatingFace);
     }
-    scene.add(rotatingFace);
+    this.scene.add(rotatingFace);
     this.animate(rotatingFace, axis, dir);
   };
 
@@ -368,7 +367,7 @@
   };
 
   rubiksCube.prototype.randomMove = function () {
-    if (cubeDimensions <= 5) {
+    if (window.cubeDimensions <= 5) {
       var randIndex = ~~(Math.random() * (this.possibleMoves.length - 1));
       return this.possibleMoves[randIndex];
     }
@@ -387,17 +386,17 @@
     rotationAxis = randAxis;
 
     // ray starts at a cubie position
-    var randCubie = ~~(Math.random() * cubeDimensions); // 0, 1, 2, etc.
-    startPos[randAxis] = (cubeStartPos) - (randCubie * (cubieSize + cubieOffset));
-    startPos[axes[0]] = cubeStartPos + 200;
-    startPos[randNormal] = cubeStartPos;
+    var randCubie = ~~(Math.random() * window.cubeDimensions); // 0, 1, 2, etc.
+    startPos[randAxis] = (window.cubeStartPos) - (randCubie * (window.cubieSize + window.cubieOffset));
+    startPos[axes[0]] = window.cubeStartPos + 200;
+    startPos[randNormal] = window.cubeStartPos;
 
     cubesToRotate = this.captureCubes(startPos, rayDir, sliceDir);
     rotatingFace = new THREE.Object3D();
     for (var j = 0; j < cubesToRotate.length; j++) {
-      THREE.SceneUtils.attach(cubesToRotate[j], scene, rotatingFace);
+      THREE.SceneUtils.attach(cubesToRotate[j], this.scene, rotatingFace);
     }
-    scene.add(rotatingFace);
+    this.scene.add(rotatingFace);
     rotationDir = Math.random() < .5 ? -1 : 1;
     this.animate(rotatingFace, rotationAxis, rotationDir);
   };
