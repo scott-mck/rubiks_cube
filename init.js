@@ -6,14 +6,14 @@ init = function (cubeDimensions) {
   window.rubiksCube, window.eventHandler;
 
   window.cubeDimensions = cubeDimensions;
-  window.cubieSize = 125 - (25 - (cubeDimensions - 2)) * (cubeDimensions - 2);
+  window.cubieSize = 125 - (20 - (cubeDimensions - 2)) * (cubeDimensions - 2);
   if (cubieSize < 40) cubieSize = 40;
   window.cubieOffset = 3;
   window.cubeStartPos = ((cubeDimensions - 1)/2) * (cubieSize + cubieOffset);
   window.cameraX = 250;
   window.cameraY = 300;
   window.cameraZ = -100;
-  window.scrambleLength = 30 + 10 * (cubeDimensions - 3);
+  window.scrambleLength = 25 + 2 * (cubeDimensions - 3);
 
   // Setup scene
   container = document.getElementById('canvas');
