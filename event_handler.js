@@ -329,7 +329,7 @@
     var prevMove = ''; // no two scramble moves are the same
     var oppositeMove = ''; // no two scramble moves cancel out
 
-    for (var i = 0; i < window.scrambleLength; i++) {
+    for (var i = 0; i < scrambleLength; i++) {
       // Get random move, make sure no two in a row are the same
       var randMove = this.cube.randomMove();
       while (randMove === oppositeMove || randMove === prevMove) {
@@ -359,25 +359,21 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     for (var i = 0; i < scrambleLength; i++) {
       this._eventLoop.push(function () {
         var randMove = this.cube.randomMove();
-        this.scene.add(randMove.rotatingFace);
-        this.cube.animate(
-          randMove.rotatingFace,
-          randMove.rotationAxis,
-          randMove.rotationDir
-        );
+        this.scrambleMoves.push(randMove);
+        this.cube.move(randMove);
       }.bind(this));
 
-      // this.scrambleMoves.push(randMove);
     }
   };
 
   EventHandler.prototype.solve = function () {
     this.scrambled = false;
     for (var i = 0; i < this.scrambleMoves.length; i++) {
-      var fn = this.scrambleMoves[this.scrambleMoves.length - i - 1];
+      var fn = this.scrambleMoves[this.scrambleMoves.length - 1 - i];
+      fn.rotationDir *= -1;
       this._eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
-    this.scrambleMoves = [];
+    // this.scrambleMoves = [];
     $('.scramble').removeClass('solve').html('Scramble');
   };
 
