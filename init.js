@@ -2,7 +2,7 @@ init = function (cubeDimensions) {
   window.canvasWidth = $('#canvas').width();
   window.canvasHeight = $('#canvas').height();
   window.camera, window.scene, window.renderer;
-  window.cubes = [];
+  window.allCubes = [];
   window.rubiksCube, window.eventHandler;
 
   window.cubeDimensions = cubeDimensions;
@@ -71,7 +71,7 @@ init = function (cubeDimensions) {
       var helper = new THREE.EdgesHelper( mesh, 0x000000 );
       helper.material.linewidth = 7;
 
-      cubes.push(mesh);
+      allCubes.push(mesh);
       scene.add(helper);
       scene.add(mesh);
     }
@@ -82,7 +82,7 @@ init = function (cubeDimensions) {
   camera.position.z += cameraZ;
   camera.lookAt(new THREE.Vector3()); // look at middle of Rubik's Cube
 
-  rubiksCube = new Game.Cube(scene, camera, cubes, renderer);
+  rubiksCube = new Game.Cube(scene, camera, renderer);
   eventHandler = new Game.EventHandler(scene, camera, rubiksCube, renderer);
 
   function animate () {
