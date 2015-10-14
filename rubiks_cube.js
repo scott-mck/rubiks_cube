@@ -112,9 +112,14 @@
 
     this.possibleMoves = [
       'r', 'rPrime', 'l', 'lPrime', 'u', 'uPrime', 'd', 'dPrime', 'f', 'fPrime',
-      'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime', 'rDouble',
-      'rDoublePrime', 'lDouble', 'lDoublePrime'
+      'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime'
     ];
+
+    if (cubeDimensions > 3) {
+      this.possibleMoves = this.possibleMoves.concat([
+        'rDouble', 'rDoublePrime', 'lDouble', 'lDoublePrime', 'left', 'right'
+      ]);
+    }
   };
 
   Game.Cube.moveToKeyMap = {
