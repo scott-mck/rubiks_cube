@@ -360,6 +360,9 @@ EventHandler.prototype.scrambleForBigCubes = function () {
   };
 
   EventHandler.prototype.solve = function () {
+    if (this.cube.animating) {
+      return;
+    }
     this.scrambled = false;
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var fn = this.scrambleMoves[this.scrambleMoves.length - 1 - i];
