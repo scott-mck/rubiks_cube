@@ -107,15 +107,6 @@ init = function (cubeDimensions) {
       });
     }
 
-    $('.button').hover(
-      function (event) {
-        $(event.currentTarget).css('background', 'green');
-      },
-      function (event) {
-        $(event.currentTarget).css('background', 'yellow');
-      }
-    );
-
     $('.button').on('mousedown', function (event) {
       $(event.currentTarget).css('background', 'red');
     });
