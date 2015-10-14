@@ -137,12 +137,10 @@
         this.displaySolveMoves();
         break;
       case 'space':
-        if ($('.scramble').hasClass('solve')) {
-          $('.scramble').removeClass('solve');
-          this.solve();
-        } else {
-          $('.scramble').addClass('solve');
+        if (this.cube.isSolved) {
           this.scramble();
+        } else {
+          this.solve();
         }
         break;
       case 'a':
