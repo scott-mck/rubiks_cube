@@ -323,7 +323,6 @@
 
     this.hideSolveMoves();
     $('.timer').text('0.00').css('color', 'white');
-    $('.scramble').addClass('solve').html('Solve');
 
     var prevMove = ''; // no two scramble moves are the same
     var oppositeMove = ''; // no two scramble moves cancel out
@@ -349,7 +348,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     this.cube.isSolved = false;
     this.hideSolveMoves();
     $('.timer').text('0.00').css('color', 'white');
-    $('.scramble').addClass('solve').html('Solve');
 
     // TODO: don't allow moves that cancel each other out
     for (var i = 0; i < scrambleLength; i++) {
@@ -368,7 +366,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       fn.rotationDir *= -1;
       this._eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
-    $('.scramble').removeClass('solve').html('Scramble');
   };
 
   EventHandler.prototype.startTimer = function () {
@@ -383,7 +380,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     this._timing = false;
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time).css('color', 'green');
-    $('.scramble').removeClass('solve').html('Scramble');
   };
 
   EventHandler.prototype.triggerEvent = function () {
@@ -399,6 +395,9 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     if (this.cube.isSolved) {
       this.scrambleMoves = [];
       $('.solve-moves span').css('color', 'gold');
+      $('.solve').removeClass('enabled').addClass('disabled');
+    } else {
+      $('.solve').removeClass('disabled').addClass('enabled');
     }
   };
 
