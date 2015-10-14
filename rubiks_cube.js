@@ -287,7 +287,6 @@
   };
 
   rubiksCube.prototype.move = function (name) {
-    this.isSolved = false;
     if (typeof name !== 'string') {
       var rotatingFace = new THREE.Object3D();
       for (var i = 0; i < name.cubesToRotate.length; i++) {
