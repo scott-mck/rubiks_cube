@@ -471,15 +471,19 @@ EventHandler.prototype.scrambleForBigCubes = function () {
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
     if (mouseUp.clientX < mouseDown.clientX - 40) {
       this._eventLoop.push(this.cube.move.bind(this.cube, 'right'));
+      this.scrambleMoves.push('left');
     }
     if (mouseUp.clientX > mouseDown.clientX + 40) {
       this._eventLoop.push(this.cube.move.bind(this.cube, 'left'));
+      this.scrambleMoves.push('right');
     }
     if (mouseUp.clientY > mouseDown.clientY + 40) {
       this._eventLoop.push(this.cube.move.bind(this.cube, 'up'));
+      this.scrambleMoves.push('down');
     }
     if (mouseUp.clientY < mouseDown.clientY - 40) {
       this._eventLoop.push(this.cube.move.bind(this.cube, 'down'));
+      this.scrambleMoves.push('up');
     }
   };
 
