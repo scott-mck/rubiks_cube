@@ -282,6 +282,11 @@
   };
 
   rubiksCube.prototype.move = function (name) {
+    if (typeof name !== 'string') {
+      this.animate(name.rotatingFace, name.rotationAxis, name.rotationDir);
+      return;
+    }
+
     this.isSolved = false;
     if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
       this.rotateCube(name);
@@ -310,7 +315,7 @@
       );
       cubesToRotate = cubesToRotate.concat(middleCubes);
     }
-    
+
     if (['m', 'e', 's'].indexOf(name[0]) > -1 && cubeDimensions % 2 === 0) {
       cubesToRotate = this.captureMiddles(name[0]);
     }
@@ -340,11 +345,11 @@
   };
 
   rubiksCube.prototype.randomMove = function () {
-    if (window.cubeDimensions <= 5) {
+    if (cubeDimensions <= 5) {
       var randIndex = ~~(Math.random() * (this.possibleMoves.length - 1));
       return this.possibleMoves[randIndex];
     }
-    var sliceDir, cubesToRotate, rotatingFace, rotationAxis, rotationDir;
+    var sliceDir, cubesToRotate, rotationAxis, rotationDir;
     var axes = ['x', 'z', 'y'];
     var startPos = new THREE.Vector3();
     var rayDir = new THREE.Vector3();
@@ -369,7 +374,6 @@
     for (var j = 0; j < cubesToRotate.length; j++) {
       THREE.SceneUtils.attach(cubesToRotate[j], this.scene, rotatingFace);
     }
-    this.scene.add(rotatingFace);
     rotationDir = Math.random() < .5 ? -1 : 1;
 
     return {
