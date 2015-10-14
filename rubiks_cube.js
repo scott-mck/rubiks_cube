@@ -199,11 +199,11 @@
     var capturedCubes = [];
     var raycaster;
 
-    for (var i = 0; i < window.cubeDimensions; i++) {
+    for (var i = 0; i < cubeDimensions; i++) {
       raycaster = new THREE.Raycaster(startPos, rayDir);
       allCaptures = allCaptures.concat(raycaster.intersectObjects(this.scene.children));
 
-      var newPos = (window.cubieSize + window.cubieOffset) * sliceDir.mag;
+      var newPos = (cubieSize + cubieOffset) * sliceDir.mag;
       startPos[sliceDir.axis] += newPos;
     }
 
@@ -282,12 +282,17 @@
   };
 
   rubiksCube.prototype.move = function (name) {
+    this.isSolved = false;
     if (typeof name !== 'string') {
-      this.animate(name.rotatingFace, name.rotationAxis, name.rotationDir);
+      var rotatingFace = new THREE.Object3D();
+      for (var i = 0; i < name.cubesToRotate.length; i++) {
+        THREE.SceneUtils.attach(name.cubesToRotate[i], this.scene, rotatingFace);
+      }
+      this.scene.add(rotatingFace);
+      this.animate(rotatingFace, name.rotationAxis, name.rotationDir);
       return;
     }
 
-    this.isSolved = false;
     if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
       this.rotateCube(name);
       return;
@@ -370,14 +375,14 @@
     startPos[randNormal] = window.cubeStartPos;
 
     cubesToRotate = this.captureCubes(startPos, rayDir, sliceDir);
-    rotatingFace = new THREE.Object3D();
-    for (var j = 0; j < cubesToRotate.length; j++) {
-      THREE.SceneUtils.attach(cubesToRotate[j], this.scene, rotatingFace);
-    }
+    // rotatingFace = new THREE.Object3D();
+    // for (var j = 0; j < cubesToRotate.length; j++) {
+    //   THREE.SceneUtils.attach(cubesToRotate[j], this.scene, rotatingFace);
+    // }
     rotationDir = Math.random() < .5 ? -1 : 1;
 
     return {
-      rotatingFace: rotatingFace,
+      cubesToRotate: cubesToRotate,
       rotationAxis: rotationAxis,
       rotationDir: rotationDir
     };
