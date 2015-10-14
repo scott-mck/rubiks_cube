@@ -13,7 +13,7 @@ init = function (cubeDimensions) {
   window.cameraX = 250;
   window.cameraY = 300;
   window.cameraZ = -100;
-  window.scrambleLength = 25 + 2 * (cubeDimensions - 3);
+  window.scrambleLength = 25 + 3 * (cubeDimensions - 3);
 
   // Setup scene
   container = document.getElementById('canvas');
