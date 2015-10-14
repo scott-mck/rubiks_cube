@@ -456,11 +456,12 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     }
 
     cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
-    this.cube.move({
+    moveDetails = {
       cubesToRotate: cubesToRotate,
       rotationAxis: rotationAxis,
       rotationDir: rotationDir
-    });
+    };
+    this._eventLoop.push(this.cube.move.bind(this.cube, moveDetails));
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
