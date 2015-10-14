@@ -109,11 +109,6 @@ body {
   min-width: 30px;
 }
 
-.button.disabled {
-  background: #ADADAD;
-  border-color: #6D6D6D;
-}
-
 .button {
   transition: 200ms;
   margin: 5px 3px 5px 0px;
@@ -127,10 +122,19 @@ body {
   background: yellow;
 }
 
+.button.disabled {
+  background: #ADADAD;
+  border-color: #6D6D6D;
+}
+
 .button.enabled:hover {
   width: 110%;
   cursor: pointer;
   background: green;
+}
+
+.button.enabled:active {
+  background: red;
 }
 
 .sample.button {

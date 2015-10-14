@@ -107,14 +107,6 @@ init = function (cubeDimensions) {
       });
     }
 
-    $('.button').on('mousedown', function (event) {
-      $(event.currentTarget).css('background', 'red');
-    });
-
-    $('.button').on('mouseup', function (event) {
-      $(event.currentTarget).css('background', 'yellow');
-    });
-
     setInterval(function () {
       var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];
       var i = ~~(Math.random() * colors.length);
