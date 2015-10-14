@@ -362,7 +362,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
         this.scrambleMoves.push(randMove);
         this.cube.move(randMove);
       }.bind(this));
-
     }
   };
 
@@ -373,7 +372,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       fn.rotationDir *= -1;
       this._eventLoop.push(this.cube.move.bind(this.cube, fn));
     }
-    // this.scrambleMoves = [];
     $('.scramble').removeClass('solve').html('Scramble');
   };
 

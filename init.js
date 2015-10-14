@@ -101,10 +101,13 @@ init = function (cubeDimensions) {
       }
     });
 
-    $('.sample').on('click', function () {
-      eventHandler.solve();
-      eventHandler.sampleSolve();
-    });
+    if (cubeDimensions === 3) {
+      $('.sample').css('display', 'block');
+      $('.sample').on('click', function () {
+        eventHandler.solve();
+        eventHandler.sampleSolve();
+      });
+    }
 
     $('.button').hover(
       function (event) {

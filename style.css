@@ -127,6 +127,10 @@ body {
   cursor: pointer;
 }
 
+.sample.button {
+  display: none;
+}
+
 .timer {
   text-align: center;
   font-family: 'AMC', sans-serif;
