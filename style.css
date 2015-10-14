@@ -58,14 +58,12 @@ body {
 }
 
 #canvas {
-  z-index: -1;
   position: absolute;
-  top: -50px;
-  left: -50px;
-  min-width: 1000px;
-  min-height: 500px;
-  width: 120vw;
-  height: 60vw;
+  left: 350px;
+  min-width: 500px;
+  width: 50vw;
+  min-height: 555px;
+  height: 50vw;
 }
 
 .title {
