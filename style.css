@@ -103,6 +103,10 @@ body {
   font-family: 'AMC', sans-serif;
 }
 
+.instructions .display-solve {
+  display: none;
+}
+
 .left {
   float: left;
   margin-right: 4px;
