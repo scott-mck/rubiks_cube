@@ -345,7 +345,7 @@
     this.cube.isSolved = false;
   };
 
-  EventHandler.prototype.scrambleForBigCubes = function () {
+EventHandler.prototype.scrambleForBigCubes = function () {
     if (this._sampling) {
       return;
     }
@@ -356,10 +356,18 @@
     $('.scramble').addClass('solve').html('Solve');
 
     // TODO: don't allow moves that cancel each other out
-    for (var i = 0; i < window.scrambleLength; i++) {
+    for (var i = 0; i < scrambleLength; i++) {
       this._eventLoop.push(function () {
-        this.cube.randomMove();
+        var randMove = this.cube.randomMove();
+        this.scene.add(randMove.rotatingFace);
+        this.cube.animate(
+          randMove.rotatingFace,
+          randMove.rotationAxis,
+          randMove.rotationDir
+        );
       }.bind(this));
+
+      // this.scrambleMoves.push(randMove);
     }
   };
 
