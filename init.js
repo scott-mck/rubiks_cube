@@ -92,13 +92,11 @@ init = function (cubeDimensions) {
 
   function addEvents () {
     $('.scramble').on('click', function () {
-      if ($('.scramble').hasClass('solve')) {
-        $('.scramble').removeClass('solve');
-        eventHandler.solve();
-      } else {
-        $('.scramble').addClass('solve');
-        eventHandler.scramble();
-      }
+      eventHandler.scramble();
+    });
+
+    $('.solve').on('click', function () {
+      eventHandler.solve();
     });
 
     if (cubeDimensions === 3) {
