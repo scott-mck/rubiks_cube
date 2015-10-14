@@ -9,7 +9,7 @@
     this.camera = camera;
     this.renderer = renderer;
     this.animating = false;
-    this.isSolved = false;
+    this.isSolved = true;
 
     this.r = {
       cubes: [],
