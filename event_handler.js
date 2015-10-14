@@ -436,8 +436,8 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     var startPos = clickedCube.position.clone();
     var rayDir = new THREE.Vector3();
     var sliceDir = { axis: normal, mag: -1 }
+    var cubesToRotate, rotationAxis;
     var rotationDir = 1;
-    var cubesToRotate, rotatingFace, rotationAxis;
 
     if (mouseUp.clientX > mouseDown.clientX + 40 ||
         mouseUp.clientX < mouseDown.clientX - 40) {
@@ -456,12 +456,11 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     }
 
     cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
-    rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], this.scene, rotatingFace);
-    }
-    this.scene.add(rotatingFace);
-    this.cube.animate(rotatingFace, rotationAxis, rotationDir);
+    this.cube.move({
+      cubesToRotate: cubesToRotate,
+      rotationAxis: rotationAxis,
+      rotationDir: rotationDir
+    });
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
