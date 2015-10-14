@@ -462,6 +462,7 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       rotationDir: rotationDir
     };
     this._eventLoop.push(this.cube.move.bind(this.cube, moveDetails));
+    this.scrambleMoves.push(moveDetails);
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
