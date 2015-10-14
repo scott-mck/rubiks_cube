@@ -106,7 +106,7 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    if (this.displayedMoves) {
+    if (this.displayedMoves || cubeDimensions > 5) {
       return;
     }
     this.displayedMoves = true;
@@ -142,11 +142,7 @@
           this.solve();
         } else {
           $('.scramble').addClass('solve');
-          if (cubeDimensions <= 5) {
-            this.scramble();
-          } else {
-            this.scrambleForBigCubes();
-          }
+          this.scramble();
         }
         break;
       case 'a':
@@ -322,6 +318,11 @@
     if (this._sampling) {
       return;
     }
+    if (cubeDimensions > 5) {
+      this.scrambleForBigCubes();
+      return;
+    }
+
     this.hideSolveMoves();
     $('.timer').text('0.00').css('color', 'white');
     $('.scramble').addClass('solve').html('Solve');
@@ -346,9 +347,6 @@
   };
 
 EventHandler.prototype.scrambleForBigCubes = function () {
-    if (this._sampling) {
-      return;
-    }
     this.scrambled = true;
     this.cube.isSolved = false;
     this.hideSolveMoves();
