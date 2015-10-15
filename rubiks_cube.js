@@ -462,7 +462,9 @@
         this._colorsAreSame(upFace)) {
       this.isSolved = true;
     }
-    if (['left', 'right', 'up', 'down'].indexOf(move) < 0) {
+    if (this.isSolved &&
+        move !== undefined &&
+        ['left', 'right', 'up', 'down'].indexOf(move) === -1) {
       this.isSolved = false;
     }
   };
