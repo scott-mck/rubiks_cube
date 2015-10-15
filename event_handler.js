@@ -76,6 +76,9 @@
   };
 
   EventHandler.prototype.click = function (mouseDown) {
+    if (this.cube.animating) {
+      return;
+    }
     var intersects = this._getIntersects(mouseDown);
     var mouseUpFn;
     if (intersects.length === 0) {
@@ -84,6 +87,10 @@
       };
     } else {
       var clickedCube = intersects[0].object;
+      if (clickedCube.name !== 'cubie') {
+        return;
+      }
+
       var normalVector = new THREE.Matrix4().extractRotation(clickedCube.matrixWorld)
         .multiplyVector3(intersects[0].face.normal.clone());
       var normal;
@@ -456,6 +463,8 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       rotationAxis = axes[0];
       if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
       if (normal === 'x') rotationDir *= -1;
+    } else {
+      return;
     }
 
     cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);

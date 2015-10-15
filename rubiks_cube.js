@@ -248,13 +248,13 @@
 
   rubiksCube.prototype.finishAnimation = function (rotatingFace, id) {
     cancelAnimationFrame(id);
+    this.animating = false;
 
     // Detach cubes from rotatingFace before removing rotatingFace from scene
     while (rotatingFace.children.length > 0) {
       THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, this.scene);
     }
     this.scene.remove(rotatingFace);
-    this.animating = false;
     this._updateSolveState();
   };
 
