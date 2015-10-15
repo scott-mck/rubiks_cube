@@ -287,6 +287,7 @@
   };
 
   rubiksCube.prototype.move = function (name) {
+    this._updateSolveState(name);
     if (typeof name !== 'string') {
       var rotatingFace = new THREE.Object3D();
       for (var i = 0; i < name.cubesToRotate.length; i++) {
@@ -448,7 +449,7 @@
     return uString + rString + fString + dString + lString + bString;
   };
 
-  rubiksCube.prototype._updateSolveState = function () {
+  rubiksCube.prototype._updateSolveState = function (move) {
     if (this.animating) {
       this.isSolved = false;
     }
@@ -460,6 +461,9 @@
         this._colorsAreSame(frontFace) &&
         this._colorsAreSame(upFace)) {
       this.isSolved = true;
+    }
+    if (['left', 'right', 'up', 'down'].indexOf(move) < 0) {
+      this.isSolved = false;
     }
   };
 
