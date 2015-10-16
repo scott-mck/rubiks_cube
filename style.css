@@ -59,11 +59,11 @@ body {
 
 #canvas {
   position: absolute;
-  left: 350px;
+  left: 250px;
   top: -50px;
   min-width: 550px;
-  width: 50vw;
-  min-height: 555px;
+  width: 80vw;
+  min-height: 600px;
   height: 55vw;
 }
 
