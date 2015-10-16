@@ -21,38 +21,38 @@
     $(window).on('keyup', this.handleEvents.bind(this));
     $('#canvas').on('mousedown', this.click.bind(this));
     this.interval = setInterval(this.triggerEvent.bind(this), 10);
-  };
 
-  Game.EventHandler.keyCodeMap = {
-    13: 'return',
-    32: 'space',
-    65: 'a',
-    67: 'c',
-    68: 'd',
-    69: 'e',
-    70: 'f',
-    71: 'g',
-    72: 'h',
-    73: 'i',
-    74: 'j',
-    75: 'k',
-    76: 'l',
-    77: 'm',
-    78: 'n',
-    79: 'o',
-    80: 'p',
-    81: 'q',
-    82: 'r',
-    83: 's',
-    84: 't',
-    85: 'u',
-    86: 'v',
-    87: 'w',
-    89: 'y',
-    90: 'z',
-    186: ';',
-    188: ',',
-    191: '/'
+    this.keyCodeMap = {
+      13: 'return',
+      32: 'space',
+      65: 'a',
+      67: 'c',
+      68: 'd',
+      69: 'e',
+      70: 'f',
+      71: 'g',
+      72: 'h',
+      73: 'i',
+      74: 'j',
+      75: 'k',
+      76: 'l',
+      77: 'm',
+      78: 'n',
+      79: 'o',
+      80: 'p',
+      81: 'q',
+      82: 'r',
+      83: 's',
+      84: 't',
+      85: 'u',
+      86: 'v',
+      87: 'w',
+      89: 'y',
+      90: 'z',
+      186: ';',
+      188: ',',
+      191: '/'
+    };
   };
 
   EventHandler.prototype.checkCorrectMove = function (keyPressed) {
@@ -106,6 +106,15 @@
     $('#canvas').one('mouseup', mouseUpFn.bind(this));
   };
 
+  EventHandler.prototype.detectTimerStart = function (keyPressed) {
+    var move = Game.Cube.keyToMoveMap[keyPressed];
+    if (!move) return;
+    if (['left', 'right', 'up', 'down'].indexOf(move) > -1) return;
+    if (this.scrambled && !this.timing) {
+      this.startTimer();
+    }
+  };
+
   EventHandler.prototype.displayElapsedTime = function () {
     this.startTime = this.startTime || new Date();
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
@@ -129,16 +138,13 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-    if ( this.scrambled &&
-      ((key.keyCode >= 67 && key.keyCode <= 77) ||
-      (key.keyCode >= 80 && key.keyCode <= 85)) ) {
-        this.startTimer();
-    }
     if (this.cube.isSolved) {
       this.hideSolveMoves();
     }
 
-    var keyPressed = Game.EventHandler.keyCodeMap[key.keyCode];
+    var keyPressed = this.keyCodeMap[key.keyCode];
+    this.detectTimerStart(keyPressed);
+
     switch (keyPressed) {
       case 'return':
         this.displaySolveMoves();
