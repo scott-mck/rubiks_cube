@@ -107,6 +107,9 @@
   };
 
   EventHandler.prototype.detectTimerStart = function (keyPressed) {
+    if (this.scrambled && !this.timing && keyPressed === 'click') {
+      this.startTimer();
+    }
     var move = Game.Cube.keyToMoveMap[keyPressed];
     if (!move) return;
     if (['left', 'right', 'up', 'down'].indexOf(move) > -1) return;
@@ -482,6 +485,9 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     };
     this._eventLoop.push(this.cube.move.bind(this.cube, moveDetails));
     this.scrambleMoves.push(moveDetails);
+
+    this.detectTimerStart('click');
+    this.checkCorrectMove();
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
