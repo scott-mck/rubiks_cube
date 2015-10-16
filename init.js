@@ -86,8 +86,8 @@ init = function (cubeDimensions) {
   eventHandler = new Game.EventHandler(scene, camera, rubiksCube, renderer);
 
   function animate () {
-    requestAnimationFrame(animate);
     renderer.render(scene, camera);
+    renderer.render(scene, camera); // renders box helper
   }
 
   function addEvents () {
