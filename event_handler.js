@@ -444,6 +444,7 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     axes.splice(axes.indexOf(normal), 1);
 
     var startPos = clickedCube.position.clone();
+    startPos[normal] = cubeStartPos;
     var rayDir = new THREE.Vector3();
     var sliceDir = { axis: normal, mag: -1 }
     var cubesToRotate, rotationAxis;
