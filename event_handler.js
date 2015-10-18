@@ -76,9 +76,13 @@
   };
 
   EventHandler.prototype.click = function (mouseDown) {
+    if (this.cube.isSolved) {
+      this.hideSolveMoves();
+    }
     if (this.cube.animating) {
       return;
     }
+
     var intersects = this._getIntersects(mouseDown);
     var mouseUpFn;
     if (intersects.length === 0) {
@@ -132,11 +136,11 @@
 
     for (var i = 0; i < this.scrambleMoves.length; i++) {
       var move = this.scrambleMoves[this.scrambleMoves.length - i - 1];
-      var key = Game.Cube.moveToKeyMap[move];
-
-      var $letter = $('<span>').addClass('white').css('color', 'white');
-      $letter.html(key);
-      $('.solve-moves').append($letter);
+      if (typeof move === 'string') {
+        this._stringSolveMove(move);
+      } else {
+        this._objSolveMove(move);
+      }
     }
   };
 
@@ -477,9 +481,11 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       return;
     }
 
-    cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
+    // cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
     moveDetails = {
-      cubesToRotate: cubesToRotate,
+      startPos: startPos,
+      rayDir: rayDir,
+      sliceDir: sliceDir,
       rotationAxis: rotationAxis,
       rotationDir: rotationDir
     };
@@ -488,6 +494,39 @@ EventHandler.prototype.scrambleForBigCubes = function () {
 
     this.detectTimerStart('click');
     this.checkCorrectMove();
+  };
+
+  EventHandler.prototype._objSolveMove = function (move) {
+    var movedCubes = this.cube.captureCubes(
+      move.startPos,
+      move.rayDir,
+      move.sliceDir
+    );
+
+    for (var i = 0; i < this.cube.faces.length; i++) {
+      var face = this.cube.faces[i];
+      if (this.cube[face].rotationAxis === move.rotationAxis) {
+        var moveString = face;
+        var testCubes = this.cube.captureCubes(
+          this.cube[face].vector.startPos,
+          this.cube[face].vector.rayDir,
+          this.cube[face].vector.sliceDir
+        );
+
+        if (movedCubes[~~(movedCubes.length/2)] === testCubes[~~(testCubes.length/2)]) {
+          if (move.rotationDir === this.cube[face].rotationDir) {
+            moveString += 'Prime';
+          }
+          this._stringSolveMove(moveString);
+          return;
+        }
+      }
+    }
+
+    if (move.rotationDir < 0) {
+      moveString += 'Prime';
+    }
+    this._stringSolveMove(moveString);
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
@@ -533,5 +572,12 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     setTimeout(function () {
       this.interval = setInterval(this.triggerEvent.bind(this), 10);
     }.bind(this), milli);
+  };
+
+  EventHandler.prototype._stringSolveMove = function (move) {
+    var key = Game.Cube.moveToKeyMap[move];
+    var $letter = $('<span>').addClass('white').css('color', 'white');
+    $letter.html(key);
+    $('.solve-moves').append($letter);
   };
 })();
