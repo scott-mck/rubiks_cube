@@ -175,7 +175,8 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    var solveMove = this.scrambleMoves.pop();
+    this.repeatSolveMove = setTimeout(this.displaySolveMoves.bind(this), 2000);
+    var solveMove = this.scrambleMoves[this.scrambleMoves.length - 1];
     if (typeof solveMove !== 'string') return;
 
     var glowMaterial = new THREE.ShaderMaterial({
