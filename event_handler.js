@@ -523,7 +523,7 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       }
     }
 
-    if (move.rotationDir < 0) {
+    if (move.rotationDir === this.cube[face].rotationDir) {
       moveString += 'Prime';
     }
     this._stringSolveMove(moveString);
