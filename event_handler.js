@@ -105,20 +105,6 @@
     if (['space', 'return'].indexOf(keyPressed) > -1 || !keyPressed || !this.displayedMoves) {
       return;
     }
-
-    if ($('.undo-moves').children('.available').length > 0) {
-      this._checkUndoMove(keyPressed);
-      return;
-    }
-
-    var letterToCheck = $('.white').eq(0);
-    if (letterToCheck.text() === keyPressed) {
-      letterToCheck.removeClass('white');
-      letterToCheck.css('color', 'green');
-    } else {
-      this._showCorrectMove(keyPressed);
-      letterToCheck.css('color', 'red');
-    }
   };
 
   EventHandler.prototype.click = function (mouseDown) {
@@ -222,20 +208,6 @@
       rotationDir *= -1;
     }
     this.animateSolveMove(glow, rotationAxis, rotationDir);
-
-    // if (this.displayedMoves || cubeDimensions > 5) {
-    //   return;
-    // }
-    // this.displayedMoves = true;
-    //
-    // for (var i = 0; i < this.scrambleMoves.length; i++) {
-    //   var move = this.scrambleMoves[this.scrambleMoves.length - i - 1];
-    //   if (typeof move === 'string') {
-    //     this._stringSolveMove(move);
-    //   } else {
-    //     this._objSolveMove(move);
-    //   }
-    // }
   };
 
   EventHandler.prototype.handleEvents = function (key) {
@@ -518,21 +490,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     }
   };
 
-  EventHandler.prototype._checkUndoMove = function (keyPressed) {
-    var letterToCheck = $('.undo-moves').children('.available').last();
-    if (keyPressed === letterToCheck.text()) {
-      letterToCheck.removeClass('available');
-      letterToCheck.css('opacity', 0);
-      letterToCheck.css('position', 'absolute');
-      letterToCheck.css('font-size', '4vh');
-      letterToCheck.one('transitionend', function () {
-        letterToCheck.remove();
-      });
-    } else {
-      this._showCorrectMove(keyPressed);
-    }
-  };
-
   EventHandler.prototype._getIntersects = function (event) {
     var canvasBox = this.renderer.domElement.getBoundingClientRect();
     var canvasMouseX = event.clientX - canvasBox.left;
@@ -575,7 +532,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       return;
     }
 
-    // cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
     moveDetails = {
       startPos: startPos,
       rayDir: rayDir,
@@ -588,39 +544,6 @@ EventHandler.prototype.scrambleForBigCubes = function () {
 
     this.detectTimerStart('click');
     this.checkCorrectMove();
-  };
-
-  EventHandler.prototype._objSolveMove = function (move) {
-    var movedCubes = this.cube.captureCubes(
-      move.startPos,
-      move.rayDir,
-      move.sliceDir
-    );
-
-    for (var i = 0; i < this.cube.faces.length; i++) {
-      var face = this.cube.faces[i];
-      if (this.cube[face].rotationAxis === move.rotationAxis) {
-        var moveString = face;
-        var testCubes = this.cube.captureCubes(
-          this.cube[face].vector.startPos,
-          this.cube[face].vector.rayDir,
-          this.cube[face].vector.sliceDir
-        );
-
-        if (movedCubes[~~(movedCubes.length/2)] === testCubes[~~(testCubes.length/2)]) {
-          if (move.rotationDir === this.cube[face].rotationDir) {
-            moveString += 'Prime';
-          }
-          this._stringSolveMove(moveString);
-          return;
-        }
-      }
-    }
-
-    if (move.rotationDir === this.cube[face].rotationDir) {
-      moveString += 'Prime';
-    }
-    this._stringSolveMove(moveString);
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {
@@ -642,36 +565,10 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     }
   };
 
-  EventHandler.prototype._showCorrectMove = function (keyPressed) {
-    var fn = Game.Cube.keyToMoveMap[keyPressed];
-    var oppFn = this.cube.oppositeMove(fn);
-
-    if (fn === 'right') {
-      oppFn = 'left';
-    } else if (fn === 'left') {
-      oppFn = 'right';
-    } else if (fn === 'up') {
-      oppFn = 'down';
-    } else if (fn === 'down') {
-      oppFn = 'up';
-    }
-
-    var oppLetter = Game.Cube.moveToKeyMap[oppFn];
-    var move = $('<span>').addClass('available').text(oppLetter);
-    $('.undo-moves').append(move);
-  };
-
   EventHandler.prototype._sleep = function (milli) {
     clearInterval(this.interval);
     setTimeout(function () {
       this.interval = setInterval(this.triggerEvent.bind(this), 10);
     }.bind(this), milli);
-  };
-
-  EventHandler.prototype._stringSolveMove = function (move) {
-    var key = Game.Cube.moveToKeyMap[move];
-    var $letter = $('<span>').addClass('white').css('color', 'white');
-    $letter.html(key);
-    $('.solve-moves').append($letter);
   };
 })();
