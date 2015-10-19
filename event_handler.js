@@ -55,14 +55,14 @@
     };
   };
 
-  EventHandler.prototype.animateSolveMove = function (glow) {
+  EventHandler.prototype.animateSolveMove = function (glow, rotationAxis, rotationDir) {
     var id = requestAnimationFrame(function () {
-      this.animateSolveMove(glow);
+      this.animateSolveMove(glow, rotationAxis, rotationDir);
       renderer.render(scene, camera);
     }.bind(this));
     if (glow.material.uniforms.p.value <= .4) {
       cancelAnimationFrame(id);
-      this.rotateSolveMove(glow);
+      this.rotateSolveMove(glow, rotationAxis, rotationDir);
       return;
     }
     this.glowPower = this.glowPower || .7;
@@ -70,21 +70,20 @@
     this.glowPower *= .89;
   };
 
-  EventHandler.prototype.rotateSolveMove = function (glow) {
+  EventHandler.prototype.rotateSolveMove = function (glow, rotationAxis, rotationDir) {
     var id = requestAnimationFrame(function () {
-      this.rotateSolveMove(glow);
+      this.rotateSolveMove(glow, rotationAxis, rotationDir);
       renderer.render(scene, camera);
     }.bind(this));
 
-    if (glow.rotation.x >= Math.PI / 2 ||
-        glow.rotation.x <= -Math.PI / 2) {
+    if (glow.rotation[rotationAxis] >= Math.PI / 2 ||
+        glow.rotation[rotationAxis] <= -Math.PI / 2) {
       cancelAnimationFrame(id);
       this.glowRotation = false;
       this.fadeOutSolveMove(glow);
       return;
     }
-    this.glowRotation = this.glowRotation || (Math.PI / 2) / (8 * 4);
-    glow.rotation.x -= this.glowRotation;
+    glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
   };
 
   EventHandler.prototype.fadeOutSolveMove = function (glow) {
@@ -176,6 +175,9 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
+    var solveMove = this.scrambleMoves.pop();
+    if (typeof solveMove !== 'string') return;
+
     var glowMaterial = new THREE.ShaderMaterial({
       uniforms: {
         "c":   { type: "f", value: .5 },
@@ -190,12 +192,27 @@
       transparent: true
     });
 
-    var geom = new THREE.BoxGeometry(cubieSize, cubieSize * 3, cubieSize * 3);
+    var capturedCubes = this.cube.captureCubes(
+      this.cube[solveMove[0]].vector.startPos,
+      this.cube[solveMove[0]].vector.rayDir,
+      this.cube[solveMove[0]].vector.sliceDir
+    );
+
+    var geomSize = new THREE.Vector3(cubieSize * 3, cubieSize * 3, cubieSize * 3);
+    var rotationAxis = this.cube[solveMove[0]].rotationAxis;
+    geomSize[rotationAxis] = cubieSize;
+    var geom = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
+
     var glow = new THREE.Mesh(geom, glowMaterial.clone());
-    glow.position.copy(allCubes[4].position);
+    glow.position.copy(capturedCubes[~~(capturedCubes.length / 2)].position);
     glow.scale.multiplyScalar(1.2);
     scene.add(glow);
-    this.animateSolveMove(glow);
+
+    var rotationDir = this.cube[solveMove[0]].rotationDir;
+    if (solveMove.indexOf('Prime') > -1) {
+      rotationDir *= -1;
+    }
+    this.animateSolveMove(glow, rotationAxis, rotationDir);
 
     // if (this.displayedMoves || cubeDimensions > 5) {
     //   return;
