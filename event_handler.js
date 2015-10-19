@@ -175,7 +175,7 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    this.repeatSolveMove = setTimeout(this.displaySolveMoves.bind(this), 2000);
+    // this.repeatSolveMove = setInterval(this.displaySolveMoves.bind(this), 2000);
     var solveMove = this.scrambleMoves[this.scrambleMoves.length - 1];
     if (typeof solveMove !== 'string') return;
 
@@ -193,19 +193,27 @@
       transparent: true
     });
 
-    var capturedCubes = this.cube.captureCubes(
-      this.cube[solveMove[0]].vector.startPos,
-      this.cube[solveMove[0]].vector.rayDir,
-      this.cube[solveMove[0]].vector.sliceDir
+    var face = this.cube[solveMove[0]];
+    var rotationAxis = face.rotationAxis;
+    var location;
+    var geomSize = new THREE.Vector3(
+      cubieSize * cubeDimensions,
+      cubieSize * cubeDimensions,
+      cubieSize * cubeDimensions
     );
-
-    var geomSize = new THREE.Vector3(cubieSize * 3, cubieSize * 3, cubieSize * 3);
-    var rotationAxis = this.cube[solveMove[0]].rotationAxis;
     geomSize[rotationAxis] = cubieSize;
-    var geom = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
 
-    var glow = new THREE.Mesh(geom, glowMaterial.clone());
-    glow.position.copy(capturedCubes[~~(capturedCubes.length / 2)].position);
+    if (['m', 'e', 's'].indexOf(solveMove[0]) > -1) {
+      location = 0;
+      if (cubeDimensions % 2 == 0) {
+        geomSize[rotationAxis] = cubieSize * 2;
+      }
+    } else {
+      location = -cubeStartPos * face.rotationDir;
+    }
+    var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
+    var glow = new THREE.Mesh(geometry, glowMaterial.clone());
+    glow.position[face.rotationAxis] = location;
     glow.scale.multiplyScalar(1.2);
     scene.add(glow);
 
