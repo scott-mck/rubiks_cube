@@ -50,7 +50,6 @@
       89: 'y',
       90: 'z',
       186: ';',
-      188: ',',
       191: '/'
     };
   };
@@ -225,121 +224,22 @@
     this.checkCorrectMove(keyPressed);
 
     switch (keyPressed) {
-      case 'return':
-        this.displaySolveMoves();
-        break;
-      case 'space':
-        if (this.cube.isSolved) {
-          this.scramble();
-        } else {
-          this.solve();
-        }
-        break;
-      case 'a':
-        var fn = 'left';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'c':
-        var fn = 'lDouble';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'd':
-        var fn = 'l';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'e':
-        var fn = 'lPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'f':
-        var fn = 'uPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'g':
-        var fn = 'fPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'h':
-        var fn = 'f';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'i':
-        var fn = 'r';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'j':
-        var fn = 'u';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'k':
-        var fn = 'rPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'l':
-        var fn = 'dPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'm':
-        var fn = 'rDoublePrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'n':
-        var fn = 'up';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'o':
-        var fn = 's';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'p':
-        var fn = 'bPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'q':
-        var fn = 'b';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'r':
-        var fn = 'lDoublePrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 's':
-        var fn = 'd';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 't':
-        var fn = 'mPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'u':
-        var fn = 'rDouble';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'v':
-        var fn = 'm';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'w':
-        var fn = 'sPrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'y':
-        var fn = 'down';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case 'z':
-        var fn = 'e';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case ';':
-        var fn = 'right';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
-      case '/':
-        var fn = 'ePrime';
-        this._eventLoop.push(this.cube.move.bind(this.cube, fn));
-        break;
+    case 'return':
+      this.displaySolveMoves();
+      return;
+    case 'space':
+      if (this.cube.isSolved) {
+        this.scramble();
+      } else {
+        this.solve();
       }
+      return;
+    }
+
+    var move = Game.Cube.keyToMoveMap[keyPressed];
+    this._eventLoop.push(function () {
+      this.cube.move(move);
+    }.bind(this));
   };
 
   EventHandler.prototype.hideSolveMoves = function () {
