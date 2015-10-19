@@ -85,7 +85,7 @@
     glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
   };
 
-  EventHandler.prototype.fadeOutSolveMove = function (glow) {
+  EventHandler.prototype.fadeOutSolveMove = function (glow, rotationAxis) {
     var id = requestAnimationFrame(function () {
       this.fadeOutSolveMove(glow);
       renderer.render(scene, camera);
@@ -101,6 +101,8 @@
   };
 
   EventHandler.prototype.checkCorrectMove = function (keyPressed) {
+    if (['return', 'space'].indexOf(keyPressed) > -1) return;
+
     var scrambleMove = this.scrambleMoves[this.scrambleMoves.length - 1];
     if (Game.Cube.keyToMoveMap[keyPressed] === scrambleMove) {
       this.scrambleMoves.pop();
@@ -165,7 +167,6 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    // this.repeatSolveMove = setInterval(this.displaySolveMoves.bind(this), 2000);
     var solveMove = this.scrambleMoves[this.scrambleMoves.length - 1];
     if (typeof solveMove !== 'string') return;
 
@@ -225,7 +226,11 @@
 
     switch (keyPressed) {
     case 'return':
+      clearInterval(this.repeatSolveMoveId);
       this.displaySolveMoves();
+      this.repeatSolveMoveId = setInterval(function () {
+        this.displaySolveMoves();
+      }.bind(this), 2000);
       return;
     case 'space':
       if (this.cube.isSolved) {
@@ -362,10 +367,7 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     }
     if (this.cube.isSolved) {
       this.scrambleMoves = [];
-      $('.solve-moves span').css('color', 'gold');
-      $('.solve').removeClass('enabled').addClass('disabled');
-    } else {
-      $('.solve').removeClass('disabled').addClass('enabled');
+      clearInterval(this.repeatSolveMoveId);
     }
   };
 
