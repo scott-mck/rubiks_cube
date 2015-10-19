@@ -55,6 +55,53 @@
     };
   };
 
+  EventHandler.prototype.animateSolveMove = function (glow) {
+    var id = requestAnimationFrame(function () {
+      this.animateSolveMove(glow);
+      renderer.render(scene, camera);
+    }.bind(this));
+    if (glow.material.uniforms.p.value <= .4) {
+      cancelAnimationFrame(id);
+      this.rotateSolveMove(glow);
+      return;
+    }
+    this.glowPower = this.glowPower || .7;
+    glow.material.uniforms.p.value -= this.glowPower;
+    this.glowPower *= .89;
+  };
+
+  EventHandler.prototype.rotateSolveMove = function (glow) {
+    var id = requestAnimationFrame(function () {
+      this.rotateSolveMove(glow);
+      renderer.render(scene, camera);
+    }.bind(this));
+
+    if (glow.rotation.x >= Math.PI / 2 ||
+        glow.rotation.x <= -Math.PI / 2) {
+      cancelAnimationFrame(id);
+      this.glowRotation = false;
+      this.fadeOutSolveMove(glow);
+      return;
+    }
+    this.glowRotation = this.glowRotation || (Math.PI / 2) / (8 * 4);
+    glow.rotation.x -= this.glowRotation;
+  };
+
+  EventHandler.prototype.fadeOutSolveMove = function (glow) {
+    var id = requestAnimationFrame(function () {
+      this.fadeOutSolveMove(glow);
+      renderer.render(scene, camera);
+    }.bind(this));
+    if (glow.material.uniforms.p.value >= 6) {
+      cancelAnimationFrame(id);
+      this.glowPower = false;
+      scene.remove(glow);
+      return;
+    }
+    glow.material.uniforms.p.value += this.glowPower;
+    this.glowPower *= (1 / .8);
+  };
+
   EventHandler.prototype.checkCorrectMove = function (keyPressed) {
     if (['space', 'return'].indexOf(keyPressed) > -1 || !keyPressed || !this.displayedMoves) {
       return;
@@ -129,19 +176,40 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    if (this.displayedMoves || cubeDimensions > 5) {
-      return;
-    }
-    this.displayedMoves = true;
+    var glowMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        "c":   { type: "f", value: .5 },
+        "p":   { type: "f", value: 6 },
+        glowColor: { type: "c", value: new THREE.Color(0xffff00) },
+        viewVector: { type: "v3", value: camera.position }
+      },
+      vertexShader: document.getElementById('vertexShader').textContent,
+      fragmentShader: document.getElementById('fragmentShader').textContent,
+      side: THREE.FrontSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    });
 
-    for (var i = 0; i < this.scrambleMoves.length; i++) {
-      var move = this.scrambleMoves[this.scrambleMoves.length - i - 1];
-      if (typeof move === 'string') {
-        this._stringSolveMove(move);
-      } else {
-        this._objSolveMove(move);
-      }
-    }
+    var geom = new THREE.BoxGeometry(cubieSize, cubieSize * 3, cubieSize * 3);
+    var glow = new THREE.Mesh(geom, glowMaterial.clone());
+    glow.position.copy(allCubes[4].position);
+    glow.scale.multiplyScalar(1.2);
+    scene.add(glow);
+    this.animateSolveMove(glow);
+
+    // if (this.displayedMoves || cubeDimensions > 5) {
+    //   return;
+    // }
+    // this.displayedMoves = true;
+    //
+    // for (var i = 0; i < this.scrambleMoves.length; i++) {
+    //   var move = this.scrambleMoves[this.scrambleMoves.length - i - 1];
+    //   if (typeof move === 'string') {
+    //     this._stringSolveMove(move);
+    //   } else {
+    //     this._objSolveMove(move);
+    //   }
+    // }
   };
 
   EventHandler.prototype.handleEvents = function (key) {
