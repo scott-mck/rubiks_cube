@@ -100,23 +100,7 @@
     this.glowPower *= (1 / .8);
   };
 
-  EventHandler.prototype.checkCorrectMove = function (keyPressed) {
-    if (['return', 'space'].indexOf(keyPressed) > -1) return;
-
-    var scrambleMove = this.scrambleMoves[this.scrambleMoves.length - 1];
-    if (Game.Cube.keyToMoveMap[keyPressed] === scrambleMove) {
-      this.scrambleMoves.pop();
-    } else {
-      var move = Game.Cube.keyToMoveMap[keyPressed];
-      var oppMove = this.cube.oppositeMove(move);
-      this.scrambleMoves.push(oppMove);
-    }
-  };
-
   EventHandler.prototype.click = function (mouseDown) {
-    if (this.cube.isSolved) {
-      this.hideSolveMoves();
-    }
     if (this.cube.animating) {
       return;
     }
@@ -188,11 +172,11 @@
     var rotationAxis = face.rotationAxis;
     var location;
     var geomSize = new THREE.Vector3(
-      cubieSize * cubeDimensions,
-      cubieSize * cubeDimensions,
-      cubieSize * cubeDimensions
+      (cubieSize * cubeDimensions),
+      (cubieSize * cubeDimensions),
+      (cubieSize * cubeDimensions)
     );
-    geomSize[rotationAxis] = cubieSize;
+    geomSize[rotationAxis] = cubieSize * (4/5);
 
     if (['m', 'e', 's'].indexOf(solveMove[0]) > -1) {
       location = 0;
@@ -216,13 +200,8 @@
   };
 
   EventHandler.prototype.handleEvents = function (key) {
-    if (this.cube.isSolved) {
-      this.hideSolveMoves();
-    }
-
     var keyPressed = this.keyCodeMap[key.keyCode];
     this.detectTimerStart(keyPressed);
-    this.checkCorrectMove(keyPressed);
 
     switch (keyPressed) {
     case 'return':
@@ -245,12 +224,6 @@
     this._eventLoop.push(function () {
       this.cube.move(move);
     }.bind(this));
-  };
-
-  EventHandler.prototype.hideSolveMoves = function () {
-    $('.solve-moves').empty();
-    $('.undo-moves').empty();
-    this.displayedMoves = false;
   };
 
   EventHandler.prototype.sampleSolve = function () {
@@ -283,47 +256,13 @@
   };
 
   EventHandler.prototype.scramble = function () {
-    if (this._sampling) {
-      return;
-    }
-    if (cubeDimensions > 5) {
-      this.scrambleForBigCubes();
-      return;
-    }
-
-    this.hideSolveMoves();
-    $('.timer').text('0.00').css('color', 'white');
-
-    var prevMove = ''; // no two scramble moves are the same
-    var oppositeMove = ''; // no two scramble moves cancel out
-
-    for (var i = 0; i < scrambleLength; i++) {
-      // Get random move, make sure no two in a row are the same
-      var randMove = this.cube.randomMove();
-      while (randMove === oppositeMove || randMove === prevMove) {
-        randMove = this.cube.randomMove();
-      }
-      this._eventLoop.push(this.cube.move.bind(this.cube, randMove));
-      prevMove = randMove;
-      oppositeMove = this.cube.oppositeMove(randMove);
-
-      this.scrambleMoves.push(oppositeMove);
-    }
     this.scrambled = true;
     this.cube.isSolved = false;
-  };
-
-EventHandler.prototype.scrambleForBigCubes = function () {
-    this.scrambled = true;
-    this.cube.isSolved = false;
-    this.hideSolveMoves();
     $('.timer').text('0.00').css('color', 'white');
 
-    // TODO: don't allow moves that cancel each other out
     for (var i = 0; i < scrambleLength; i++) {
       this._eventLoop.push(function () {
         var randMove = this.cube.randomMove();
-        this.scrambleMoves.push(randMove);
         this.cube.move(randMove);
       }.bind(this));
     }
@@ -333,11 +272,11 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     if (this.cube.animating) {
       return;
     }
-    this.scrambled = false;
-    for (var i = 0; i < this.scrambleMoves.length; i++) {
-      var fn = this.scrambleMoves[this.scrambleMoves.length - 1 - i];
-      fn.rotationDir *= -1;
-      this._eventLoop.push(this.cube.move.bind(this.cube, fn));
+    // this.scrambled = false;
+    while (this.cube.movesMade.length > 0) {
+      var moveDetails = this.cube.movesMade.pop();
+      moveDetails.rotationDir *= -1;
+      this._eventLoop.push(this.cube.move.bind(this.cube, moveDetails));
     }
   };
 
@@ -359,14 +298,14 @@ EventHandler.prototype.scrambleForBigCubes = function () {
     if (this.cube.isSolved && this._timing) {
       this.stopTimer();
       this._eventLoop = [];
-      this.scrambleMoves = [];
+      this.cube.movesMade = [];
       this.startTime = undefined;
     }
     if (!this.cube.animating && this._eventLoop.length > 0) {
       this._eventLoop.shift()();
     }
     if (this.cube.isSolved) {
-      this.scrambleMoves = [];
+      this.cube.movesMade = [];
       clearInterval(this.repeatSolveMoveId);
     }
   };
@@ -413,18 +352,17 @@ EventHandler.prototype.scrambleForBigCubes = function () {
       return;
     }
 
+    var cubesToRotate = this.cube.captureCubes(startPos, rayDir, sliceDir);
     moveDetails = {
-      startPos: startPos,
-      rayDir: rayDir,
-      sliceDir: sliceDir,
+      cubesToRotate: cubesToRotate,
       rotationAxis: rotationAxis,
       rotationDir: rotationDir
     };
-    this._eventLoop.push(this.cube.move.bind(this.cube, moveDetails));
-    this.scrambleMoves.push(moveDetails);
+    this._eventLoop.push(function () {
+      this.cube.move(moveDetails);
+    }.bind(this));
 
     this.detectTimerStart('click');
-    this.checkCorrectMove();
   };
 
   EventHandler.prototype._rotateCube = function (mouseDown, mouseUp) {

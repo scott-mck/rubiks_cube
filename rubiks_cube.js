@@ -1,4 +1,3 @@
-
 (function () {
   if (typeof Game === "undefined") {
     Game = {};
@@ -8,6 +7,7 @@
     this.scene = scene;
     this.camera = camera;
     this.renderer = renderer;
+    this.movesMade = [];
     this.animating = false;
     this.isSolved = true;
 
@@ -238,6 +238,19 @@
     return left.concat(right);
   };
 
+  rubiksCube.prototype.checkCorrectMove = function (moveDetails) {
+    if (this.movesMade.length === 0) {
+      this.movesMade.push(moveDetails);
+      return;
+    }
+    var lastMove = this.movesMade[this.movesMade.length - 1];
+    if (this.isOppositeMove(moveDetails, lastMove)) {
+      this.movesMade.pop();
+    } else {
+      this.movesMade.push(moveDetails);
+    }
+  };
+
   // TODO: prototypify this on THREE.Color
   rubiksCube.prototype.colorToString = function (color) {
     if (color.equals(new THREE.Color(1, 1, 1)))  return 'U';
@@ -288,28 +301,7 @@
     return colors;
   };
 
-  rubiksCube.prototype.move = function (name) {
-    this._updateSolveState(name);
-    if (typeof name !== 'string') {
-      var cubesToRotate = this.captureCubes(
-        name.startPos,
-        name.rayDir,
-        name.sliceDir
-      );
-      var rotatingFace = new THREE.Object3D();
-      for (var i = 0; i < cubesToRotate.length; i++) {
-        THREE.SceneUtils.attach(cubesToRotate[i], this.scene, rotatingFace);
-      }
-      this.scene.add(rotatingFace);
-      this.animate(rotatingFace, name.rotationAxis, name.rotationDir);
-      return;
-    }
-
-    if (['up', 'down', 'right', 'left'].indexOf(name) > -1) {
-      this.rotateCube(name);
-      return;
-    }
-
+  rubiksCube.prototype.getMoveDetailsOfFace = function (name) {
     var face = this[name[0]];
     var cubesToRotate = this.captureCubes(
       face.vector.startPos,
@@ -337,12 +329,48 @@
       cubesToRotate = this.captureMiddles(name[0]);
     }
 
-    var rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], this.scene, rotatingFace);
+    return {
+      cubesToRotate: cubesToRotate,
+      rotationAxis: rotationAxis,
+      rotationDir: rotationDir
+    };
+  };
+
+  rubiksCube.prototype.isOppositeMove = function (move1, move2) {
+    var cubes1 = move1.cubesToRotate;
+    var cubes2 = move2.cubesToRotate;
+
+    var facesAreSame = false;
+    if (cubeDimensions % 2 == 0) {
+      facesAreSame = this._middlesAreSame(cubes1, cubes2);
+    } else {
+      var midIndex = ~~(cubes1.length / 2);
+      facesAreSame = cubes1[midIndex] === cubes2[midIndex];
+      return facesAreSame &&
+             move1.rotationAxis === move2.rotationAxis &&
+             move1.rotationDir === move2.rotationDir * -1;
     }
-    this.scene.add(rotatingFace)
-    this.animate(rotatingFace, rotationAxis, rotationDir);
+  };
+
+  rubiksCube.prototype.move = function (moveDetails) {
+    this._updateSolveState(moveDetails);
+    var moveDetails;
+    if (typeof moveDetails === 'string') {
+      if (['up', 'down', 'right', 'left'].indexOf(moveDetails) > -1) {
+        moveDetails = this.getMoveDetailsOfRotation(moveDetails);
+      } else {
+        moveDetails = this.getMoveDetailsOfFace(moveDetails);
+      }
+    }
+
+    var rotatingFace = new THREE.Object3D();
+    for (var i = 0; i < moveDetails.cubesToRotate.length; i++) {
+      THREE.SceneUtils.attach(moveDetails.cubesToRotate[i], this.scene, rotatingFace);
+    }
+    this.scene.add(rotatingFace);
+
+    this.checkCorrectMove(moveDetails);
+    this.animate(rotatingFace, moveDetails.rotationAxis, moveDetails.rotationDir);
   };
 
   rubiksCube.prototype.oppositeMove = function (name) {
@@ -358,14 +386,10 @@
     if (name.indexOf('Prime') < 0) {
       oppMove += 'Prime';
     }
-    return oppMove
+    return oppMove;
   };
 
   rubiksCube.prototype.randomMove = function () {
-    if (cubeDimensions <= 5) {
-      var randIndex = ~~(Math.random() * (this.possibleMoves.length - 1));
-      return this.possibleMoves[randIndex];
-    }
     var sliceDir, cubesToRotate, rotationAxis, rotationDir;
     var axes = ['x', 'z', 'y'];
     var startPos = new THREE.Vector3();
@@ -387,10 +411,6 @@
     startPos[randNormal] = cubeStartPos;
 
     cubesToRotate = this.captureCubes(startPos, rayDir, sliceDir);
-    // rotatingFace = new THREE.Object3D();
-    // for (var j = 0; j < cubesToRotate.length; j++) {
-    //   THREE.SceneUtils.attach(cubesToRotate[j], this.scene, rotatingFace);
-    // }
     rotationDir = Math.random() < .5 ? -1 : 1;
 
     return {
@@ -400,8 +420,7 @@
     };
   };
 
-  rubiksCube.prototype.rotateCube = function (name) {
-    var cubesToRotate = allCubes;
+  rubiksCube.prototype.getMoveDetailsOfRotation = function (name) {
     var rotationAxis, rotationDir;
     if (name === 'left') {
       rotationAxis = 'y';
@@ -417,43 +436,35 @@
       rotationDir = -1;
     }
 
-    var rotatingFace = new THREE.Object3D();
-    for (var i = 0; i < cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(cubesToRotate[i], this.scene, rotatingFace);
-    }
-    this.scene.add(rotatingFace);
-    this.animate(rotatingFace, rotationAxis, rotationDir);
+    return {
+      cubesToRotate: allCubes,
+      rotationAxis: rotationAxis,
+      rotationDir: rotationDir
+    };
   };
 
-  rubiksCube.prototype.solve = function () {
-    return Cube.fromString(this.stringifyFaces());
-    return cube.solve();
+  rubiksCube.prototype._colorsAreSame = function (colors) {
+    var firstColor = colors[0];
+    var testColor;
+    for (var i = 1; i < colors.length; i++) {
+      testColor = colors[i];
+
+      if (!firstColor.equals(colors[i])) {
+        return false;
+      }
+    }
+    return true;
   };
 
-  rubiksCube.prototype.stringifyFaces = function () {
-    var u = this.getColorsOfFace('u');
-    var r = this.getColorsOfFace('r');
-    var f = this.getColorsOfFace('f');
-    var d = this.getColorsOfFace('d');
-    var l = this.getColorsOfFace('l');
-    var b = this.getColorsOfFace('b');
-
-    var uString = '';
-    var rString = '';
-    var fString = '';
-    var dString = '';
-    var lString = '';
-    var bString = '';
-
-    for (var i = 0; i < u.length; i++) {
-      uString += this.colorToString(u[i]);
-      rString += this.colorToString(r[i]);
-      fString += this.colorToString(f[i]);
-      dString += this.colorToString(d[i]);
-      lString += this.colorToString(l[i]);
-      bString += this.colorToString(b[i]);
+  rubiksCube.prototype._middlesAreSame = function (cubes1, cubes2) {
+    var midIndex = ~~(cubes1.length / 2);
+    var cubeToMatch = cubes1[midIndex];
+    for (var i = midIndex - 1; i < midIndex + 3; i++) {
+      if (cubeToMatch === cubes2[i]) {
+        return true;
+      }
     }
-    return uString + rString + fString + dString + lString + bString;
+    return false;
   };
 
   rubiksCube.prototype._updateSolveState = function (move) {
@@ -471,21 +482,8 @@
     }
     if (this.isSolved &&
         move !== undefined &&
-        ['left', 'right', 'up', 'down'].indexOf(move) === -1) {
+        ['left', 'right', 'up', 'down'].indexOf(move) < 0) {
       this.isSolved = false;
     }
-  };
-
-  rubiksCube.prototype._colorsAreSame = function (colors) {
-    var firstColor = colors[0];
-    var testColor;
-    for (var i = 1; i < colors.length; i++) {
-      testColor = colors[i];
-
-      if (!firstColor.equals(colors[i])) {
-        return false;
-      }
-    }
-    return true;
   };
 })();
