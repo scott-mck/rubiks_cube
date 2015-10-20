@@ -340,16 +340,15 @@
     var cubes1 = move1.cubesToRotate;
     var cubes2 = move2.cubesToRotate;
 
-    var facesAreSame = false;
+    var midIndex = ~~(cubes1.length / 2);
+    facesAreSame = cubes1[midIndex] === cubes2[midIndex];
+    
     if (cubeDimensions % 2 == 0) {
       facesAreSame = this._middlesAreSame(cubes1, cubes2);
-    } else {
-      var midIndex = ~~(cubes1.length / 2);
-      facesAreSame = cubes1[midIndex] === cubes2[midIndex];
-      return facesAreSame &&
-             move1.rotationAxis === move2.rotationAxis &&
-             move1.rotationDir === move2.rotationDir * -1;
     }
+    return facesAreSame &&
+           move1.rotationAxis === move2.rotationAxis &&
+           move1.rotationDir === move2.rotationDir * -1;
   };
 
   rubiksCube.prototype.move = function (moveDetails) {
@@ -457,10 +456,19 @@
   };
 
   rubiksCube.prototype._middlesAreSame = function (cubes1, cubes2) {
-    var midIndex = ~~(cubes1.length / 2);
-    var cubeToMatch = cubes1[midIndex];
-    for (var i = midIndex - 1; i < midIndex + 3; i++) {
-      if (cubeToMatch === cubes2[i]) {
+    var middles1 = [];
+    var middles2 = [];
+    var midIndex = (cubes1.length / 4) + 1;
+
+    for (var i = 0; i < 2; i++) {
+      for (var j = 0; j < 2; j++) {
+        middles1.push(cubes1[midIndex + j + (cubeDimensions * i)]);
+        middles2.push(cubes2[midIndex + j + (cubeDimensions * i)]);
+      }
+    }
+
+    for (var i = 0; i < 4; i++) {
+      if (middles1[0] === middles2[i]) {
         return true;
       }
     }
