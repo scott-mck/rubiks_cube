@@ -106,28 +106,34 @@
     }
 
     var intersects = this._getIntersects(mouseDown);
-    var mouseUpFn;
-    if (intersects.length === 0) {
-      mouseUpFn = function (mouseUp) {
+    var clickedMesh;
+    for (var i = 0; i < intersects.length; i++) {
+      if (intersects[i].object.name === 'cubie') {
+        clickedMesh = intersects[i];
+        break;
+      }
+    }
+
+    if (!clickedMesh) {
+      var mouseUpFn = function (mouseUp) {
         this._rotateCube(mouseDown, mouseUp);
       };
-    } else {
-      var clickedCube = intersects[0].object;
-      if (clickedCube.name !== 'cubie') {
-        return;
-      }
-
-      var normalVector = new THREE.Matrix4().extractRotation(clickedCube.matrixWorld)
-        .multiplyVector3(intersects[0].face.normal.clone());
-      var normal;
-      if (normalVector.x === 1) normal = 'x';
-      else if (normalVector.y === 1) normal = 'y';
-      else if (normalVector.z === 1) normal = 'z';
-
-      mouseUpFn = function (mouseUp) {
-        this._mouseUp(clickedCube, normal, mouseDown, mouseUp);
-      };
+      $('#canvas').one('mouseup', mouseUpFn.bind(this));
+      return;
     }
+
+    var vector = new THREE.Matrix4();
+    vector = vector.extractRotation(clickedMesh.object.matrixWorld);
+    vector = vector.multiplyVector3(clickedMesh.face.normal.clone());
+
+    var normal;
+    if (vector.x === 1) normal = 'x';
+    else if (vector.y === 1) normal = 'y';
+    else if (vector.z === 1) normal = 'z';
+
+    var mouseUpFn = function (mouseUp) {
+      this._mouseUp(clickedMesh.object, normal, mouseDown, mouseUp);
+    };
 
     $('#canvas').one('mouseup', mouseUpFn.bind(this));
   };
@@ -151,8 +157,7 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    var solveMove = this.scrambleMoves[this.scrambleMoves.length - 1];
-    if (typeof solveMove !== 'string') return;
+    var solveMove = this.cube.movesMade[this.cube.movesMade.length - 1];
 
     var glowMaterial = new THREE.ShaderMaterial({
       uniforms: {
@@ -168,35 +173,28 @@
       transparent: true
     });
 
-    var face = this.cube[solveMove[0]];
-    var rotationAxis = face.rotationAxis;
     var location;
     var geomSize = new THREE.Vector3(
       (cubieSize * cubeDimensions),
       (cubieSize * cubeDimensions),
       (cubieSize * cubeDimensions)
     );
-    geomSize[rotationAxis] = cubieSize * (4/5);
+    geomSize[solveMove.rotationAxis] = cubieSize * (4/5);
 
-    if (['m', 'e', 's'].indexOf(solveMove[0]) > -1) {
-      location = 0;
-      if (cubeDimensions % 2 == 0) {
-        geomSize[rotationAxis] = cubieSize * 2;
-      }
-    } else {
-      location = -cubeStartPos * face.rotationDir;
-    }
     var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
     var glow = new THREE.Mesh(geometry, glowMaterial.clone());
-    glow.position[face.rotationAxis] = location;
+    glow.name = 'glow';
+
+    var cubiePos = solveMove.cubesToRotate[0].position;
+    var glowPos = new THREE.Vector3(0, 0, 0);
+    glowPos[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
+
+    glow.position.copy(glowPos);
     glow.scale.multiplyScalar(1.2);
     scene.add(glow);
 
-    var rotationDir = this.cube[solveMove[0]].rotationDir;
-    if (solveMove.indexOf('Prime') > -1) {
-      rotationDir *= -1;
-    }
-    this.animateSolveMove(glow, rotationAxis, rotationDir);
+    var rotationDir = solveMove.rotationDir * -1;
+    this.animateSolveMove(glow, solveMove.rotationAxis, rotationDir);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
