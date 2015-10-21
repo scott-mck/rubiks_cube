@@ -156,9 +156,8 @@
     $('.timer').text(time.toFixed(2));
   };
 
-  EventHandler.prototype.displaySolveMoves = function () {
-    var solveMove = this.cube.movesMade[this.cube.movesMade.length - 1];
-
+  EventHandler.prototype._createSolveGlow = function (solveMove) {
+    // create glow material
     var glowMaterial = new THREE.ShaderMaterial({
       uniforms: {
         "c":   { type: "f", value: .5 },
@@ -173,30 +172,37 @@
       transparent: true
     });
 
-    var location;
+    // default width, height, depth of geometry equal to that of entire cube
     var geomSize = new THREE.Vector3(
       (cubieSize * cubeDimensions),
       (cubieSize * cubeDimensions),
       (cubieSize * cubeDimensions)
     );
-
+    // make width of geometry proportional to number of cubes to rotate
     var width = solveMove.cubesToRotate.length / Math.pow(cubeDimensions, 2);
     geomSize[solveMove.rotationAxis] = cubieSize * width;
 
+    // create mesh
     var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
     var glow = new THREE.Mesh(geometry, glowMaterial.clone());
-    glow.name = 'glow';
+    // set correct mesh position
+    var glowPosition = new THREE.Vector3(0, 0, 0);
+    var midIndex = ~~(solveMove.cubesToRotate.length / 2);
+    var cubiePos = solveMove.cubesToRotate[midIndex].position;
+    glowPosition[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
+    glow.position.copy(glowPosition);
 
-    var cubiePos = solveMove.cubesToRotate[~~(solveMove.cubesToRotate.length / 2)].position;
-    var glowPos = new THREE.Vector3(0, 0, 0);
-    glowPos[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
-
-    glow.position.copy(glowPos);
     glow.scale.multiplyScalar(1.1);
-    scene.add(glow);
+    return glow;
+  };
+
+  EventHandler.prototype.displaySolveMoves = function () {
+    var solveMove = this.cube.movesMade[this.cube.movesMade.length - 1];
+    var solveGlow = this._createSolveGlow(solveMove);
+    scene.add(solveGlow);
 
     var rotationDir = solveMove.rotationDir * -1;
-    this.animateSolveMove(glow, solveMove.rotationAxis, rotationDir);
+    this.animateSolveMove(solveGlow, solveMove.rotationAxis, rotationDir);
   };
 
   EventHandler.prototype.handleEvents = function (key) {
