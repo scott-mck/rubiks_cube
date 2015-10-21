@@ -433,6 +433,8 @@
   };
 
   rubiksCube.prototype._colorsAreSame = function (colors) {
+    if (colors.length === 0) return;
+
     var firstColor = colors[0];
     var testColor;
     for (var i = 1; i < colors.length; i++) {
