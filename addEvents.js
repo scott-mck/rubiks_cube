@@ -15,6 +15,10 @@
       eventHandler.sampleSolve();
     });
 
+    $('.display-solve-moves').on('click', function () {
+      eventHandler.displaySolveMoves();
+    });
+
     $('.button').hover(
       function (event) {
         $(event.currentTarget).css('background', 'green');
