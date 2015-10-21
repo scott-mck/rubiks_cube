@@ -151,22 +151,3 @@ body {
   color: white;
   font-size: 8vh;
 }
-
-.list {
-  transition: 200ms;
-  word-break: break-all;
-  width: 800px;
-  letter-spacing: 2px;
-  margin: auto;
-  font-family: 'AMC', sans-serif;
-  font-size: 3vh;
-}
-
-.list span {
-  transition: 200ms;
-}
-
-.undo-moves {
-  text-align: left;
-  color: red;
-}
