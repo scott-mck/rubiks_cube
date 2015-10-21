@@ -304,15 +304,16 @@
     if (this.cube.isSolved && this._timing) {
       this.stopTimer();
       this._eventLoop = [];
-      this.cube.movesMade = [];
       this.startTime = undefined;
     }
     if (!this.cube.animating && this._eventLoop.length > 0) {
       this._eventLoop.shift()();
     }
     if (this.cube.isSolved) {
-      this.cube.movesMade = [];
       clearInterval(this.repeatSolveMoveId);
+      $('.solve.button').removeClass('enabled').addClass('disabled');
+    } else {
+      $('.solve.button').removeClass('disabled').addClass('enabled');
     }
   };
 
