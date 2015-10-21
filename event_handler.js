@@ -179,18 +179,20 @@
       (cubieSize * cubeDimensions),
       (cubieSize * cubeDimensions)
     );
-    geomSize[solveMove.rotationAxis] = cubieSize * (4/5);
+
+    var width = solveMove.cubesToRotate.length / Math.pow(cubeDimensions, 2);
+    geomSize[solveMove.rotationAxis] = cubieSize * width;
 
     var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
     var glow = new THREE.Mesh(geometry, glowMaterial.clone());
     glow.name = 'glow';
 
-    var cubiePos = solveMove.cubesToRotate[0].position;
+    var cubiePos = solveMove.cubesToRotate[~~(solveMove.cubesToRotate.length / 2)].position;
     var glowPos = new THREE.Vector3(0, 0, 0);
     glowPos[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
 
     glow.position.copy(glowPos);
-    glow.scale.multiplyScalar(1.2);
+    glow.scale.multiplyScalar(1.1);
     scene.add(glow);
 
     var rotationDir = solveMove.rotationDir * -1;
