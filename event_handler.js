@@ -61,43 +61,12 @@
     }.bind(this));
     if (glow.material.uniforms.p.value <= .4) {
       cancelAnimationFrame(id);
-      this.rotateSolveMove(glow, rotationAxis, rotationDir);
+      this._rotateSolveMove(glow, rotationAxis, rotationDir);
       return;
     }
     this.glowPower = this.glowPower || .7;
     glow.material.uniforms.p.value -= this.glowPower;
     this.glowPower *= .89;
-  };
-
-  EventHandler.prototype.rotateSolveMove = function (glow, rotationAxis, rotationDir) {
-    var id = requestAnimationFrame(function () {
-      this.rotateSolveMove(glow, rotationAxis, rotationDir);
-      renderer.render(scene, camera);
-    }.bind(this));
-
-    if (glow.rotation[rotationAxis] >= Math.PI / 2 ||
-        glow.rotation[rotationAxis] <= -Math.PI / 2) {
-      cancelAnimationFrame(id);
-      this.glowRotation = false;
-      this.fadeOutSolveMove(glow);
-      return;
-    }
-    glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
-  };
-
-  EventHandler.prototype.fadeOutSolveMove = function (glow, rotationAxis) {
-    var id = requestAnimationFrame(function () {
-      this.fadeOutSolveMove(glow);
-      renderer.render(scene, camera);
-    }.bind(this));
-    if (glow.material.uniforms.p.value >= 6) {
-      cancelAnimationFrame(id);
-      this.glowPower = false;
-      scene.remove(glow);
-      return;
-    }
-    glow.material.uniforms.p.value += this.glowPower;
-    this.glowPower *= (1 / .8);
   };
 
   EventHandler.prototype.click = function (mouseDown) {
@@ -154,46 +123,6 @@
     this.startTime = this.startTime || new Date();
     var time = Math.round(parseInt(new Date() - this.startTime) / 10) / 100;
     $('.timer').text(time.toFixed(2));
-  };
-
-  EventHandler.prototype._createSolveGlow = function (solveMove) {
-    // create glow material
-    var glowMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        "c":   { type: "f", value: .5 },
-        "p":   { type: "f", value: 6 },
-        glowColor: { type: "c", value: new THREE.Color(0xffff00) },
-        viewVector: { type: "v3", value: camera.position }
-      },
-      vertexShader: document.getElementById('vertexShader').textContent,
-      fragmentShader: document.getElementById('fragmentShader').textContent,
-      side: THREE.FrontSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true
-    });
-
-    // default width, height, depth of geometry equal to that of entire cube
-    var geomSize = new THREE.Vector3(
-      (cubieSize * cubeDimensions),
-      (cubieSize * cubeDimensions),
-      (cubieSize * cubeDimensions)
-    );
-    // make width of geometry proportional to number of cubes to rotate
-    var width = solveMove.cubesToRotate.length / Math.pow(cubeDimensions, 2);
-    geomSize[solveMove.rotationAxis] = cubieSize * width;
-
-    // create mesh
-    var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
-    var glow = new THREE.Mesh(geometry, glowMaterial.clone());
-    // set correct mesh position
-    var glowPosition = new THREE.Vector3(0, 0, 0);
-    var midIndex = ~~(solveMove.cubesToRotate.length / 2);
-    var cubiePos = solveMove.cubesToRotate[midIndex].position;
-    glowPosition[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
-    glow.position.copy(glowPosition);
-
-    glow.scale.multiplyScalar(1.1);
-    return glow;
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
@@ -263,7 +192,6 @@
 
   EventHandler.prototype.scramble = function () {
     this.scrambled = true;
-    this.cube.isSolved = false;
     $('.timer').text('0.00').css('color', 'white');
 
     for (var i = 0; i < scrambleLength; i++) {
@@ -315,6 +243,61 @@
     } else {
       $('.solve.button').removeClass('disabled').addClass('enabled');
     }
+  };
+
+  EventHandler.prototype._createSolveGlow = function (solveMove) {
+    // create glow material
+    var glowMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        "c":   { type: "f", value: .5 },
+        "p":   { type: "f", value: 6 },
+        glowColor: { type: "c", value: new THREE.Color(0xffff00) },
+        viewVector: { type: "v3", value: camera.position }
+      },
+      vertexShader: document.getElementById('vertexShader').textContent,
+      fragmentShader: document.getElementById('fragmentShader').textContent,
+      side: THREE.FrontSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    });
+
+    // default width, height, depth of geometry equal to that of entire cube
+    var geomSize = new THREE.Vector3(
+      (cubieSize * cubeDimensions),
+      (cubieSize * cubeDimensions),
+      (cubieSize * cubeDimensions)
+    );
+    // make width of geometry proportional to number of cubes to rotate
+    var width = solveMove.cubesToRotate.length / Math.pow(cubeDimensions, 2);
+    geomSize[solveMove.rotationAxis] = cubieSize * width;
+
+    // create mesh
+    var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
+    var glow = new THREE.Mesh(geometry, glowMaterial.clone());
+    // set correct mesh position
+    var glowPosition = new THREE.Vector3(0, 0, 0);
+    var midIndex = ~~(solveMove.cubesToRotate.length / 2);
+    var cubiePos = solveMove.cubesToRotate[midIndex].position;
+    glowPosition[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
+    glow.position.copy(glowPosition);
+
+    glow.scale.multiplyScalar(1.1);
+    return glow;
+  };
+
+  EventHandler.prototype._fadeOutSolveMove = function (glow, rotationAxis) {
+    var id = requestAnimationFrame(function () {
+      this._fadeOutSolveMove(glow);
+      renderer.render(scene, camera);
+    }.bind(this));
+    if (glow.material.uniforms.p.value >= 6) {
+      cancelAnimationFrame(id);
+      this.glowPower = false;
+      scene.remove(glow);
+      return;
+    }
+    glow.material.uniforms.p.value += this.glowPower;
+    this.glowPower *= (1 / .8);
   };
 
   EventHandler.prototype._getIntersects = function (event) {
@@ -389,6 +372,22 @@
       this._eventLoop.push(this.cube.move.bind(this.cube, 'down'));
       this.scrambleMoves.push('up');
     }
+  };
+
+  EventHandler.prototype._rotateSolveMove = function (glow, rotationAxis, rotationDir) {
+    var id = requestAnimationFrame(function () {
+      this._rotateSolveMove(glow, rotationAxis, rotationDir);
+      renderer.render(scene, camera);
+    }.bind(this));
+
+    if (glow.rotation[rotationAxis] >= Math.PI / 2 ||
+        glow.rotation[rotationAxis] <= -Math.PI / 2) {
+      cancelAnimationFrame(id);
+      this.glowRotation = false;
+      this._fadeOutSolveMove(glow);
+      return;
+    }
+    glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
   };
 
   EventHandler.prototype._sleep = function (milli) {
