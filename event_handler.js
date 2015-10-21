@@ -23,7 +23,6 @@
     this.interval = setInterval(this.triggerEvent.bind(this), 10);
 
     this.keyCodeMap = {
-      13: 'return',
       32: 'space',
       65: 'a',
       67: 'c',
@@ -126,12 +125,11 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    var solveMove = this.cube.movesMade[this.cube.movesMade.length - 1];
-    var solveGlow = this._createSolveGlow(solveMove);
-    scene.add(solveGlow);
-
-    var rotationDir = solveMove.rotationDir * -1;
-    this.animateSolveMove(solveGlow, solveMove.rotationAxis, rotationDir);
+    clearInterval(this.repeatSolveMoveId);
+    this.repeatSolveMoveId = setInterval(function () {
+      this._showNextMove();
+    }.bind(this), 2000);
+    this._showNextMove();
   };
 
   EventHandler.prototype.handleEvents = function (key) {
@@ -139,19 +137,14 @@
     this.detectTimerStart(keyPressed);
 
     switch (keyPressed) {
-    case 'return':
-      clearInterval(this.repeatSolveMoveId);
-      this.displaySolveMoves();
-      this.repeatSolveMoveId = setInterval(function () {
-        this.displaySolveMoves();
-      }.bind(this), 2000);
-      return;
     case 'space':
       if (this.cube.isSolved) {
         this.scramble();
       } else {
         this.solve();
       }
+      return;
+    case undefined:
       return;
     }
 
@@ -239,9 +232,11 @@
     }
     if (this.cube.isSolved) {
       clearInterval(this.repeatSolveMoveId);
-      $('.solve.button').removeClass('enabled').addClass('disabled');
+      $('.solve').removeClass('enabled').addClass('disabled');
+      $('.display-solve-moves').removeClass('enabled').addClass('disabled');
     } else {
-      $('.solve.button').removeClass('disabled').addClass('enabled');
+      $('.solve').removeClass('disabled').addClass('enabled');
+      $('.display-solve-moves').removeClass('disabled').addClass('enabled');
     }
   };
 
@@ -395,5 +390,14 @@
     setTimeout(function () {
       this.interval = setInterval(this.triggerEvent.bind(this), 10);
     }.bind(this), milli);
+  };
+
+  EventHandler.prototype._showNextMove = function () {
+    var solveMove = this.cube.movesMade[this.cube.movesMade.length - 1];
+    var solveGlow = this._createSolveGlow(solveMove);
+    scene.add(solveGlow);
+
+    var rotationDir = solveMove.rotationDir * -1;
+    this.animateSolveMove(solveGlow, solveMove.rotationAxis, rotationDir);
   };
 })();
