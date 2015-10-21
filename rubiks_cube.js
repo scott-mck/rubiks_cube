@@ -450,12 +450,13 @@
   rubiksCube.prototype._middlesAreSame = function (cubes1, cubes2) {
     var middles1 = [];
     var middles2 = [];
-    var midIndex = (cubes1.length / 4) + 1;
+    var midIndex = ~~(cubes1.length / 2) - 1;
+    var midCubeIndex = midIndex - (cubeDimensions / 2);
 
     for (var i = 0; i < 2; i++) {
       for (var j = 0; j < 2; j++) {
-        middles1.push(cubes1[midIndex + j + (cubeDimensions * i)]);
-        middles2.push(cubes2[midIndex + j + (cubeDimensions * i)]);
+        middles1.push(cubes1[midCubeIndex + j + (cubeDimensions * i)]);
+        middles2.push(cubes2[midCubeIndex + j + (cubeDimensions * i)]);
       }
     }
 
