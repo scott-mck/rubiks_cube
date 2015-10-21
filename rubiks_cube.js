@@ -215,7 +215,7 @@
     }
 
     for (var i = 0; i < allCaptures.length; i++) {
-      // make sure captured object is a 'cubie', no duplicates
+      // make sure captured object is a 'cubie' and no duplicates
       if (allCaptures[i].object.name === "cubie" &&
           capturedCubes.indexOf(allCaptures[i].object) === -1) {
         capturedCubes.push(allCaptures[i].object);
@@ -282,12 +282,12 @@
       intersects = ray.intersectObjects(this.scene.children);
 
       for (var j = 0; j < intersects.length; j++) {
-        if (intersects[0].object.name === "cubie")
-        colors.push(intersects[0].face.color);
-        break;
+        if (intersects[j].object.name === "cubie") {
+          colors.push(intersects[j].face.color);
+          break;
+        }
       }
     }
-
     return colors;
   };
 
