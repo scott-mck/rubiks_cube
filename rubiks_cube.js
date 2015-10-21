@@ -477,6 +477,7 @@
         this._colorsAreSame(frontFace) &&
         this._colorsAreSame(upFace)) {
       this.isSolved = true;
+      this.movesMade = [];
     }
     if (this.isSolved &&
         move !== undefined &&
