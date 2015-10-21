@@ -107,10 +107,6 @@ init = function (cubeDimensions) {
       });
     }
 
-    if (cubeDimensions <= 5) {
-      $('.display-solve').css('display', 'block');
-    }
-
     setInterval(function () {
       var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];
       var i = ~~(Math.random() * colors.length);
