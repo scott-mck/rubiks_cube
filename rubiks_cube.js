@@ -251,16 +251,6 @@
     }
   };
 
-  // TODO: prototypify this on THREE.Color
-  rubiksCube.prototype.colorToString = function (color) {
-    if (color.equals(new THREE.Color(1, 1, 1)))  return 'U';
-    if (color.equals(new THREE.Color(1, 0, 0)))  return 'R';
-    if (color.equals(new THREE.Color(0, 1, 0)))  return 'F';
-    if (color.equals(new THREE.Color(0, 0, 1)))  return 'D';
-    if (color.equals(new THREE.Color(1, .5, 0))) return 'L';
-    if (color.equals(new THREE.Color(1, 1, 0)))  return 'B';
-  };
-
   rubiksCube.prototype.finishAnimation = function (rotatingFace, id) {
     cancelAnimationFrame(id);
     this.animating = false;
@@ -342,7 +332,7 @@
 
     var midIndex = ~~(cubes1.length / 2);
     facesAreSame = cubes1[midIndex] === cubes2[midIndex];
-    
+
     if (cubeDimensions % 2 == 0) {
       facesAreSame = this._middlesAreSame(cubes1, cubes2);
     }
