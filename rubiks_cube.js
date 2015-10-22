@@ -307,12 +307,12 @@
     if (name.indexOf('Double') > -1) {
       var middle = face.vector.startPos.clone();
       middle[face.rotationAxis] += cubieSize * face.rotationDir;
-      var middleCubes = this.captureCubes(
+      var secondaryCubes = this.captureCubes(
         middle,
         face.vector.rayDir,
         face.vector.sliceDir
       );
-      cubesToRotate = cubesToRotate.concat(middleCubes);
+      // cubesToRotate = cubesToRotate.concat(middleCubes);
     }
 
     if (['m', 'e', 's'].indexOf(name[0]) > -1 && cubeDimensions % 2 === 0) {
@@ -321,6 +321,7 @@
 
     return {
       cubesToRotate: cubesToRotate,
+      secondaryCubes: secondaryCubes,
       rotationAxis: rotationAxis,
       rotationDir: rotationDir
     };
@@ -357,9 +358,22 @@
       THREE.SceneUtils.attach(moveDetails.cubesToRotate[i], this.scene, rotatingFace);
     }
     this.scene.add(rotatingFace);
-
     this.checkCorrectMove(moveDetails);
     this.animate(rotatingFace, moveDetails.rotationAxis, moveDetails.rotationDir);
+
+    if (moveDetails.secondaryCubes) { // for double moves
+      var secondaryFace = new THREE.Object3D();
+      for (var i = 0; i < moveDetails.secondaryCubes.length; i++) {
+        THREE.SceneUtils.attach(moveDetails.secondaryCubes[i], this.scene, secondaryFace);
+      }
+      this.scene.add(secondaryFace);
+      this.checkCorrectMove({
+        cubesToRotate: moveDetails.secondaryCubes,
+        rotationAxis: moveDetails.rotationAxis,
+        rotationDir: moveDetails.rotationDir
+      });
+      this.animate(secondaryFace, moveDetails.rotationAxis, moveDetails.rotationDir);
+    }
   };
 
   rubiksCube.prototype.oppositeMove = function (name) {
