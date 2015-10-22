@@ -344,7 +344,6 @@
 
   rubiksCube.prototype.move = function (moveDetails) {
     this._updateSolveState(moveDetails);
-    var moveDetails;
     if (typeof moveDetails === 'string') {
       if (['up', 'down', 'right', 'left'].indexOf(moveDetails) > -1) {
         moveDetails = this.getMoveDetailsOfRotation(moveDetails);
@@ -358,7 +357,11 @@
       THREE.SceneUtils.attach(moveDetails.cubesToRotate[i], this.scene, rotatingFace);
     }
     this.scene.add(rotatingFace);
-    this.checkCorrectMove(moveDetails);
+    this.checkCorrectMove({
+      cubesToRotate: moveDetails.cubesToRotate,
+      rotationAxis: moveDetails.rotationAxis,
+      rotationDir: moveDetails.rotationDir
+    });
     this.animate(rotatingFace, moveDetails.rotationAxis, moveDetails.rotationDir);
 
     if (moveDetails.secondaryCubes) { // for double moves
