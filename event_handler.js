@@ -262,9 +262,10 @@
       (cubieSize * cubeDimensions),
       (cubieSize * cubeDimensions)
     );
-    // make width of geometry proportional to number of cubes to rotate
-    var width = solveMove.cubesToRotate.length / Math.pow(cubeDimensions, 2);
-    geomSize[solveMove.rotationAxis] = cubieSize * width;
+    geomSize[solveMove.rotationAxis] = cubieSize;
+    if (solveMove.cubesToRotate.length === allCubes.length) {
+      geomSize[solveMove.rotationAxis] = cubieSize * cubeDimensions;
+    }
 
     // create mesh
     var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
@@ -275,6 +276,10 @@
     var cubiePos = solveMove.cubesToRotate[midIndex].position;
     glowPosition[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
     glow.position.copy(glowPosition);
+
+    if (solveMove.cubesToRotate.length === allCubes.length) {
+      glow.position.copy(new THREE.Vector3());
+    }
 
     glow.scale.multiplyScalar(1.1);
     return glow;
