@@ -342,13 +342,14 @@
            move1.rotationDir === move2.rotationDir * -1;
   };
 
-  rubiksCube.prototype.move = function (moveDetails) {
-    this._updateSolveState(moveDetails);
-    if (typeof moveDetails === 'string') {
-      if (['up', 'down', 'right', 'left'].indexOf(moveDetails) > -1) {
-        moveDetails = this.getMoveDetailsOfRotation(moveDetails);
+  rubiksCube.prototype.move = function (move) {
+    this._updateSolveState(move);
+    var moveDetails = move;
+    if (typeof move === 'string') {
+      if (['up', 'down', 'right', 'left'].indexOf(move) > -1) {
+        moveDetails = this.getMoveDetailsOfRotation(move);
       } else {
-        moveDetails = this.getMoveDetailsOfFace(moveDetails);
+        moveDetails = this.getMoveDetailsOfFace(move);
       }
     }
 
@@ -364,18 +365,13 @@
     });
     this.animate(rotatingFace, moveDetails.rotationAxis, moveDetails.rotationDir);
 
-    if (moveDetails.secondaryCubes) { // for double moves
-      var secondaryFace = new THREE.Object3D();
-      for (var i = 0; i < moveDetails.secondaryCubes.length; i++) {
-        THREE.SceneUtils.attach(moveDetails.secondaryCubes[i], this.scene, secondaryFace);
-      }
-      this.scene.add(secondaryFace);
-      this.checkCorrectMove({
+    // for double moves
+    if (moveDetails.secondaryCubes) {
+      this.move({
         cubesToRotate: moveDetails.secondaryCubes,
         rotationAxis: moveDetails.rotationAxis,
         rotationDir: moveDetails.rotationDir
       });
-      this.animate(secondaryFace, moveDetails.rotationAxis, moveDetails.rotationDir);
     }
   };
 
