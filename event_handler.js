@@ -53,21 +53,6 @@
     };
   };
 
-  EventHandler.prototype.animateSolveMove = function (glow, rotationAxis, rotationDir) {
-    var id = requestAnimationFrame(function () {
-      this.animateSolveMove(glow, rotationAxis, rotationDir);
-      renderer.render(scene, camera);
-    }.bind(this));
-    if (glow.material.uniforms.p.value <= .4) {
-      cancelAnimationFrame(id);
-      this._rotateSolveMove(glow, rotationAxis, rotationDir);
-      return;
-    }
-    this.glowPower = this.glowPower || .7;
-    glow.material.uniforms.p.value -= this.glowPower;
-    this.glowPower *= .89;
-  };
-
   EventHandler.prototype.click = function (mouseDown) {
     if (this.cube.animating) {
       return;
@@ -128,7 +113,7 @@
     clearInterval(this.repeatSolveMoveId);
     this.repeatSolveMoveId = setInterval(function () {
       this._showNextMove();
-    }.bind(this), 2000);
+    }.bind(this), 1700);
     this._showNextMove();
   };
 
@@ -240,21 +225,25 @@
     }
   };
 
+  EventHandler.prototype._animateSolveMove = function (glow, rotationAxis, rotationDir) {
+    var id = requestAnimationFrame(function () {
+      this._animateSolveMove(glow, rotationAxis, rotationDir);
+      renderer.render(scene, camera);
+    }.bind(this));
+
+    glow.material.opacity += .02;
+
+    if (glow.material.opacity >= .2 && !this.rotating) {
+      this._rotateSolveMove(glow, rotationAxis, rotationDir);
+    }
+
+    if (glow.material.opacity >= .8) {
+      cancelAnimationFrame(id);
+    }
+  };
+
   EventHandler.prototype._createSolveGlow = function (solveMove) {
-    // create glow material
-    var glowMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        "c":   { type: "f", value: .5 },
-        "p":   { type: "f", value: 6 },
-        glowColor: { type: "c", value: new THREE.Color(0xffff00) },
-        viewVector: { type: "v3", value: camera.position }
-      },
-      vertexShader: document.getElementById('vertexShader').textContent,
-      fragmentShader: document.getElementById('fragmentShader').textContent,
-      side: THREE.FrontSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true
-    });
+    var material = new THREE.MeshBasicMaterial({ color: 0xFFFF00 });
 
     // default width, height, depth of geometry equal to that of entire cube
     var geomSize = new THREE.Vector3(
@@ -269,7 +258,7 @@
 
     // create mesh
     var geometry = new THREE.BoxGeometry(geomSize.x, geomSize.y, geomSize.z);
-    var glow = new THREE.Mesh(geometry, glowMaterial.clone());
+    var glow = new THREE.Mesh(geometry, material);
     // set correct mesh position
     var glowPosition = new THREE.Vector3(0, 0, 0);
     var midIndex = ~~(solveMove.cubesToRotate.length / 2);
@@ -278,10 +267,12 @@
     glow.position.copy(glowPosition);
 
     if (solveMove.cubesToRotate.length === allCubes.length) {
-      glow.position.copy(new THREE.Vector3());
+    glow.position.copy(new THREE.Vector3());
     }
 
     glow.scale.multiplyScalar(1.1);
+    glow.material.transparent = true;
+    glow.material.opacity = 0;
     return glow;
   };
 
@@ -290,14 +281,13 @@
       this._fadeOutSolveMove(glow);
       renderer.render(scene, camera);
     }.bind(this));
-    if (glow.material.uniforms.p.value >= 6) {
+
+    glow.material.opacity -= .04;
+
+    if (glow.material.opacity <= 0) {
       cancelAnimationFrame(id);
-      this.glowPower = false;
       scene.remove(glow);
-      return;
     }
-    glow.material.uniforms.p.value += this.glowPower;
-    this.glowPower *= (1 / .8);
   };
 
   EventHandler.prototype._getIntersects = function (event) {
@@ -375,19 +365,20 @@
   };
 
   EventHandler.prototype._rotateSolveMove = function (glow, rotationAxis, rotationDir) {
+    this.rotating = true;
     var id = requestAnimationFrame(function () {
       this._rotateSolveMove(glow, rotationAxis, rotationDir);
       renderer.render(scene, camera);
     }.bind(this));
 
+    glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
+
     if (glow.rotation[rotationAxis] >= Math.PI / 2 ||
         glow.rotation[rotationAxis] <= -Math.PI / 2) {
       cancelAnimationFrame(id);
-      this.glowRotation = false;
+      this.rotating = false;
       this._fadeOutSolveMove(glow);
-      return;
     }
-    glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
   };
 
   EventHandler.prototype._sleep = function (milli) {
@@ -403,6 +394,6 @@
     scene.add(solveGlow);
 
     var rotationDir = solveMove.rotationDir * -1;
-    this.animateSolveMove(solveGlow, solveMove.rotationAxis, rotationDir);
+    this._animateSolveMove(solveGlow, solveMove.rotationAxis, rotationDir);
   };
 })();
