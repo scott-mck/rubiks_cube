@@ -312,7 +312,6 @@
         face.vector.rayDir,
         face.vector.sliceDir
       );
-      // cubesToRotate = cubesToRotate.concat(middleCubes);
     }
 
     if (['m', 'e', 's'].indexOf(name[0]) > -1 && cubeDimensions % 2 === 0) {
@@ -328,18 +327,12 @@
   };
 
   rubiksCube.prototype.isOppositeMove = function (move1, move2) {
-    var cubes1 = move1.cubesToRotate;
-    var cubes2 = move2.cubesToRotate;
+    var sameAxis = move1.rotationAxis === move2.rotationAxis;
+    var sameDir = move1.rotationDir === move2.rotationDir;
+    var pos1 = ~~move1.cubesToRotate[0].position[move1.rotationAxis];
+    var pos2 = ~~move2.cubesToRotate[0].position[move2.rotationAxis];
 
-    var midIndex = ~~(cubes1.length / 2);
-    facesAreSame = cubes1[midIndex] === cubes2[midIndex];
-
-    if (cubeDimensions % 2 == 0) {
-      facesAreSame = this._middlesAreSame(cubes1, cubes2);
-    }
-    return facesAreSame &&
-           move1.rotationAxis === move2.rotationAxis &&
-           move1.rotationDir === move2.rotationDir * -1;
+    return sameAxis && !sameDir && pos1 === pos2;
   };
 
   rubiksCube.prototype.move = function (move) {
@@ -458,27 +451,6 @@
       }
     }
     return true;
-  };
-
-  rubiksCube.prototype._middlesAreSame = function (cubes1, cubes2) {
-    var middles1 = [];
-    var middles2 = [];
-    var midIndex = ~~(cubes1.length / 2) - 1;
-    var midCubeIndex = midIndex - (cubeDimensions / 2);
-
-    for (var i = 0; i < 2; i++) {
-      for (var j = 0; j < 2; j++) {
-        middles1.push(cubes1[midCubeIndex + j + (cubeDimensions * i)]);
-        middles2.push(cubes2[midCubeIndex + j + (cubeDimensions * i)]);
-      }
-    }
-
-    for (var i = 0; i < 4; i++) {
-      if (middles1[0] === middles2[i]) {
-        return true;
-      }
-    }
-    return false;
   };
 
   rubiksCube.prototype._updateSolveState = function (move) {
