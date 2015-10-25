@@ -1,33 +1,27 @@
 init = function (cubeDimensions) {
-  window.canvasWidth = $('#canvas').width();
-  window.canvasHeight = $('#canvas').height();
-  window.camera, window.scene, window.renderer;
-  window.allCubes = [];
-  window.rubiksCube, window.eventHandler;
-
+  // Define global variables for rubik's cube
   window.cubeDimensions = cubeDimensions;
-  window.cubieSize = 125 - (20 - (cubeDimensions - 2)) * (cubeDimensions - 2);
+  cubieSize = 125 - (20 - (cubeDimensions - 2)) * (cubeDimensions - 2);
   if (cubieSize < 40) cubieSize = 40;
-  window.cubieOffset = 3;
-  window.cubeStartPos = ((cubeDimensions - 1)/2) * (cubieSize + cubieOffset);
-  window.cameraX = 250;
-  window.cameraY = 300;
-  window.cameraZ = -100;
-  window.scrambleLength = 25 + 3 * (cubeDimensions - 3);
+  cubieOffset = 3;
+  cubeStartPos = ((cubeDimensions - 1)/2) * (cubieSize + cubieOffset);
+  scrambleLength = 25 + 3 * (cubeDimensions - 3);
+  allCubes = [];
 
   // Setup scene
+  var canvasWidth = $('#canvas').width();
+  var canvasHeight = $('#canvas').height();
   container = document.getElementById('canvas');
   document.body.appendChild(container);
   renderer = new THREE.WebGLRenderer();
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(devicePixelRatio);
   renderer.setSize(canvasWidth, canvasHeight);
   container.appendChild(renderer.domElement);
 
   camera = new THREE.PerspectiveCamera(70, canvasWidth / canvasHeight, 1, 1000);
-  camera.position.z = 600;
-
   scene = new THREE.Scene();
 
+  // Cube geometry and material
   var material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     vertexColors: THREE.FaceColors
@@ -94,9 +88,9 @@ init = function (cubeDimensions) {
     }
   }
 
-  camera.position.x += cameraX;
-  camera.position.y += cameraY;
-  camera.position.z += cameraZ;
+  camera.position.x = 250;
+  camera.position.y = 300;
+  camera.position.z = 500;
   camera.lookAt(new THREE.Vector3()); // look at middle of Rubik's Cube
 
   rubiksCube = new Game.Cube(scene, camera, renderer);
@@ -113,42 +107,6 @@ init = function (cubeDimensions) {
     return cubie;
   }
 
-  //////////////// EVENTS
-  $('.scramble').on('click', function () {
-    eventHandler.scramble();
-  });
-
-  $('.solve.enabled').on('click', function () {
-    eventHandler.solve();
-  });
-
-  $('.display-solve-moves.enabled').on('click', function () {
-    eventHandler.displaySolveMoves();
-  });
-
-  if (cubeDimensions === 3) {
-    $('.sample').css('display', 'block');
-    $('.sample').on('click', function () {
-      eventHandler.solve();
-      eventHandler.sampleSolve();
-    });
-  }
-
-  setInterval(function () {
-    var colors = ['red', 'yellow', 'blue', 'green', 'orange', 'purple'];
-    var i = ~~(Math.random() * colors.length);
-    while (colors[i] === $('.title').css('color')) {
-      i = ~~(Math.random() * colors.length);
-    }
-    $('.title').css('color', colors[i]);
-  }, 5000);
-
-  $(window).resize(function () {
-    camera.aspect = $('#canvas').width() / $('#canvas').height();
-    camera.updateProjectionMatrix();
-    renderer.setSize($('#canvas').width(), $('#canvas').height());
-  });
-
   renderer.render(scene, camera);
   renderer.render(scene, camera); // renders box helper
-}
+};
