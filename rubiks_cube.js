@@ -269,16 +269,21 @@
       this[face].vector.rayDir,
       this[face].vector.sliceDir
     );
-    var point = new THREE.Vector3();
-    point[this[face].rotationAxis] = (cubeStartPos + 300) * -this[face].rotationDir;
     var cubePos, dir, ray, intersects;
     var colors = [];
 
     for (var i = 0; i < cubesToRotate.length; i++) {
+      var axes = ['x', 'y', 'z'];
+      axes.splice(axes.indexOf(this[face].rotationAxis), 1);
+
       cubePos = cubesToRotate[i].position.clone();
-      cubePos.sub(cubePos.clone().normalize().multiplyScalar(10));
-      dir = cubePos.sub(point).normalize();
-      ray = new THREE.Raycaster(point, dir);
+      cubePos[axes[0]] += cubieOffset + 1;
+      cubePos[axes[1]] += cubieOffset + 1;
+
+      dir = new THREE.Vector3();
+      dir[this[face].rotationAxis] = this[face].rotationDir;
+
+      ray = new THREE.Raycaster(cubePos, dir);
       intersects = ray.intersectObjects(this.scene.children);
 
       for (var j = 0; j < intersects.length; j++) {
