@@ -110,10 +110,7 @@
   };
 
   EventHandler.prototype.displaySolveMoves = function () {
-    clearInterval(this.repeatSolveMoveId);
-    this.repeatSolveMoveId = setInterval(function () {
-      this._showNextMove();
-    }.bind(this), 1700);
+    clearTimeout(this.repeatSolveMoveId);
     this._showNextMove();
   };
 
@@ -378,6 +375,7 @@
       cancelAnimationFrame(id);
       this.rotating = false;
       this._fadeOutSolveMove(glow);
+      this.repeatSolveMoveId = setTimeout(this._showNextMove.bind(this), 1500);
     }
   };
 
