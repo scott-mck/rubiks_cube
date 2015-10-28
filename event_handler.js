@@ -188,6 +188,7 @@
       moveDetails.rotationDir *= -1;
       this._eventLoop.push(this.cube.move.bind(this.cube, moveDetails));
     }
+    this.scrambled = false;
   };
 
   EventHandler.prototype.startTimer = function () {
