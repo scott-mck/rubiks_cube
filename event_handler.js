@@ -182,7 +182,7 @@
     if (this.cube.animating) {
       return;
     }
-    // this.scrambled = false;
+
     while (this.cube.movesMade.length > 0) {
       var moveDetails = this.cube.movesMade.pop();
       moveDetails.rotationDir *= -1;
@@ -389,7 +389,7 @@
 
   EventHandler.prototype._showNextMove = function () {
     if (this.cube.movesMade.length === 0) return;
-    
+
     var solveMove = this.cube.movesMade[this.cube.movesMade.length - 1];
     var solveGlow = this._createSolveGlow(solveMove);
     scene.add(solveGlow);
