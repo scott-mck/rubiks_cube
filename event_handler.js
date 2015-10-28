@@ -141,6 +141,7 @@
       return;
     }
     this._sampling = true;
+    clearTimeout(this.repeatSolveMoveId);
 
     var scramble = 'iqssdllklffesshqsfpgldsdpjllhh';
     var solve = ' ;; yy; ;; a ; dkgjijdjyy ; ; fijiifi ; ;; jejdijk;ijjkfdjjeajefd hejjdjjdhheh f kfi;ii;skjifilhh';
