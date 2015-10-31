@@ -32,5 +32,6 @@ addEvents = function () {
     camera.aspect = $('#canvas').width() / $('#canvas').height();
     camera.updateProjectionMatrix();
     renderer.setSize($('#canvas').width(), $('#canvas').height());
+    renderer.render(scene, camera);
   });
 };
