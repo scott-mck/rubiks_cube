@@ -279,6 +279,7 @@
       cubePos = cubesToRotate[i].position.clone();
       cubePos[axes[0]] += cubieOffset + 1;
       cubePos[axes[1]] += cubieOffset + 1;
+      cubePos[this[face].rotationAxis] = cubeStartPos + 200;
 
       dir = new THREE.Vector3();
       dir[this[face].rotationAxis] = this[face].rotationDir;
