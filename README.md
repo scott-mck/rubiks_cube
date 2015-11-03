@@ -1,6 +1,5 @@
-# Rubik's cube
-
-## [Live](http://scott-mck.github.io/rubiks_cube/)
+# Rubik's cube ([live](http://scott-mck.github.io/rubiks_cube/))
+Inspired by the original game at http://hi-games.net/cube/
 
 ## Features
 * Offers choice of cube size ranging from 2x2x2 to 9x9x9
