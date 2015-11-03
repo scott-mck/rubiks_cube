@@ -44,17 +44,20 @@ body {
 }
 
 .select .cube-size {
-  width: 110px;
-  margin: 10px auto;
+  padding: 10px;
+  margin: 7px auto;
   font-size: 3.5vh;
   list-style-type: none;
-  padding: 10px;
 }
 
-.select .cube-size:hover {
+.select .cube-size span:hover {
   cursor: pointer;
   background-color: gainsboro;
   border-radius: 3px;
+}
+
+.select .cube-size span {
+  padding: 7px;
 }
 
 #canvas {
