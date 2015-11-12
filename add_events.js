@@ -1,6 +1,6 @@
 var container, resizeId, canvasSize;
 
-function addEvents () {
+addEvents = function () {
   container = $('#canvas');
   resizeId = null;
   canvasSize = .9

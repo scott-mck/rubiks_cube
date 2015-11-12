@@ -3,7 +3,7 @@ var rubiksCube, eventHandler;
 var cubeDimensions, cubieSize, cubieOffset, cubeStartPos;
 var allCubes = [];
 
-function init (dimensions) {
+init = function (dimensions) {
   setCubeGlobals(dimensions);
   setScene();
 
