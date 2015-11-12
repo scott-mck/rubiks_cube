@@ -1,7 +1,9 @@
-addEvents = function () {
-  window.container = $('#canvas');
-  window.resizeId = null;
-  window.canvasSize = .9
+var container, resizeId, canvasSize;
+
+function addEvents () {
+  container = $('#canvas');
+  resizeId = null;
+  canvasSize = .9
   resizeWindow();
 
   function resizeWindow () {
