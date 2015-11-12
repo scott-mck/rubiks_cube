@@ -25,7 +25,7 @@ init = function (dimensions) {
 
   rubiksCube = new Game.Cube(scene, camera, renderer);
   eventHandler = new Game.EventHandler(scene, camera, rubiksCube, renderer);
-}
+};
 
 function addCubie(geometry, material) {
   var cubie = new THREE.Mesh(geometry.clone(), material.clone());
