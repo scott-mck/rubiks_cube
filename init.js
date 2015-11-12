@@ -21,11 +21,11 @@ function init (dimensions) {
   camera.position.x = 250;
   camera.position.y = 300;
   camera.position.z = 500;
-  camera.lookAt(new THREE.Vector3()); // look at middle of Rubik's Cube
+  camera.lookAt(new THREE.Vector3());
 
   rubiksCube = new Game.Cube(scene, camera, renderer);
   eventHandler = new Game.EventHandler(scene, camera, rubiksCube, renderer);
-};
+}
 
 function addCubie(geometry, material) {
   var cubie = new THREE.Mesh(geometry.clone(), material.clone());
@@ -117,7 +117,6 @@ function setScene () {
   var canvasWidth = $('#canvas').width();
   var canvasHeight = $('#canvas').height();
   container = document.getElementById('canvas');
-  // document.body.appendChild(container);
   renderer = new THREE.WebGLRenderer();
   renderer.setPixelRatio(devicePixelRatio);
   renderer.setSize(canvasWidth, canvasHeight);
