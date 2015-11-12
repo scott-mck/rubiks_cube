@@ -23,8 +23,8 @@ init = function (dimensions) {
   camera.position.z = 500;
   camera.lookAt(new THREE.Vector3());
 
-  rubiksCube = new Game.Cube(scene, camera, renderer);
-  eventHandler = new Game.EventHandler(scene, camera, rubiksCube, renderer);
+  rubiksCube = new Game.Cube();
+  eventHandler = new Game.EventHandler(rubiksCube);
 };
 
 function addCubie(geometry, material) {

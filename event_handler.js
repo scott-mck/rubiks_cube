@@ -7,11 +7,8 @@
     window.Game = {};
   }
 
-  var EventHandler = window.Game.EventHandler = function (scene, camera, cube, renderer) {
-    this.scene = scene;
-    this.camera = camera;
+  var EventHandler = window.Game.EventHandler = function (cube) {
     this.cube = cube;
-    this.renderer = renderer;
     this._eventLoop = [];
     this.scrambleMoves = [];
     this.scrambled = false;
@@ -290,16 +287,16 @@
   };
 
   EventHandler.prototype._getIntersects = function (event) {
-    var canvasBox = this.renderer.domElement.getBoundingClientRect();
+    var canvasBox = renderer.domElement.getBoundingClientRect();
     var canvasMouseX = event.clientX - canvasBox.left;
     var canvasMouseY = event.clientY - canvasBox.top;
 
     var mouse = new THREE.Vector2();
-    mouse.x = (canvasMouseX / this.renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = -(canvasMouseY / this.renderer.domElement.clientHeight) * 2 + 1;
+    mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1;
     var raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, this.camera);
-    return raycaster.intersectObjects(this.scene.children);
+    raycaster.setFromCamera(mouse, camera);
+    return raycaster.intersectObjects(scene.children);
   };
 
   EventHandler.prototype._mouseUp = function (clickedCube, normal, mouseDown, mouseUp) {

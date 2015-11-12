@@ -3,10 +3,7 @@
     Game = {};
   }
 
-  var rubiksCube = Game.Cube = function (scene, camera, renderer) {
-    this.scene = scene;
-    this.camera = camera;
-    this.renderer = renderer;
+  var rubiksCube = Game.Cube = function () {
     this.movesMade = [];
     this.animating = false;
     this.isSolved = true;
@@ -187,11 +184,11 @@
     this.animating = true;
     var id = requestAnimationFrame(function () {
       this.animate(rotatingFace, rotationAxis, rotationDir);
-      this.renderer.render(this.scene, this.camera);
+      renderer.render(scene, camera);
     }.bind(this));
 
     rotatingFace.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / 8;
-    this.renderer.render(this.scene, this.camera);
+    renderer.render(scene, camera);
 
     if (rotatingFace.rotation[rotationAxis] >= Math.PI / 2 ||
         rotatingFace.rotation[rotationAxis] <= -Math.PI / 2) {
@@ -208,7 +205,7 @@
 
     for (var i = 0; i < cubeDimensions; i++) {
       raycaster = new THREE.Raycaster(startPos, rayDir);
-      allCaptures = allCaptures.concat(raycaster.intersectObjects(this.scene.children));
+      allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
 
       var newPos = (cubieSize + cubieOffset) * sliceDir.mag;
       startPos[sliceDir.axis] += newPos;
@@ -257,9 +254,9 @@
 
     // Detach cubes from rotatingFace before removing rotatingFace from scene
     while (rotatingFace.children.length > 0) {
-      THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, this.scene);
+      THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
     }
-    this.scene.remove(rotatingFace);
+    scene.remove(rotatingFace);
     this._updateSolveState();
   };
 
@@ -285,7 +282,7 @@
       dir[this[face].rotationAxis] = this[face].rotationDir;
 
       ray = new THREE.Raycaster(cubePos, dir);
-      intersects = ray.intersectObjects(this.scene.children);
+      intersects = ray.intersectObjects(scene.children);
 
       for (var j = 0; j < intersects.length; j++) {
         if (intersects[j].object.name === "cubie") {
@@ -354,9 +351,9 @@
 
     var rotatingFace = new THREE.Object3D();
     for (var i = 0; i < moveDetails.cubesToRotate.length; i++) {
-      THREE.SceneUtils.attach(moveDetails.cubesToRotate[i], this.scene, rotatingFace);
+      THREE.SceneUtils.attach(moveDetails.cubesToRotate[i], scene, rotatingFace);
     }
-    this.scene.add(rotatingFace);
+    scene.add(rotatingFace);
     this.checkCorrectMove({
       cubesToRotate: moveDetails.cubesToRotate,
       rotationAxis: moveDetails.rotationAxis,
