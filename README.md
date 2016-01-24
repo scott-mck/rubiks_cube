@@ -1,10 +1,7 @@
 # Rubik's cube ([live](http://scott-mck.github.io/rubiks_cube/))
 Inspired by the original game at http://hi-games.net/cube/
 
-## Demo
-<!-- ![demo](demos/scramble.gif)
-![demo](demos/solve.gif) -->
-
+## Demos
 <img src="./demos/scramble.gif" width=500 height=300/>
 <img src="./demos/solve.gif" width=500 height=300/>
 
