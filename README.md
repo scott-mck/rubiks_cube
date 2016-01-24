@@ -1,6 +1,10 @@
 # Rubik's cube ([live](http://scott-mck.github.io/rubiks_cube/))
 Inspired by the original game at http://hi-games.net/cube/
 
+## Demo
+![scramble](./demos/scramble.gif)
+![solve](./demos/solve.gif)
+
 ## Features
 * Offers choice of cube size ranging from 2x2x2 to 9x9x9
 * Move faces using mouse or keyboard
