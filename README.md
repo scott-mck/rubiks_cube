@@ -2,8 +2,11 @@
 Inspired by the original game at http://hi-games.net/cube/
 
 ## Demo
-![demo](demos/scramble.gif)
-![demo](demos/solve.gif)
+<!-- ![demo](demos/scramble.gif)
+![demo](demos/solve.gif) -->
+
+<img src="./demos/scramble.gif" width=500 height=300/>
+<img src="./demos/solve.gif" width=500 height=300/>
 
 ## Features
 * Offers choice of cube size ranging from 2x2x2 to 9x9x9
