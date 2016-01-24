@@ -1,3 +1,7 @@
+img[alt="demo"] {
+  width: 500px;
+}
+
 body {
   z-index: -2;
   position: relative;

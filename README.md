@@ -5,10 +5,6 @@ Inspired by the original game at http://hi-games.net/cube/
 ![demo](demos/scramble.gif)
 ![demo](demos/solve.gif)
 
-img[alt="demo"] {
-  width: 500px;
-}
-
 ## Features
 * Offers choice of cube size ranging from 2x2x2 to 9x9x9
 * Move faces using mouse or keyboard
