@@ -4,13 +4,13 @@ var rename = require('gulp-rename');
 var cleancss = require('gulp-clean-css');
 
 gulp.task('build', function() {
-  gulp.src('./dist/built.js')
+  gulp.src('dist/built.js')
     .pipe(uglify())
-    .pipe(gulp.dest('./dist/'));
+    .pipe(gulp.dest('dist/'));
 
-  gulp.src('./dist/built.css')
+  gulp.src('dist/built.css')
     .pipe(cleancss())
-    .pipe(gulp.dest('./dist/'));
+    .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('default', ['build']);

@@ -1,3 +1,5 @@
+// TODO: remove all the globals maybe? (the entire thing is broken)
+
 var $ = require('jquery');
 var init = require('./init');
 var addEvents = require('./add_events');
