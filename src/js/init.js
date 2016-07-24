@@ -4,10 +4,16 @@ var THREE = require('three');
 var RubiksCube = require('./rubiks_cube');
 var EventHandler = require('./event_handler');
 
-var scene, camera, renderer;
-var rubiksCube, eventHandler;
-var cubeDimensions, cubieSize, cubieOffset, cubeStartPos;
-var allCubes = [];
+window.scene;
+window.camera;
+window.renderer;
+window.rubiksCube;
+window.eventHandler;
+window.cubeDimensions;
+window.cubieSize;
+window.cubieOffset;
+window.cubeStartPos;
+window.allCubes = [];
 
 var init = function (dimensions) {
   setCubeGlobals(dimensions);
