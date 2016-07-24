@@ -1,12 +1,12 @@
 var $ = require('jquery');
 var THREE = require('three');
 
-var setCubeGlobals = require('./cube_globals').set;
 var RubiksCube = require('./rubiks_cube');
 var EventHandler = require('./event_handler');
 
 var scene, camera, renderer;
 var rubiksCube, eventHandler;
+var cubeDimensions, cubieSize, cubieOffset, cubeStartPos;
 var allCubes = [];
 
 var init = function (dimensions) {
@@ -110,14 +110,14 @@ function createUpAndDown (geometry, material) {
   }
 }
 
-// function setCubeGlobals(dimensions) {
-  // cubeDimensions = dimensions;
-  // cubieSize = 125 - (20 - (cubeDimensions - 2)) * (cubeDimensions - 2);
-  // if (cubieSize < 40) cubieSize = 40;
-  // cubieOffset = 3;
-  // cubeStartPos = ((cubeDimensions - 1)/2) * (cubieSize + cubieOffset);
-  // scrambleLength = 25 + 3 * (cubeDimensions - 3);
-// }
+function setCubeGlobals(dimensions) {
+  cubeDimensions = dimensions;
+  cubieSize = 125 - (20 - (cubeDimensions - 2)) * (cubeDimensions - 2);
+  if (cubieSize < 40) cubieSize = 40;
+  cubieOffset = 3;
+  cubeStartPos = ((cubeDimensions - 1)/2) * (cubieSize + cubieOffset);
+  scrambleLength = 25 + 3 * (cubeDimensions - 3);
+}
 
 function setScene () {
   var canvasWidth = $('#canvas').width();
