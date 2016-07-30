@@ -5,7 +5,7 @@
   "main": "rubiks_cube.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm-run-all build:*; gulp",
+    "build": "npm run build:*; gulp",
     "build:js": "browserify src/js/main.js -o dist/built.js",
     "build:css": "sass src/sass/main.scss dist/built.css",
     "clean": "rm -rf dist/*"
