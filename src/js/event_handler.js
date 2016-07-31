@@ -305,7 +305,7 @@ EventHandler.prototype._mouseUp = function (clickedCube, normal, mouseDown, mous
   axes.splice(axes.indexOf(normal), 1);
 
   var startPos = clickedCube.position.clone();
-  startPos[normal] = window.cubeStartPos;
+  startPos[normal] = g.cubeStartPos;
   var rayDir = new THREE.Vector3();
   var sliceDir = { axis: normal, mag: -1 }
   var cubesToRotate, rotationAxis;
@@ -313,14 +313,14 @@ EventHandler.prototype._mouseUp = function (clickedCube, normal, mouseDown, mous
 
   if (mouseUp.clientX > mouseDown.clientX + 40 ||
       mouseUp.clientX < mouseDown.clientX - 40) {
-    startPos[axes[0]] = window.cubeStartPos + 200;
+    startPos[axes[0]] = g.cubeStartPos + 200;
     rayDir[axes[0]] = -1;
     rotationAxis = axes[1];
     if (mouseUp.clientX < mouseDown.clientX - 40) rotationDir *= -1;
     if (normal === 'y') rotationDir *= -1;
   } else if (mouseUp.clientY > mouseDown.clientY + 40 ||
              mouseUp.clientY < mouseDown.clientY - 40) {
-    startPos[axes[1]] = window.cubeStartPos + 200;
+    startPos[axes[1]] = g.cubeStartPos + 200;
     rayDir[axes[1]] = -1;
     rotationAxis = axes[0];
     if (mouseUp.clientY < mouseDown.clientY - 40) rotationDir *= -1;
