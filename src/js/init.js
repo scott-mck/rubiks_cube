@@ -2,8 +2,8 @@ var $ = require('jquery');
 var THREE = require('three');
 
 var g = require('./globals').getGlobals();
-var RubiksCube = require('./rubiks_cube');
-var EventHandler = require('./event_handler');
+var RubiksCube = require('./rubiks_cube').init;
+var EventHandler = require('./event_handler').init;
 
 var init = function () {
   var material = new THREE.MeshBasicMaterial({
@@ -22,8 +22,9 @@ var init = function () {
   g.camera.position.z = 500;
   g.camera.lookAt(new THREE.Vector3());
 
-  var rubiksCube = new RubiksCube();
-  new EventHandler(rubiksCube);
+  // init rubiks cube and event handler in this order
+  RubiksCube.call(RubiksCube.prototype);
+  EventHandler.call(EventHandler.prototype);
 };
 
 function addCubie(geometry, material) {

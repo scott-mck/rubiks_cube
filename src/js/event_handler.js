@@ -2,13 +2,14 @@ var $ = require('jquery');
 var THREE = require('three');
 
 var g = require('./globals').getGlobals();
+var rubiksCube = require('./rubiks_cube').rubiksCube;
 
 // TODO: Keep track of average solve times
 // TODO: Do not allow movement of cube while scrambling
 // TODO: make more 'videos'
 
-var EventHandler = function (cube) {
-  this.cube = cube;
+var EventHandler = function () {
+  this.cube = rubiksCube;
   this._eventLoop = [];
   this.scrambleMoves = [];
   this.scrambled = false;
@@ -167,7 +168,7 @@ EventHandler.prototype.scramble = function () {
   this.scrambled = true;
   $('.timer').text('0.00').css('color', 'white');
 
-  for (var i = 0; i < scrambleLength; i++) {
+  for (var i = 0; i < g.scrambleLength; i++) {
     this._eventLoop.push(function () {
       var randMove = this.cube.randomMove();
       this.cube.move(randMove);
@@ -396,4 +397,7 @@ EventHandler.prototype._showNextMove = function () {
   this._animateSolveMove(solveGlow, solveMove.rotationAxis, rotationDir);
 };
 
-module.exports = EventHandler;
+module.exports = {
+  init: EventHandler,
+  eventHandler: EventHandler.prototype
+};

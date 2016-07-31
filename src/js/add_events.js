@@ -2,6 +2,7 @@ var $ = require('jquery');
 var THREE = require('three');
 
 var g = require('./globals').getGlobals();
+var eventHandler = require('./event_handler').eventHandler;
 
 var container, resizeId, canvasSize;
 

@@ -1,5 +1,3 @@
-// TODO: remove all the globals maybe? (the entire thing is broken)
-
 var $ = require('jquery');
 
 var setGlobals = require('./globals').setGlobals;

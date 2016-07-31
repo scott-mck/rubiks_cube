@@ -3,7 +3,7 @@ var THREE = require('three');
 
 var g = require('./globals').getGlobals();
 
-var rubiksCube = function () {
+var RubiksCube = function () {
   this.movesMade = [];
   this.animating = false;
   this.isSolved = true;
@@ -121,7 +121,7 @@ var rubiksCube = function () {
   }
 };
 
-rubiksCube.prototype.moveToKeyMap = {
+RubiksCube.prototype.moveToKeyMap = {
   b:            'q',
   bPrime:       'p',
   d:            's',
@@ -150,7 +150,7 @@ rubiksCube.prototype.moveToKeyMap = {
   sPrime:       'w'
 };
 
-rubiksCube.prototype.keyToMoveMap = {
+RubiksCube.prototype.keyToMoveMap = {
   a:   'left',
   c:   'lDouble',
   d:   'l',
@@ -179,7 +179,7 @@ rubiksCube.prototype.keyToMoveMap = {
   '/': 'ePrime'
 };
 
-rubiksCube.prototype.animate = function (rotatingFace, rotationAxis, rotationDir) {
+RubiksCube.prototype.animate = function (rotatingFace, rotationAxis, rotationDir) {
   // rotatingFace is an Object3D parent containing all cubes on a given face
   this.animating = true;
   var id = requestAnimationFrame(function () {
@@ -196,7 +196,7 @@ rubiksCube.prototype.animate = function (rotatingFace, rotationAxis, rotationDir
   }
 };
 
-rubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
+RubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
   startPos = startPos.clone();
   rayDir = rayDir.clone();
   var allCaptures = [];
@@ -222,7 +222,7 @@ rubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
   return capturedCubes;
 };
 
-rubiksCube.prototype.captureMiddles = function (face) {
+RubiksCube.prototype.captureMiddles = function (face) {
   var vector = this[face].vector;
   var rightMiddle = vector.startPos.clone();
   var leftMiddle = vector.startPos.clone();
@@ -235,7 +235,7 @@ rubiksCube.prototype.captureMiddles = function (face) {
   return left.concat(right);
 };
 
-rubiksCube.prototype.checkCorrectMove = function (moveDetails) {
+RubiksCube.prototype.checkCorrectMove = function (moveDetails) {
   if (this.movesMade.length === 0) {
     this.movesMade.push(moveDetails);
     return;
@@ -248,7 +248,7 @@ rubiksCube.prototype.checkCorrectMove = function (moveDetails) {
   }
 };
 
-rubiksCube.prototype.finishAnimation = function (rotatingFace, id) {
+RubiksCube.prototype.finishAnimation = function (rotatingFace, id) {
   cancelAnimationFrame(id);
   this.animating = false;
 
@@ -260,7 +260,7 @@ rubiksCube.prototype.finishAnimation = function (rotatingFace, id) {
   this._updateSolveState();
 };
 
-rubiksCube.prototype.getColorsOfFace = function (face) {
+RubiksCube.prototype.getColorsOfFace = function (face) {
   var cubesToRotate = this.captureCubes(
     this[face].vector.startPos.clone(),
     this[face].vector.rayDir,
@@ -294,7 +294,7 @@ rubiksCube.prototype.getColorsOfFace = function (face) {
   return colors;
 };
 
-rubiksCube.prototype.getMoveDetailsOfFace = function (name) {
+RubiksCube.prototype.getMoveDetailsOfFace = function (name) {
   var face = this[name[0]];
   var cubesToRotate = this.captureCubes(
     face.vector.startPos,
@@ -329,7 +329,7 @@ rubiksCube.prototype.getMoveDetailsOfFace = function (name) {
   };
 };
 
-rubiksCube.prototype.isOppositeMove = function (move1, move2) {
+RubiksCube.prototype.isOppositeMove = function (move1, move2) {
   var sameAxis = move1.rotationAxis === move2.rotationAxis;
   var sameDir = move1.rotationDir === move2.rotationDir;
   var pos1 = ~~move1.cubesToRotate[0].position[move1.rotationAxis];
@@ -338,7 +338,7 @@ rubiksCube.prototype.isOppositeMove = function (move1, move2) {
   return sameAxis && !sameDir && pos1 === pos2;
 };
 
-rubiksCube.prototype.move = function (move) {
+RubiksCube.prototype.move = function (move) {
   this._updateSolveState(move);
   var moveDetails = move;
   if (typeof move === 'string') {
@@ -371,7 +371,7 @@ rubiksCube.prototype.move = function (move) {
   }
 };
 
-rubiksCube.prototype.oppositeMove = function (name) {
+RubiksCube.prototype.oppositeMove = function (name) {
   if (name === 'left') return 'right';
   if (name === 'right') return 'left';
   if (name === 'up') return 'down';
@@ -387,7 +387,7 @@ rubiksCube.prototype.oppositeMove = function (name) {
   return oppMove;
 };
 
-rubiksCube.prototype.randomMove = function () {
+RubiksCube.prototype.randomMove = function () {
   var sliceDir, cubesToRotate, rotationAxis, rotationDir;
   var axes = ['x', 'z', 'y'];
   var startPos = new THREE.Vector3();
@@ -418,7 +418,7 @@ rubiksCube.prototype.randomMove = function () {
   };
 };
 
-rubiksCube.prototype.getMoveDetailsOfRotation = function (name) {
+RubiksCube.prototype.getMoveDetailsOfRotation = function (name) {
   var rotationAxis, rotationDir;
   if (name === 'left') {
     rotationAxis = 'y';
@@ -441,7 +441,7 @@ rubiksCube.prototype.getMoveDetailsOfRotation = function (name) {
   };
 };
 
-rubiksCube.prototype._colorsAreSame = function (colors) {
+RubiksCube.prototype._colorsAreSame = function (colors) {
   if (colors.length === 0) return;
 
   var firstColor = colors[0];
@@ -456,7 +456,7 @@ rubiksCube.prototype._colorsAreSame = function (colors) {
   return true;
 };
 
-rubiksCube.prototype._updateSolveState = function (move) {
+RubiksCube.prototype._updateSolveState = function (move) {
   if (this.animating) {
     this.isSolved = false;
   }
@@ -477,4 +477,7 @@ rubiksCube.prototype._updateSolveState = function (move) {
   }
 };
 
-module.exports = rubiksCube;
+module.exports = {
+  init: RubiksCube,
+  rubiksCube: RubiksCube.prototype
+};
