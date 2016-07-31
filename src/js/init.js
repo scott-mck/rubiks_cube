@@ -1,42 +1,44 @@
 var $ = require('jquery');
 var THREE = require('three');
 
+// var setGlobals = require('./globals');
+
 var RubiksCube = require('./rubiks_cube');
 var EventHandler = require('./event_handler');
 
-window.scene;
-window.camera;
-window.renderer;
-window.rubiksCube;
-window.eventHandler;
-window.cubeDimensions;
-window.cubieSize;
-window.cubieOffset;
-window.cubeStartPos;
-window.allCubes = [];
+// window.g.scene;
+// window.g.camera;
+// window.g.renderer;
+// window.rubiksCube;
+// window.eventHandler;
+// window.cubeDimensions;
+// window.cubieSize;
+// window.cubieOffset;
+// window.cubeStartPos;
+// window.allCubes = [];
 
-var init = function (dimensions) {
-  setCubeGlobals(dimensions);
-  setScene();
+var init = function () {
+  // setCubeGlobals(dimensions);
+  // setScene();
 
   var material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     vertexColors: THREE.FaceColors
   });
-  var geometry = new THREE.BoxGeometry(cubieSize, cubieSize, cubieSize);
+  var geometry = new THREE.BoxGeometry(g.cubieSize, g.cubieSize, g.cubieSize);
   colorCubies(geometry);
 
   createLeftAndRight(geometry, material);
   createUpAndDown(geometry, material);
   createFrontAndBack(geometry, material);
 
-  camera.position.x = 250;
-  camera.position.y = 300;
-  camera.position.z = 500;
-  camera.lookAt(new THREE.Vector3());
+  g.camera.position.x = 250;
+  g.camera.position.y = 300;
+  g.camera.position.z = 500;
+  g.camera.lookAt(new THREE.Vector3());
 
-  rubiksCube = new RubiksCube();
-  eventHandler = new EventHandler(rubiksCube);
+  var rubiksCube = new RubiksCube();
+  new EventHandler(rubiksCube);
 };
 
 function addCubie(geometry, material) {
@@ -44,9 +46,9 @@ function addCubie(geometry, material) {
   var helper = new THREE.EdgesHelper(cubie, 0x000000);
   helper.material.linewidth = 7;
   cubie.name = "cubie";
-  allCubes.push(cubie);
-  scene.add(cubie);
-  scene.add(helper);
+  g.allCubes.push(cubie);
+  g.scene.add(cubie);
+  g.scene.add(helper);
   return cubie;
 }
 
@@ -73,13 +75,13 @@ function colorCubies (geometry) {
 
 function createFrontAndBack (geometry, material) {
   for (var z = 0; z < 2; z++) {
-    for (var y = 0; y < cubeDimensions - 2; y++) {
-      for (var x = 0; x < cubeDimensions - 2; x++) {
+    for (var y = 0; y < g.cubeDimensions - 2; y++) {
+      for (var x = 0; x < g.cubeDimensions - 2; x++) {
         var cubie = addCubie(geometry, material);
         cubie.position.set(
-          cubeStartPos - ((x + 1) * (cubieSize + cubieOffset)),
-          cubeStartPos - ((y + 1) * (cubieSize + cubieOffset)),
-          cubeStartPos - (2 * z * cubeStartPos)
+          g.cubeStartPos - ((x + 1) * (g.cubieSize + g.cubieOffset)),
+          g.cubeStartPos - ((y + 1) * (g.cubieSize + g.cubieOffset)),
+          g.cubeStartPos - (2 * z * g.cubeStartPos)
         );
       }
     }
@@ -88,13 +90,13 @@ function createFrontAndBack (geometry, material) {
 
 function createLeftAndRight (geometry, material) {
   for (var x = 0; x < 2; x++) {
-    for (var y = 0; y < cubeDimensions; y++) {
-      for (var z = 0; z < cubeDimensions; z++) {
+    for (var y = 0; y < g.cubeDimensions; y++) {
+      for (var z = 0; z < g.cubeDimensions; z++) {
         var cubie = addCubie(geometry, material);
         cubie.position.set(
-          cubeStartPos - (2 * x * cubeStartPos),
-          cubeStartPos - (y * (cubieSize + cubieOffset)),
-          cubeStartPos - (z * (cubieSize + cubieOffset))
+          g.cubeStartPos - (2 * x * g.cubeStartPos),
+          g.cubeStartPos - (y * (g.cubieSize + g.cubieOffset)),
+          g.cubeStartPos - (z * (g.cubieSize + g.cubieOffset))
         );
       }
     }
@@ -103,39 +105,41 @@ function createLeftAndRight (geometry, material) {
 
 function createUpAndDown (geometry, material) {
   for (var y = 0; y < 2; y++) {
-    for (var x = 0; x < cubeDimensions - 2; x++) {
-      for (var z = 0; z < cubeDimensions; z++) {
+    for (var x = 0; x < g.cubeDimensions - 2; x++) {
+      for (var z = 0; z < g.cubeDimensions; z++) {
         var cubie = addCubie(geometry, material);
         cubie.position.set(
-          cubeStartPos - ((x + 1) * (cubieSize + cubieOffset)),
-          cubeStartPos - (2 * y * cubeStartPos),
-          cubeStartPos - (z * (cubieSize + cubieOffset))
+          g.cubeStartPos - ((x + 1) * (g.cubieSize + g.cubieOffset)),
+          g.cubeStartPos - (2 * y * g.cubeStartPos),
+          g.cubeStartPos - (z * (g.cubieSize + g.cubieOffset))
         );
       }
     }
   }
 }
 
-function setCubeGlobals(dimensions) {
-  cubeDimensions = dimensions;
-  cubieSize = 125 - (20 - (cubeDimensions - 2)) * (cubeDimensions - 2);
-  if (cubieSize < 40) cubieSize = 40;
-  cubieOffset = 3;
-  cubeStartPos = ((cubeDimensions - 1)/2) * (cubieSize + cubieOffset);
-  scrambleLength = 25 + 3 * (cubeDimensions - 3);
-}
+// function setCubeGlobals(dimensions) {
+//   g.cubeDimensions = dimensions;
+//   g.cubieSize = 125 - (20 - (dimensions - 2)) * (dimensions - 2);
+//   if (g.cubieSize < 40) g.cubieSize = 40;
+//   g.cubieOffset = 3;
+//   g.cubeStartPos = ((dimensions - 1)/2) * (g.cubieSize + g.cubieOffset);
+//   g.scrambleLength = 25 + 3 * (dimensions - 3);
+// }
 
-function setScene () {
-  var canvasWidth = $('#canvas').width();
-  var canvasHeight = $('#canvas').height();
-  container = document.getElementById('canvas');
-  renderer = new THREE.WebGLRenderer();
-  renderer.setPixelRatio(devicePixelRatio);
-  renderer.setSize(canvasWidth, canvasHeight);
-  container.appendChild(renderer.domElement);
-
-  camera = new THREE.PerspectiveCamera(70, canvasWidth / canvasHeight, 1, 1000);
-  scene = new THREE.Scene();
-}
+// function setScene () {
+  // var canvasWidth = $('#canvas').width();
+  // var canvasHeight = $('#canvas').height();
+  // var container = document.getElementById('canvas');
+  //
+  // g.renderer = new THREE.WebGLRenderer();
+  // g.renderer.setPixelRatio(devicePixelRatio);
+  // g.renderer.setSize(canvasWidth, canvasHeight);
+  //
+  // container.appendChild(g.renderer.domElement);
+  //
+  // g.camera = new THREE.PerspectiveCamera(70, canvasWidth / canvasHeight, 1, 1000);
+  // g.scene = new THREE.Scene();
+// }
 
 module.exports = init;

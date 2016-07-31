@@ -1,6 +1,8 @@
 var $ = require('jquery');
 var THREE = require('three');
 
+var g = require('./globals').getGlobals;
+
 var rubiksCube = function () {
   this.movesMade = [];
   this.animating = false;
@@ -11,7 +13,7 @@ var rubiksCube = function () {
     rotationAxis: 'x',
     rotationDir: -1,
     vector: {
-      startPos: new THREE.Vector3(cubeStartPos, cubeStartPos, (cubeStartPos + 100)),
+      startPos: new THREE.Vector3(g.cubeStartPos, g.cubeStartPos, (g.cubeStartPos + 100)),
       rayDir: new THREE.Vector3(0, 0, -1),
       sliceDir: { axis: 'y', mag: -1 } // TODO: make this a vector
     },
@@ -22,7 +24,7 @@ var rubiksCube = function () {
     rotationAxis: 'x',
     rotationDir: 1,
     vector: {
-      startPos: new THREE.Vector3(-cubeStartPos, cubeStartPos, -(cubeStartPos + 100)),
+      startPos: new THREE.Vector3(-g.cubeStartPos, g.cubeStartPos, -(g.cubeStartPos + 100)),
       rayDir: new THREE.Vector3(0, 0, 1),
       sliceDir: { axis: 'y', mag: -1 }
     },
@@ -33,7 +35,7 @@ var rubiksCube = function () {
     rotationAxis: 'y',
     rotationDir: -1,
     vector: {
-      startPos: new THREE.Vector3(-(cubeStartPos + 100), cubeStartPos, -cubeStartPos),
+      startPos: new THREE.Vector3(-(g.cubeStartPos + 100), g.cubeStartPos, -g.cubeStartPos),
       rayDir: new THREE.Vector3(1, 0, 0),
       sliceDir: { axis: 'z', mag: 1 }
     },
@@ -44,7 +46,7 @@ var rubiksCube = function () {
     rotationAxis: 'y',
     rotationDir: 1,
     vector: {
-      startPos: new THREE.Vector3(-(cubeStartPos + 100), -cubeStartPos, cubeStartPos),
+      startPos: new THREE.Vector3(-(g.cubeStartPos + 100), -g.cubeStartPos, g.cubeStartPos),
       rayDir: new THREE.Vector3(1, 0, 0),
       sliceDir: { axis: 'z', mag: -1 }
     },
@@ -55,7 +57,7 @@ var rubiksCube = function () {
     rotationAxis: 'z',
     rotationDir: 1,
     vector: {
-      startPos: new THREE.Vector3((cubeStartPos + 100), cubeStartPos, -cubeStartPos),
+      startPos: new THREE.Vector3((g.cubeStartPos + 100), g.cubeStartPos, -g.cubeStartPos),
       rayDir: new THREE.Vector3(-1, 0, 0),
       sliceDir: { axis: 'y', mag: -1 }
     },
@@ -66,7 +68,7 @@ var rubiksCube = function () {
     rotationAxis: 'z',
     rotationDir: -1,
     vector: {
-      startPos: new THREE.Vector3(-(cubeStartPos + 100), cubeStartPos, cubeStartPos),
+      startPos: new THREE.Vector3(-(g.cubeStartPos + 100), g.cubeStartPos, g.cubeStartPos),
       rayDir: new THREE.Vector3(1, 0, 0),
       sliceDir: { axis: 'y', mag: -1 }
     },
@@ -77,7 +79,7 @@ var rubiksCube = function () {
     rotationAxis: 'x',
     rotationDir: 1,
     vector: {
-      startPos: new THREE.Vector3(0, cubeStartPos, (cubeStartPos + 100)),
+      startPos: new THREE.Vector3(0, g.cubeStartPos, (g.cubeStartPos + 100)),
       rayDir: new THREE.Vector3(0, 0, -1),
       sliceDir: { axis: 'y', mag: -1 }
     },
@@ -88,7 +90,7 @@ var rubiksCube = function () {
     rotationAxis: 'y',
     rotationDir: 1,
     vector: {
-      startPos: new THREE.Vector3(-cubeStartPos, 0, (cubeStartPos + 100)),
+      startPos: new THREE.Vector3(-g.cubeStartPos, 0, (g.cubeStartPos + 100)),
       rayDir: new THREE.Vector3(0, 0, -1),
       sliceDir: { axis: 'x', mag: 1 }
     },
@@ -99,7 +101,7 @@ var rubiksCube = function () {
     rotationAxis: 'z',
     rotationDir: -1,
     vector: {
-      startPos: new THREE.Vector3((cubeStartPos + 100), cubeStartPos, 0),
+      startPos: new THREE.Vector3((g.cubeStartPos + 100), g.cubeStartPos, 0),
       rayDir: new THREE.Vector3(-1, 0, 0),
       sliceDir: { axis: 'y', mag: -1 }
     },
@@ -112,7 +114,7 @@ var rubiksCube = function () {
     'b', 'bPrime', 'm', 'mPrime', 'e', 'ePrime', 's', 'sPrime'
   ];
 
-  if (cubeDimensions > 3) {
+  if (g.cubeDimensions > 3) {
     this.possibleMoves = this.possibleMoves.concat([
       'rDouble', 'rDoublePrime', 'lDouble', 'lDoublePrime', 'left', 'right'
     ]);
@@ -182,11 +184,11 @@ rubiksCube.prototype.animate = function (rotatingFace, rotationAxis, rotationDir
   this.animating = true;
   var id = requestAnimationFrame(function () {
     this.animate(rotatingFace, rotationAxis, rotationDir);
-    renderer.render(scene, camera);
+    g.renderer.render(g.scene, g.camera);
   }.bind(this));
 
   rotatingFace.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / 8;
-  renderer.render(scene, camera);
+  g.renderer.render(g.scene, g.camera);
 
   if (rotatingFace.rotation[rotationAxis] >= Math.PI / 2 ||
       rotatingFace.rotation[rotationAxis] <= -Math.PI / 2) {
@@ -201,11 +203,11 @@ rubiksCube.prototype.captureCubes = function (startPos, rayDir, sliceDir) {
   var capturedCubes = [];
   var raycaster;
 
-  for (var i = 0; i < cubeDimensions; i++) {
+  for (var i = 0; i < g.cubeDimensions; i++) {
     raycaster = new THREE.Raycaster(startPos, rayDir);
-    allCaptures = allCaptures.concat(raycaster.intersectObjects(scene.children));
+    allCaptures = allCaptures.concat(raycaster.intersectObjects(g.scene.children));
 
-    var newPos = (cubieSize + cubieOffset) * sliceDir.mag;
+    var newPos = (g.cubieSize + g.cubieOffset) * sliceDir.mag;
     startPos[sliceDir.axis] += newPos;
   }
 
@@ -225,8 +227,8 @@ rubiksCube.prototype.captureMiddles = function (face) {
   var rightMiddle = vector.startPos.clone();
   var leftMiddle = vector.startPos.clone();
 
-  rightMiddle[this[face].rotationAxis] += cubieSize * this[face].rotationDir;
-  leftMiddle[this[face].rotationAxis] -= cubieSize * this[face].rotationDir;
+  rightMiddle[this[face].rotationAxis] += g.cubieSize * this[face].rotationDir;
+  leftMiddle[this[face].rotationAxis] -= g.cubieSize * this[face].rotationDir;
 
   var left = this.captureCubes(rightMiddle, vector.rayDir, vector.sliceDir);
   var right = this.captureCubes(leftMiddle, vector.rayDir, vector.sliceDir);
@@ -250,11 +252,11 @@ rubiksCube.prototype.finishAnimation = function (rotatingFace, id) {
   cancelAnimationFrame(id);
   this.animating = false;
 
-  // Detach cubes from rotatingFace before removing rotatingFace from scene
+  // Detach cubes from rotatingFace before removing rotatingFace from g.scene
   while (rotatingFace.children.length > 0) {
-    THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, scene);
+    THREE.SceneUtils.detach(rotatingFace.children[0], rotatingFace, g.scene);
   }
-  scene.remove(rotatingFace);
+  g.scene.remove(rotatingFace);
   this._updateSolveState();
 };
 
@@ -272,15 +274,15 @@ rubiksCube.prototype.getColorsOfFace = function (face) {
     axes.splice(axes.indexOf(this[face].rotationAxis), 1);
 
     cubePos = cubesToRotate[i].position.clone();
-    cubePos[axes[0]] += cubieOffset + 1;
-    cubePos[axes[1]] += cubieOffset + 1;
-    cubePos[this[face].rotationAxis] = cubeStartPos + 200;
+    cubePos[axes[0]] += g.cubieOffset + 1;
+    cubePos[axes[1]] += g.cubieOffset + 1;
+    cubePos[this[face].rotationAxis] = g.cubeStartPos + 200;
 
     dir = new THREE.Vector3();
     dir[this[face].rotationAxis] = this[face].rotationDir;
 
     ray = new THREE.Raycaster(cubePos, dir);
-    intersects = ray.intersectObjects(scene.children);
+    intersects = ray.intersectObjects(g.scene.children);
 
     for (var j = 0; j < intersects.length; j++) {
       if (intersects[j].object.name === "cubie") {
@@ -307,7 +309,7 @@ rubiksCube.prototype.getMoveDetailsOfFace = function (name) {
 
   if (name.indexOf('Double') > -1) {
     var middle = face.vector.startPos.clone();
-    middle[face.rotationAxis] += cubieSize * face.rotationDir;
+    middle[face.rotationAxis] += g.cubieSize * face.rotationDir;
     var secondaryCubes = this.captureCubes(
       middle,
       face.vector.rayDir,
@@ -315,7 +317,7 @@ rubiksCube.prototype.getMoveDetailsOfFace = function (name) {
     );
   }
 
-  if (['m', 'e', 's'].indexOf(name[0]) > -1 && cubeDimensions % 2 === 0) {
+  if (['m', 'e', 's'].indexOf(name[0]) > -1 && g.cubeDimensions % 2 === 0) {
     cubesToRotate = this.captureMiddles(name[0]);
   }
 
@@ -349,9 +351,9 @@ rubiksCube.prototype.move = function (move) {
 
   var rotatingFace = new THREE.Object3D();
   for (var i = 0; i < moveDetails.cubesToRotate.length; i++) {
-    THREE.SceneUtils.attach(moveDetails.cubesToRotate[i], scene, rotatingFace);
+    THREE.SceneUtils.attach(moveDetails.cubesToRotate[i], g.scene, rotatingFace);
   }
-  scene.add(rotatingFace);
+  g.scene.add(rotatingFace);
   this.checkCorrectMove({
     cubesToRotate: moveDetails.cubesToRotate,
     rotationAxis: moveDetails.rotationAxis,
@@ -401,10 +403,10 @@ rubiksCube.prototype.randomMove = function () {
   rotationAxis = randAxis;
 
   // ray starts at a cubie position
-  var randCubie = ~~(Math.random() * cubeDimensions); // 0, 1, 2, etc.
-  startPos[randAxis] = (cubeStartPos) - (randCubie * (cubieSize + cubieOffset));
-  startPos[axes[0]] = cubeStartPos + 200;
-  startPos[randNormal] = cubeStartPos;
+  var randCubie = ~~(Math.random() * g.cubeDimensions); // 0, 1, 2, etc.
+  startPos[randAxis] = (g.cubeStartPos) - (randCubie * (g.cubieSize + g.cubieOffset));
+  startPos[axes[0]] = g.cubeStartPos + 200;
+  startPos[randNormal] = g.cubeStartPos;
 
   cubesToRotate = this.captureCubes(startPos, rayDir, sliceDir);
   rotationDir = Math.random() < .5 ? -1 : 1;
@@ -433,7 +435,7 @@ rubiksCube.prototype.getMoveDetailsOfRotation = function (name) {
   }
 
   return {
-    cubesToRotate: allCubes,
+    cubesToRotate: g.allCubes,
     rotationAxis: rotationAxis,
     rotationDir: rotationDir
   };

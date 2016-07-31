@@ -1,6 +1,8 @@
 var $ = require('jquery');
 var THREE = require('three');
 
+var g = require('./globals').getGlobals;
+
 // TODO: Keep track of average solve times
 // TODO: Do not allow movement of cube while scrambling
 // TODO: make more 'videos'
@@ -222,7 +224,7 @@ EventHandler.prototype.triggerEvent = function () {
 EventHandler.prototype._animateSolveMove = function (glow, rotationAxis, rotationDir) {
   var id = requestAnimationFrame(function () {
     this._animateSolveMove(glow, rotationAxis, rotationDir);
-    renderer.render(scene, camera);
+    renderer.render(g.scene, g.camera);
   }.bind(this));
 
   glow.material.opacity += .02;
@@ -241,13 +243,13 @@ EventHandler.prototype._createSolveGlow = function (solveMove) {
 
   // default width, height, depth of geometry equal to that of entire cube
   var geomSize = new THREE.Vector3(
-    (cubieSize * cubeDimensions),
-    (cubieSize * cubeDimensions),
-    (cubieSize * cubeDimensions)
+    (g.cubieSize * g.cubeDimensions),
+    (g.cubieSize * g.cubeDimensions),
+    (g.cubieSize * g.cubeDimensions)
   );
-  geomSize[solveMove.rotationAxis] = cubieSize;
-  if (solveMove.cubesToRotate.length === allCubes.length) {
-    geomSize[solveMove.rotationAxis] = cubieSize * cubeDimensions;
+  geomSize[solveMove.rotationAxis] = g.cubieSize;
+  if (solveMove.cubesToRotate.length === g.allCubes.length) {
+    geomSize[solveMove.rotationAxis] = g.cubieSize * g.cubeDimensions;
   }
 
   // create mesh
@@ -260,7 +262,7 @@ EventHandler.prototype._createSolveGlow = function (solveMove) {
   glowPosition[solveMove.rotationAxis] = cubiePos[solveMove.rotationAxis];
   glow.position.copy(glowPosition);
 
-  if (solveMove.cubesToRotate.length === allCubes.length) {
+  if (solveMove.cubesToRotate.length === g.allCubes.length) {
   glow.position.copy(new THREE.Vector3());
   }
 
@@ -273,14 +275,14 @@ EventHandler.prototype._createSolveGlow = function (solveMove) {
 EventHandler.prototype._fadeOutSolveMove = function (glow, rotationAxis) {
   var id = requestAnimationFrame(function () {
     this._fadeOutSolveMove(glow);
-    renderer.render(scene, camera);
+    renderer.render(g.scene, g.camera);
   }.bind(this));
 
   glow.material.opacity -= .04;
 
   if (glow.material.opacity <= 0) {
     cancelAnimationFrame(id);
-    scene.remove(glow);
+    g.scene.remove(glow);
   }
 };
 
@@ -293,8 +295,8 @@ EventHandler.prototype._getIntersects = function (event) {
   mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1;
   mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1;
   var raycaster = new THREE.Raycaster();
-  raycaster.setFromCamera(mouse, camera);
-  return raycaster.intersectObjects(scene.children);
+  raycaster.setFromCamera(mouse, g.camera);
+  return raycaster.intersectObjects(g.scene.children);
 };
 
 EventHandler.prototype._mouseUp = function (clickedCube, normal, mouseDown, mouseUp) {
@@ -362,7 +364,7 @@ EventHandler.prototype._rotateSolveMove = function (glow, rotationAxis, rotation
   this.rotating = true;
   var id = requestAnimationFrame(function () {
     this._rotateSolveMove(glow, rotationAxis, rotationDir);
-    renderer.render(scene, camera);
+    renderer.render(g.scene, g.camera);
   }.bind(this));
 
   glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
@@ -388,7 +390,7 @@ EventHandler.prototype._showNextMove = function () {
 
   var solveMove = this.cube.movesMade[this.cube.movesMade.length - 1];
   var solveGlow = this._createSolveGlow(solveMove);
-  scene.add(solveGlow);
+  g.scene.add(solveGlow);
 
   var rotationDir = solveMove.rotationDir * -1;
   this._animateSolveMove(solveGlow, solveMove.rotationAxis, rotationDir);

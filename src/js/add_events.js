@@ -1,6 +1,8 @@
 var $ = require('jquery');
 var THREE = require('three');
 
+var g = require('./globals').getGlobals;
+
 var container, resizeId, canvasSize;
 
 var addEvents = function () {
@@ -30,10 +32,10 @@ var addEvents = function () {
     $('#canvas').css('width', width * scale * canvasSize + 'px');
     $('#canvas').css('height', height * scale * canvasSize + 'px');
 
-    camera.aspect = (width * scale) / (height * scale);
-    camera.updateProjectionMatrix();
-    renderer.setSize(width * scale * canvasSize, height * scale * canvasSize);
-    renderer.render(scene, camera);
+    g.camera.aspect = (width * scale) / (height * scale);
+    g.camera.updateProjectionMatrix();
+    g.renderer.setSize(width * scale * canvasSize, height * scale * canvasSize);
+    g.renderer.render(g.scene, g.camera);
   }
 
   $(window).resize(function () {
@@ -53,7 +55,7 @@ var addEvents = function () {
     eventHandler.displaySolveMoves();
   });
 
-  if (cubeDimensions === 3) {
+  if (g.cubeDimensions === 3) {
     $('.sample').css('display', 'block');
     $('.sample').on('click', function () {
       eventHandler.solve();

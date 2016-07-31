@@ -1,6 +1,8 @@
 // TODO: remove all the globals maybe? (the entire thing is broken)
 
 var $ = require('jquery');
+
+var setGlobals = require('./globals').setGlobals;
 var init = require('./init');
 var addEvents = require('./add_events');
 
@@ -21,7 +23,8 @@ $(document).ready(function () {
     });
 
     var dimensions = parseInt($(event.currentTarget).attr('id'));
-    init(dimensions);
+    setGlobals(dimensions);
+    init();
     addEvents();
   });
 });
