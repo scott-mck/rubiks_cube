@@ -14,7 +14,7 @@ gulp.task('js', function () {
     .pipe(sourcemaps.init())
     .pipe(concat('./built.js'))
     .pipe(browserify())
-    .pipe(uglify())
+    .pipe(uglify({ magle: false }))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('./dist/'));
 });

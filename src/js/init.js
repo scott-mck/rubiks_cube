@@ -1,26 +1,11 @@
 var $ = require('jquery');
 var THREE = require('three');
 
-// var setGlobals = require('./globals');
-
+var g = require('./globals').getGlobals();
 var RubiksCube = require('./rubiks_cube');
 var EventHandler = require('./event_handler');
 
-// window.g.scene;
-// window.g.camera;
-// window.g.renderer;
-// window.rubiksCube;
-// window.eventHandler;
-// window.cubeDimensions;
-// window.cubieSize;
-// window.cubieOffset;
-// window.cubeStartPos;
-// window.allCubes = [];
-
 var init = function () {
-  // setCubeGlobals(dimensions);
-  // setScene();
-
   var material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     vertexColors: THREE.FaceColors

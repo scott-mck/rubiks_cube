@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var THREE = require('three');
 
-var g = require('./globals').getGlobals;
+var g = require('./globals').getGlobals();
 
 var rubiksCube = function () {
   this.movesMade = [];

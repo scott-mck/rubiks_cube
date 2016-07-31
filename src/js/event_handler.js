@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var THREE = require('three');
 
-var g = require('./globals').getGlobals;
+var g = require('./globals').getGlobals();
 
 // TODO: Keep track of average solve times
 // TODO: Do not allow movement of cube while scrambling
@@ -224,7 +224,7 @@ EventHandler.prototype.triggerEvent = function () {
 EventHandler.prototype._animateSolveMove = function (glow, rotationAxis, rotationDir) {
   var id = requestAnimationFrame(function () {
     this._animateSolveMove(glow, rotationAxis, rotationDir);
-    renderer.render(g.scene, g.camera);
+    g.renderer.render(g.scene, g.camera);
   }.bind(this));
 
   glow.material.opacity += .02;
@@ -275,7 +275,7 @@ EventHandler.prototype._createSolveGlow = function (solveMove) {
 EventHandler.prototype._fadeOutSolveMove = function (glow, rotationAxis) {
   var id = requestAnimationFrame(function () {
     this._fadeOutSolveMove(glow);
-    renderer.render(g.scene, g.camera);
+    g.renderer.render(g.scene, g.camera);
   }.bind(this));
 
   glow.material.opacity -= .04;
@@ -287,13 +287,13 @@ EventHandler.prototype._fadeOutSolveMove = function (glow, rotationAxis) {
 };
 
 EventHandler.prototype._getIntersects = function (event) {
-  var canvasBox = renderer.domElement.getBoundingClientRect();
+  var canvasBox = g.renderer.domElement.getBoundingClientRect();
   var canvasMouseX = event.clientX - canvasBox.left;
   var canvasMouseY = event.clientY - canvasBox.top;
 
   var mouse = new THREE.Vector2();
-  mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1;
-  mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1;
+  mouse.x = (canvasMouseX / g.renderer.domElement.clientWidth) * 2 - 1;
+  mouse.y = -(canvasMouseY / g.renderer.domElement.clientHeight) * 2 + 1;
   var raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(mouse, g.camera);
   return raycaster.intersectObjects(g.scene.children);
@@ -364,7 +364,7 @@ EventHandler.prototype._rotateSolveMove = function (glow, rotationAxis, rotation
   this.rotating = true;
   var id = requestAnimationFrame(function () {
     this._rotateSolveMove(glow, rotationAxis, rotationDir);
-    renderer.render(g.scene, g.camera);
+    g.renderer.render(g.scene, g.camera);
   }.bind(this));
 
   glow.rotation[rotationAxis] += rotationDir * (Math.PI / 2) / (8 * 4);
