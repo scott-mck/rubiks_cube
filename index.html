@@ -4,12 +4,6 @@
 		<title>Rubik's Cube</title>
 		<link rel=StyleSheet href="dist/built.css" type="text/css">
 		<script src="dist/built.js"></script>
-		<!-- <script type="application/javascript" src="jquery-2.1.4.min.js"></script> -->
-		<!-- <script type="application/javascript" src="three.min.js"></script>
-		<script type="application/javascript" src="init.js"></script>
-		<script type="application/javascript" src="add_events.js"></script>
-		<script type="application/javascript" src="rubiks_cube.js"></script>
-		<script type="application/javascript" src="event_handler.js"></script> -->
 	</head>
 	<body>
 		<div class="backdrop"></div>
@@ -59,29 +53,5 @@
 			<div class="sample button enabled">Example solve</div>
 			<div class="timer">0.00</div>
 		</div>
-
-		<!-- <script>
-			$(document).ready(function () {
-				setTimeout(function () {
-					$('.backdrop').addClass('transition');
-					$('.select').addClass('show');
-				}, 200);
-
-				$('.cube-size span').click(function (event) {
-					$('.select').removeClass('show');
-					$('.select').one('transitionend', function () {
-						$('.select').remove();
-						$('.backdrop').removeClass('transition');
-						$('.backdrop').one('transitionend', function () {
-							$('.backdrop').remove();
-						});
-					});
-
-					var dimensions = parseInt($(event.currentTarget).attr('id'));
-					init(dimensions);
-					addEvents();
-				});
-			});
-		</script> -->
 	</body>
 </html>
