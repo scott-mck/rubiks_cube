@@ -6,13 +6,16 @@ var cleancss = require('gulp-clean-css');
 var watch = require('gulp-watch');
 var sass = require('gulp-sass');
 var browserify = require('gulp-browserify');
+var sourcemaps = require('gulp-sourcemaps');
 
 // JavaScript
 gulp.task('js', function () {
   return gulp.src(['./src/js/*.js'])
+    .pipe(sourcemaps.init())
     .pipe(concat('./built.js'))
     .pipe(browserify())
     .pipe(uglify())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('./dist/'));
 });
 
@@ -31,5 +34,5 @@ gulp.task('watch', function() {
   gulp.watch('./src/sass/*.scss', ['sass']);
 });
 
-gulp.task('default', ['build']);
+gulp.task('default', ['js', 'sass']);
 gulp.task('dev', ['js', 'sass', 'watch']);
