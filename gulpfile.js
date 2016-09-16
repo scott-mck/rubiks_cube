@@ -7,6 +7,7 @@ var cleancss = require('gulp-clean-css');
 var watch = require('gulp-watch');
 var sass = require('gulp-sass');
 var babel = require('gulp-babel')
+var plumber = require('gulp-plumber')
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
@@ -28,10 +29,13 @@ gulp.task('js', function () {
 });
 
 // JavaScript Dev
-gulp.task('js-dev', function () {
+gulp.task('js-dev', function() {
   browserify('./src/js/main.js')
     .transform('babelify', { presets: ['es2015'] })
     .bundle()
+    .on('error', function(error) {
+      console.log(error.toString());
+    })
     .pipe(source('built.js'))
     .pipe(gulp.dest('dist/'));
 });
@@ -39,6 +43,7 @@ gulp.task('js-dev', function () {
 // Sass
 gulp.task('sass', function() {
   gulp.src('./src/scss/*.scss')
+    .pipe(plumber())
     .pipe(sass())
     .pipe(cleancss())
     .pipe(rename('built.css'))
