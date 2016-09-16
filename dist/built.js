@@ -59655,6 +59655,8 @@ var _gsap = require('gsap');
 
 var _gsap2 = _interopRequireDefault(_gsap);
 
+var _globals = require('./globals');
+
 var _scene = require('./scene');
 
 var _scene2 = _interopRequireDefault(_scene);
@@ -59717,6 +59719,7 @@ exports.default = function () {
   (0, _jquery2.default)(window).resize(resizeWindow);
 
   (0, _jquery2.default)(document).ready(function () {
+    var $backdrop = (0, _jquery2.default)('.backdrop');
     var $select = (0, _jquery2.default)('.select');
 
     _gsap2.default.to($select, DURATION, {
@@ -59726,6 +59729,8 @@ exports.default = function () {
     });
 
     $select.click(function (e) {
+      var dimensions = +e.target.getAttribute('id');
+      (0, _globals.set)(dimensions);
 
       _gsap2.default.to($select, DURATION, {
         opacity: 0,
@@ -59733,6 +59738,7 @@ exports.default = function () {
         ease: Power3.easeOut,
         onComplete: function onComplete() {
           $select.hide();
+          $backdrop.hide();
           (0, _init2.default)();
         }
       });
@@ -59740,7 +59746,7 @@ exports.default = function () {
   });
 };
 
-},{"./camera":5,"./event-handler":6,"./init":8,"./renderer":10,"./scene":11,"gsap":1,"jquery":2}],5:[function(require,module,exports){
+},{"./camera":5,"./event-handler":6,"./globals":7,"./init":8,"./renderer":10,"./scene":12,"gsap":1,"jquery":2}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59781,28 +59787,49 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
+
+var _rubiksCube = require('./rubiks-cube');
+
+var _rubiksCube2 = _interopRequireDefault(_rubiksCube);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var EventHandler = function EventHandler() {
-  _classCallCheck(this, EventHandler);
+var EventHandler = function () {
+  function EventHandler() {
+    _classCallCheck(this, EventHandler);
 
-  console.log('i made it!');
-};
+    this.addEvents();
+  }
+
+  _createClass(EventHandler, [{
+    key: 'addEvents',
+    value: function addEvents() {
+      (0, _jquery2.default)(window).on('keyup', function (e) {
+        var letter = String.fromCharCode(e.keyCode);
+        _rubiksCube2.default.move(letter);
+      });
+    }
+  }]);
+
+  return EventHandler;
+}();
 
 exports.default = EventHandler;
 
-},{"jquery":2}],7:[function(require,module,exports){
+},{"./rubiks-cube":11,"jquery":2}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.set = undefined;
 
 var _three = require('three');
 
@@ -59812,40 +59839,41 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var g = {};
 
-g.cubeDimensions = 3;
-g.cubieOffset = 3;
-g.cubieSize = 125 - (20 - (g.cubeDimensions - 2)) * (g.cubeDimensions - 2);
-g.cubeStartPos = (g.cubeDimensions - 1) / 2 * (g.cubieSize + g.cubieOffset);
-g.scrambleLength = 25 + 3 * (g.cubeDimensions - 3);
-g.allCubes = [];
-
-g.material = new _three2.default.MeshBasicMaterial({
-  color: 0xffffff,
-  vertexColors: _three2.default.FaceColors
-});
-
-g.geometry = new _three2.default.BoxGeometry(g.cubieSize, g.cubieSize, g.cubieSize);
-
-// Color right face RED
-g.geometry.faces[0].color.setRGB(1, 0, 0);
-g.geometry.faces[1].color.setRGB(1, 0, 0);
-// Color left face ORANGE
-g.geometry.faces[2].color.setRGB(1, .5, 0);
-g.geometry.faces[3].color.setRGB(1, .5, 0);
-// Color top face YELLOW
-g.geometry.faces[4].color.setRGB(1, 1, 0);
-g.geometry.faces[5].color.setRGB(1, 1, 0);
-// Color down face WHITE
-g.geometry.faces[6].color.setRGB(1, 1, 1);
-g.geometry.faces[7].color.setRGB(1, 1, 1);
-// Color front face BLUE
-g.geometry.faces[8].color.setRGB(0, 0, 1);
-g.geometry.faces[9].color.setRGB(0, 0, 1);
-// Color back face GREEN
-g.geometry.faces[10].color.setRGB(0, 1, 0);
-g.geometry.faces[11].color.setRGB(0, 1, 0);
-
 exports.default = g;
+var set = exports.set = function set(dimensions) {
+  g.cubeDimensions = dimensions;
+  g.cubieOffset = 3;
+  g.cubieSize = 125 - (20 - (g.cubeDimensions - 2)) * (g.cubeDimensions - 2);
+  g.cubeStartPos = (g.cubeDimensions - 1) / 2 * (g.cubieSize + g.cubieOffset);
+  g.scrambleLength = 25 + 3 * (g.cubeDimensions - 3);
+  g.allCubes = [];
+
+  g.material = new _three2.default.MeshBasicMaterial({
+    color: 0xffffff,
+    vertexColors: _three2.default.FaceColors
+  });
+
+  g.geometry = new _three2.default.BoxGeometry(g.cubieSize, g.cubieSize, g.cubieSize);
+
+  // Color right face RED
+  g.geometry.faces[0].color.setRGB(1, 0, 0);
+  g.geometry.faces[1].color.setRGB(1, 0, 0);
+  // Color left face ORANGE
+  g.geometry.faces[2].color.setRGB(1, .5, 0);
+  g.geometry.faces[3].color.setRGB(1, .5, 0);
+  // Color top face YELLOW
+  g.geometry.faces[4].color.setRGB(1, 1, 0);
+  g.geometry.faces[5].color.setRGB(1, 1, 0);
+  // Color down face WHITE
+  g.geometry.faces[6].color.setRGB(1, 1, 1);
+  g.geometry.faces[7].color.setRGB(1, 1, 1);
+  // Color front face BLUE
+  g.geometry.faces[8].color.setRGB(0, 0, 1);
+  g.geometry.faces[9].color.setRGB(0, 0, 1);
+  // Color back face GREEN
+  g.geometry.faces[10].color.setRGB(0, 1, 0);
+  g.geometry.faces[11].color.setRGB(0, 1, 0);
+};
 
 },{"three":3}],8:[function(require,module,exports){
 'use strict';
@@ -59941,7 +59969,7 @@ var createFrontAndBack = function createFrontAndBack() {
   }
 };
 
-},{"./camera":5,"./globals":7,"./renderer":10,"./scene":11,"three":3}],9:[function(require,module,exports){
+},{"./camera":5,"./globals":7,"./renderer":10,"./scene":12,"three":3}],9:[function(require,module,exports){
 'use strict';
 
 var _jquery = require('jquery');
@@ -59989,7 +60017,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   (0, _addEvents2.default)();
 });
 
-},{"./add-events":4,"./camera":5,"./init":8,"./renderer":10,"./scene":11,"jquery":2,"three":3}],10:[function(require,module,exports){
+},{"./add-events":4,"./camera":5,"./init":8,"./renderer":10,"./scene":12,"jquery":2,"three":3}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60005,6 +60033,38 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = new _three2.default.WebGLRenderer();
 
 },{"three":3}],11:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _three = require('three');
+
+var _three2 = _interopRequireDefault(_three);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RubiksCube = function () {
+  function RubiksCube() {
+    _classCallCheck(this, RubiksCube);
+  }
+
+  _createClass(RubiksCube, [{
+    key: 'move',
+    value: function move(letter) {}
+  }]);
+
+  return RubiksCube;
+}();
+
+exports.default = new RubiksCube();
+
+},{"three":3}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

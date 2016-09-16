@@ -4,6 +4,10 @@ class RubiksCube {
   constructor() {
 
   }
+
+  move(letter) {
+    
+  }
 }
 
-export default RubiksCube
+export default new RubiksCube()

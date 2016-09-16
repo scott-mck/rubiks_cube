@@ -1,5 +1,6 @@
 import $ from 'jquery'
 import TweenMax from 'gsap'
+import { set } from './globals'
 import scene from './scene'
 import camera from './camera'
 import renderer from './renderer'
@@ -46,6 +47,7 @@ export default () => {
   $(window).resize(resizeWindow)
 
   $(document).ready(() => {
+    let $backdrop = $('.backdrop')
     let $select = $('.select')
 
     TweenMax.to($select, DURATION, {
@@ -55,6 +57,8 @@ export default () => {
     })
 
     $select.click((e) => {
+      let dimensions = +e.target.getAttribute('id')
+      set(dimensions)
 
       TweenMax.to($select, DURATION, {
         opacity: 0,
@@ -62,6 +66,7 @@ export default () => {
         ease: Power3.easeOut,
         onComplete: () => {
           $select.hide()
+          $backdrop.hide()
           init()
         }
       })
