@@ -1,6 +1,6 @@
 import THREE from 'three'
 import g from './globals'
-import faceDetector from './face-detector'
+import grabber from './grabber'
 import scene from './scene'
 import camera from './camera'
 import renderer from './renderer'
@@ -14,7 +14,7 @@ export default () => {
   createUpAndDown()
   createFrontAndBack()
 
-  faceDetector.init()
+  grabber.init()
   renderer.render(scene, camera)
 }
 
@@ -77,8 +77,8 @@ const createLeftAndRight = () => {
         );
 
         let d = g.cubeDimensions - 1
-        if (x === 0 && y === 0 && z === 0) faceDetector.setAnchor1(cubie)
-        if (x === 1 && y === d && z === d) faceDetector.setAnchor2(cubie)
+        if (x === 0 && y === 0 && z === 0) grabber.setAnchor1(cubie)
+        if (x === 1 && y === d && z === d) grabber.setAnchor2(cubie)
       }
     }
   }

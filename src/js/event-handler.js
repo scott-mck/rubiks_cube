@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import g from './globals'
-import faceDetector from './face-detector'
+import grabber from './grabber'
 import rubiksCube from './rubiks-cube'
 import renderer from './renderer'
 import camera from './camera'
@@ -39,7 +39,7 @@ class EventHandler {
     let objects = raycaster.intersectObjects(scene.children)
 
     if (this.doTheThing) {
-      faceDetector.right()
+      grabber.right()
     }
   }
 }

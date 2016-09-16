@@ -1,7 +1,7 @@
 import THREE from 'three'
 import scene from './scene'
 
-class FaceDetector {
+class Grabber {
   constructor() {}
 
   setAnchor1(cubie) {
@@ -95,4 +95,4 @@ class FaceDetector {
   }
 }
 
-export default new FaceDetector()
+export default new Grabber()
