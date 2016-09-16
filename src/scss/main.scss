@@ -25,16 +25,15 @@ body {
 
 .select {
   opacity: 0;
-  transition: 300ms;
   z-index: 1000;
   position: absolute;
-  width: 400px;
-  background: white;
+  top: 0;
   left: 0;
   right: 0;
+  width: 400px;
+  background: white;
   margin-left: auto;
   margin-right: auto;
-  border-radius: 2px;
   font-family: 'AMC', sans-serif;
   text-align: center;
 

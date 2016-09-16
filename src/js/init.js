@@ -1,12 +1,15 @@
 import THREE from 'three'
 import g from './globals'
 import scene from './scene'
+import camera from './camera'
 import renderer from './renderer'
 
 export default () => {
   createLeftAndRight()
   createUpAndDown()
   createFrontAndBack()
+
+  renderer.render(scene, camera)
 }
 
 const addCubie = () => {
