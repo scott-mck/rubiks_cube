@@ -59665,6 +59665,10 @@ var DURATION = 0.7;
 
 exports.default = function () {
 
+  (0, _jquery2.default)(window).click(function (e) {
+    e.preventDefault();
+  });
+
   (0, _jquery2.default)(document).ready(function () {
     var $select = (0, _jquery2.default)('.select');
 

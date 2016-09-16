@@ -6,6 +6,10 @@ let DURATION = 0.7
 
 export default () => {
 
+  $(window).click((e) => {
+    e.preventDefault()
+  })
+
   $(document).ready(() => {
     let $select = $('.select')
 
