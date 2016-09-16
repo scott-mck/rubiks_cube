@@ -19,10 +19,10 @@ class FaceDetector {
       this.anchor1.position,
       new THREE.Vector3().setZ(-1)
     )
-    let intersects = this.filterIntersects(raycaster.intersectObjects(scene.children))
+    let intersects = this.raycast(raycaster)
     intersects.push(this.anchor1)
-
-    intersects = intersects.concat(this.fillOutFace(intersects))
+    this.filterIntersects(intersects)
+    this.fillOutFace(intersects)
 
     return intersects
   }
@@ -33,17 +33,22 @@ class FaceDetector {
     let object
 
     for (i = 0; i < intersects.length; i++) {
-      object = intersects[i].object
+      object = intersects[i]
       if (object.name === 'cubie' && cubes.indexOf(object) === -1) {
         cubes.push(object)
       }
     }
-    return cubes
+
+    intersects.splice(0)
+    for (i = 0; i < cubes.length; i++) {
+      intersects.push(cubes[i])
+    }
   }
 
   fillOutFace(intersects) {
-    let cubes = []
+    let cubes = intersects
     let raycastDir = new THREE.Vector3().setY(-1)
+    let captures = []
     let i
     let cube
     let raycaster
@@ -51,11 +56,20 @@ class FaceDetector {
     for (i = 0; i < intersects.length; i++) {
       cube = intersects[i]
       raycaster = new THREE.Raycaster(cube.position, raycastDir)
-      cubes = cubes.concat(raycaster.intersectObjects(scene.children))
+      captures = this.raycast(raycaster)
+      cubes = cubes.concat(captures)
     }
 
-    cubes = this.filterIntersects(cubes)
-    return cubes
+    intersects.splice(0)
+    for (i = 0; i < cubes.length; i++) {
+      intersects.push(cubes[i])
+    }
+  }
+
+  raycast(raycaster) {
+    return raycaster.intersectObjects(scene.children).map((data) => {
+      return data.object
+    })
   }
 
   test() {

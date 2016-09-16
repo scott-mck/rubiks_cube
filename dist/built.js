@@ -59914,10 +59914,10 @@ var FaceDetector = function () {
     key: 'right',
     value: function right() {
       var raycaster = new _three2.default.Raycaster(this.anchor1.position, new _three2.default.Vector3().setZ(-1));
-      var intersects = this.filterIntersects(raycaster.intersectObjects(_scene2.default.children));
+      var intersects = this.raycast(raycaster);
       intersects.push(this.anchor1);
-
-      intersects = intersects.concat(this.fillOutFace(intersects));
+      this.filterIntersects(intersects);
+      this.fillOutFace(intersects);
 
       return intersects;
     }
@@ -59929,18 +59929,23 @@ var FaceDetector = function () {
       var object = void 0;
 
       for (i = 0; i < intersects.length; i++) {
-        object = intersects[i].object;
+        object = intersects[i];
         if (object.name === 'cubie' && cubes.indexOf(object) === -1) {
           cubes.push(object);
         }
       }
-      return cubes;
+
+      intersects.splice(0);
+      for (i = 0; i < cubes.length; i++) {
+        intersects.push(cubes[i]);
+      }
     }
   }, {
     key: 'fillOutFace',
     value: function fillOutFace(intersects) {
-      var cubes = [];
+      var cubes = intersects;
       var raycastDir = new _three2.default.Vector3().setY(-1);
+      var captures = [];
       var i = void 0;
       var cube = void 0;
       var raycaster = void 0;
@@ -59948,11 +59953,21 @@ var FaceDetector = function () {
       for (i = 0; i < intersects.length; i++) {
         cube = intersects[i];
         raycaster = new _three2.default.Raycaster(cube.position, raycastDir);
-        cubes = cubes.concat(raycaster.intersectObjects(_scene2.default.children));
+        captures = this.raycast(raycaster);
+        cubes = cubes.concat(captures);
       }
 
-      cubes = this.filterIntersects(cubes);
-      return cubes;
+      intersects.splice(0);
+      for (i = 0; i < cubes.length; i++) {
+        intersects.push(cubes[i]);
+      }
+    }
+  }, {
+    key: 'raycast',
+    value: function raycast(raycaster) {
+      return raycaster.intersectObjects(_scene2.default.children).map(function (data) {
+        return data.object;
+      });
     }
   }, {
     key: 'test',
