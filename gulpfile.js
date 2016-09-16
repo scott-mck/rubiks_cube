@@ -6,8 +6,10 @@ var del = require('del');
 var cleancss = require('gulp-clean-css');
 var watch = require('gulp-watch');
 var sass = require('gulp-sass');
-var browserify = require('gulp-browserify');
-var sourcemaps = require('gulp-sourcemaps');
+var babel = require('gulp-babel')
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 // Clean
 gulp.task('clean', function() {
@@ -16,28 +18,27 @@ gulp.task('clean', function() {
 
 // JavaScript
 gulp.task('js', function () {
-  gulp.src(['./src/js/*.js'])
-    .pipe(concat('built.js'))
-    .pipe(browserify())
+  browserify('./src/js/main.js')
+    .transform('babelify', { presets: ['es2015'] })
+    .bundle()
+    .pipe(source('built.js'))
+    .pipe(buffer())
     .pipe(uglify())
     .pipe(gulp.dest('dist/'));
 });
 
-// JavaScript Sourcemaps
-gulp.task('js-sourcemaps', function () {
-  return gulp.src(['./src/js/*.js'])
-    .pipe(sourcemaps.init())
-    .pipe(concat('built.js'))
-    .pipe(browserify())
-    .pipe(uglify())
-    .pipe(sourcemaps.write())
+// JavaScript Dev
+gulp.task('js-dev', function () {
+  browserify('./src/js/main.js')
+    .transform('babelify', { presets: ['es2015'] })
+    .bundle()
+    .pipe(source('built.js'))
     .pipe(gulp.dest('dist/'));
 });
-
 
 // Sass
 gulp.task('sass', function() {
-  gulp.src('./src/sass/*.scss')
+  gulp.src('./src/scss/*.scss')
     .pipe(sass())
     .pipe(cleancss())
     .pipe(rename('built.css'))
@@ -47,8 +48,14 @@ gulp.task('sass', function() {
 // Watch
 gulp.task('watch', function() {
   gulp.watch('./src/js/*.js', ['js']);
-  gulp.watch('./src/sass/*.scss', ['sass']);
+  gulp.watch('./src/scss/*.scss', ['sass']);
+});
+
+// Watch dev
+gulp.task('watch-dev', function() {
+  gulp.watch('./src/js/*.js', ['js-dev']);
+  gulp.watch('./src/scss/*.scss', ['sass']);
 });
 
 gulp.task('default', ['clean', 'js', 'sass']);
-gulp.task('dev', ['clean', 'js-sourcemaps', 'sass', 'watch']);
+gulp.task('dev', ['clean', 'js-dev', 'sass', 'watch-dev']);

@@ -311,6 +311,8 @@ EventHandler.prototype._mouseUp = function (clickedCube, normal, mouseDown, mous
   var cubesToRotate, rotationAxis;
   var rotationDir = 1;
 
+  debugger;//
+
   if (mouseUp.clientX > mouseDown.clientX + 40 ||
       mouseUp.clientX < mouseDown.clientX - 40) {
     startPos[axes[0]] = g.cubeStartPos + 200;
