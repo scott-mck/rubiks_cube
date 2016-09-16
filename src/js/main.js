@@ -1,3 +1,6 @@
+// REMEMBER TO KILL ME WHEN YOU NEED TO
+import windows from './windows'
+
 import $ from 'jquery'
 import THREE from 'three'
 import scene from './scene'
@@ -6,6 +9,7 @@ import camera, { setCamera } from './camera'
 
 import addEvents from './add-events'
 import init from './init'
+
 
 $(document).ready(() => {
 
