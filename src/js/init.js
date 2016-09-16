@@ -4,7 +4,11 @@ import scene from './scene'
 import camera from './camera'
 import renderer from './renderer'
 
+let material
+let geometry
+
 export default () => {
+  createMesh()
   createLeftAndRight()
   createUpAndDown()
   createFrontAndBack()
@@ -12,8 +16,39 @@ export default () => {
   renderer.render(scene, camera)
 }
 
+const createMesh = () => {
+  material = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    vertexColors: THREE.FaceColors
+  })
+
+  geometry = new THREE.BoxGeometry(
+    g.cubieSize,
+    g.cubieSize,
+    g.cubieSize
+  )
+  // Color right face RED
+  geometry.faces[0].color.setRGB(1, 0, 0)
+  geometry.faces[1].color.setRGB(1, 0, 0)
+  // Color left face ORANGE
+  geometry.faces[2].color.setRGB(1, .5, 0)
+  geometry.faces[3].color.setRGB(1, .5, 0)
+  // Color top face YELLOW
+  geometry.faces[4].color.setRGB(1, 1, 0)
+  geometry.faces[5].color.setRGB(1, 1, 0)
+  // Color down face WHITE
+  geometry.faces[6].color.setRGB(1, 1, 1)
+  geometry.faces[7].color.setRGB(1, 1, 1)
+  // Color front face BLUE
+  geometry.faces[8].color.setRGB(0, 0, 1)
+  geometry.faces[9].color.setRGB(0, 0, 1)
+  // Color back face GREEN
+  geometry.faces[10].color.setRGB(0, 1, 0)
+  geometry.faces[11].color.setRGB(0, 1, 0)
+}
+
 const addCubie = () => {
-  let cubie = new THREE.Mesh(g.geometry.clone(), g.material.clone());
+  let cubie = new THREE.Mesh(geometry.clone(), material.clone());
   let helper = new THREE.EdgesHelper(cubie, 0x000000);
   helper.material.linewidth = 7;
   cubie.name = "cubie";

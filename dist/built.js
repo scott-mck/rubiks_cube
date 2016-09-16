@@ -59847,32 +59847,6 @@ var set = exports.set = function set(dimensions) {
   g.cubeStartPos = (g.cubeDimensions - 1) / 2 * (g.cubieSize + g.cubieOffset);
   g.scrambleLength = 25 + 3 * (g.cubeDimensions - 3);
   g.allCubes = [];
-
-  g.material = new _three2.default.MeshBasicMaterial({
-    color: 0xffffff,
-    vertexColors: _three2.default.FaceColors
-  });
-
-  g.geometry = new _three2.default.BoxGeometry(g.cubieSize, g.cubieSize, g.cubieSize);
-
-  // Color right face RED
-  g.geometry.faces[0].color.setRGB(1, 0, 0);
-  g.geometry.faces[1].color.setRGB(1, 0, 0);
-  // Color left face ORANGE
-  g.geometry.faces[2].color.setRGB(1, .5, 0);
-  g.geometry.faces[3].color.setRGB(1, .5, 0);
-  // Color top face YELLOW
-  g.geometry.faces[4].color.setRGB(1, 1, 0);
-  g.geometry.faces[5].color.setRGB(1, 1, 0);
-  // Color down face WHITE
-  g.geometry.faces[6].color.setRGB(1, 1, 1);
-  g.geometry.faces[7].color.setRGB(1, 1, 1);
-  // Color front face BLUE
-  g.geometry.faces[8].color.setRGB(0, 0, 1);
-  g.geometry.faces[9].color.setRGB(0, 0, 1);
-  // Color back face GREEN
-  g.geometry.faces[10].color.setRGB(0, 1, 0);
-  g.geometry.faces[11].color.setRGB(0, 1, 0);
 };
 
 },{"three":3}],8:[function(require,module,exports){
@@ -59904,7 +59878,11 @@ var _renderer2 = _interopRequireDefault(_renderer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var material = void 0;
+var geometry = void 0;
+
 exports.default = function () {
+  createMesh();
   createLeftAndRight();
   createUpAndDown();
   createFrontAndBack();
@@ -59912,8 +59890,35 @@ exports.default = function () {
   _renderer2.default.render(_scene2.default, _camera2.default);
 };
 
+var createMesh = function createMesh() {
+  material = new _three2.default.MeshBasicMaterial({
+    color: 0xffffff,
+    vertexColors: _three2.default.FaceColors
+  });
+
+  geometry = new _three2.default.BoxGeometry(_globals2.default.cubieSize, _globals2.default.cubieSize, _globals2.default.cubieSize);
+  // Color right face RED
+  geometry.faces[0].color.setRGB(1, 0, 0);
+  geometry.faces[1].color.setRGB(1, 0, 0);
+  // Color left face ORANGE
+  geometry.faces[2].color.setRGB(1, .5, 0);
+  geometry.faces[3].color.setRGB(1, .5, 0);
+  // Color top face YELLOW
+  geometry.faces[4].color.setRGB(1, 1, 0);
+  geometry.faces[5].color.setRGB(1, 1, 0);
+  // Color down face WHITE
+  geometry.faces[6].color.setRGB(1, 1, 1);
+  geometry.faces[7].color.setRGB(1, 1, 1);
+  // Color front face BLUE
+  geometry.faces[8].color.setRGB(0, 0, 1);
+  geometry.faces[9].color.setRGB(0, 0, 1);
+  // Color back face GREEN
+  geometry.faces[10].color.setRGB(0, 1, 0);
+  geometry.faces[11].color.setRGB(0, 1, 0);
+};
+
 var addCubie = function addCubie() {
-  var cubie = new _three2.default.Mesh(_globals2.default.geometry.clone(), _globals2.default.material.clone());
+  var cubie = new _three2.default.Mesh(geometry.clone(), material.clone());
   var helper = new _three2.default.EdgesHelper(cubie, 0x000000);
   helper.material.linewidth = 7;
   cubie.name = "cubie";
