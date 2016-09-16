@@ -12,3 +12,11 @@ export const set = (dimensions) => {
   g.scrambleLength = 25 + 3 * (g.cubeDimensions - 3)
   g.allCubes = []
 }
+
+export const setAnchor1 = (cubie) => {
+  g.anchor1 = cubie
+}
+
+export const setAnchor2 = (cubie) => {
+  g.anchor2 = cubie
+}

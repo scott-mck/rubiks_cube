@@ -1,5 +1,6 @@
 import THREE from 'three'
 import g from './globals'
+import faceDetector from './face-detector'
 import scene from './scene'
 import camera from './camera'
 import renderer from './renderer'
@@ -73,6 +74,10 @@ const createLeftAndRight = () => {
           g.cubeStartPos - (y * (g.cubieSize + g.cubieOffset)),
           g.cubeStartPos - (z * (g.cubieSize + g.cubieOffset))
         );
+
+        let d = g.cubeDimensions - 1
+        if (x === 0 && y === 0 && z === 0) faceDetector.setAnchor1(cubie)
+        if (x === 1 && y === d && z === d) faceDetector.setAnchor2(cubie)
       }
     }
   }

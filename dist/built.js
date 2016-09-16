@@ -59740,13 +59740,14 @@ exports.default = function () {
           $select.hide();
           $backdrop.hide();
           (0, _init2.default)();
+          eventHandler.start();
         }
       });
     });
   });
 };
 
-},{"./camera":5,"./event-handler":6,"./globals":7,"./init":8,"./renderer":10,"./scene":12,"gsap":1,"jquery":2}],5:[function(require,module,exports){
+},{"./camera":5,"./event-handler":6,"./globals":8,"./init":9,"./renderer":11,"./scene":13,"gsap":1,"jquery":2}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59793,9 +59794,33 @@ var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
+var _three = require('three');
+
+var _three2 = _interopRequireDefault(_three);
+
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
+
+var _faceDetector = require('./face-detector');
+
+var _faceDetector2 = _interopRequireDefault(_faceDetector);
+
 var _rubiksCube = require('./rubiks-cube');
 
 var _rubiksCube2 = _interopRequireDefault(_rubiksCube);
+
+var _renderer = require('./renderer');
+
+var _renderer2 = _interopRequireDefault(_renderer);
+
+var _camera = require('./camera');
+
+var _camera2 = _interopRequireDefault(_camera);
+
+var _scene = require('./scene');
+
+var _scene2 = _interopRequireDefault(_scene);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -59805,16 +59830,42 @@ var EventHandler = function () {
   function EventHandler() {
     _classCallCheck(this, EventHandler);
 
-    this.addEvents();
+    this.doTheThing = true;
   }
 
   _createClass(EventHandler, [{
+    key: 'start',
+    value: function start() {
+      this.addEvents();
+    }
+  }, {
     key: 'addEvents',
     value: function addEvents() {
       (0, _jquery2.default)(window).on('keyup', function (e) {
         var letter = String.fromCharCode(e.keyCode);
-        _rubiksCube2.default.move(letter);
+        // rubiksCube.move(letter)
       });
+
+      (0, _jquery2.default)(window).on('click', this.click.bind(this));
+    }
+  }, {
+    key: 'click',
+    value: function click(e) {
+      var canvasBox = _renderer2.default.domElement.getBoundingClientRect();
+      var canvasMouseX = event.clientX - canvasBox.left;
+      var canvasMouseY = event.clientY - canvasBox.top;
+
+      var mouse = new _three2.default.Vector2();
+      mouse.x = canvasMouseX / _renderer2.default.domElement.clientWidth * 2 - 1;
+      mouse.y = -(canvasMouseY / _renderer2.default.domElement.clientHeight) * 2 + 1;
+
+      var raycaster = new _three2.default.Raycaster();
+      raycaster.setFromCamera(mouse, _camera2.default);
+      var objects = raycaster.intersectObjects(_scene2.default.children);
+
+      if (this.doTheThing) {
+        _faceDetector2.default.right();
+      }
     }
   }]);
 
@@ -59823,13 +59874,110 @@ var EventHandler = function () {
 
 exports.default = EventHandler;
 
-},{"./rubiks-cube":11,"jquery":2}],7:[function(require,module,exports){
+},{"./camera":5,"./face-detector":7,"./globals":8,"./renderer":11,"./rubiks-cube":12,"./scene":13,"jquery":2,"three":3}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.set = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _three = require('three');
+
+var _three2 = _interopRequireDefault(_three);
+
+var _scene = require('./scene');
+
+var _scene2 = _interopRequireDefault(_scene);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var FaceDetector = function () {
+  function FaceDetector() {
+    _classCallCheck(this, FaceDetector);
+  }
+
+  _createClass(FaceDetector, [{
+    key: 'setAnchor1',
+    value: function setAnchor1(cubie) {
+      this.anchor1 = cubie;
+    }
+  }, {
+    key: 'setAnchor2',
+    value: function setAnchor2(cubie) {
+      this.anchor2 = cubie;
+    }
+  }, {
+    key: 'right',
+    value: function right() {
+      var raycaster = new _three2.default.Raycaster(this.anchor1.position, new _three2.default.Vector3().setZ(-1));
+      var intersects = this.filterIntersects(raycaster.intersectObjects(_scene2.default.children));
+      intersects.push(this.anchor1);
+
+      intersects = intersects.concat(this.fillOutFace(intersects));
+
+      return intersects;
+    }
+  }, {
+    key: 'filterIntersects',
+    value: function filterIntersects(intersects) {
+      var cubes = [];
+      var i = void 0;
+      var object = void 0;
+
+      for (i = 0; i < intersects.length; i++) {
+        object = intersects[i].object;
+        if (object.name === 'cubie' && cubes.indexOf(object) === -1) {
+          cubes.push(object);
+        }
+      }
+      return cubes;
+    }
+  }, {
+    key: 'fillOutFace',
+    value: function fillOutFace(intersects) {
+      var cubes = [];
+      var raycastDir = new _three2.default.Vector3().setY(-1);
+      var i = void 0;
+      var cube = void 0;
+      var raycaster = void 0;
+
+      for (i = 0; i < intersects.length; i++) {
+        cube = intersects[i];
+        raycaster = new _three2.default.Raycaster(cube.position, raycastDir);
+        cubes = cubes.concat(raycaster.intersectObjects(_scene2.default.children));
+      }
+
+      cubes = this.filterIntersects(cubes);
+      return cubes;
+    }
+  }, {
+    key: 'test',
+    value: function test() {
+      var i = void 0;
+      var right = this.right();
+      for (i = 0; i < right.length; i++) {
+        _scene2.default.remove(right[i]);
+      }
+      renderer.render(_scene2.default, camera);
+    }
+  }]);
+
+  return FaceDetector;
+}();
+
+exports.default = new FaceDetector();
+
+},{"./scene":13,"three":3}],8:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setAnchor2 = exports.setAnchor1 = exports.set = undefined;
 
 var _three = require('three');
 
@@ -59849,7 +59997,15 @@ var set = exports.set = function set(dimensions) {
   g.allCubes = [];
 };
 
-},{"three":3}],8:[function(require,module,exports){
+var setAnchor1 = exports.setAnchor1 = function setAnchor1(cubie) {
+  g.anchor1 = cubie;
+};
+
+var setAnchor2 = exports.setAnchor2 = function setAnchor2(cubie) {
+  g.anchor2 = cubie;
+};
+
+},{"three":3}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59863,6 +60019,10 @@ var _three2 = _interopRequireDefault(_three);
 var _globals = require('./globals');
 
 var _globals2 = _interopRequireDefault(_globals);
+
+var _faceDetector = require('./face-detector');
+
+var _faceDetector2 = _interopRequireDefault(_faceDetector);
 
 var _scene = require('./scene');
 
@@ -59939,6 +60099,10 @@ var createLeftAndRight = function createLeftAndRight() {
       for (z = 0; z < _globals2.default.cubeDimensions; z++) {
         cubie = addCubie();
         cubie.position.set(_globals2.default.cubeStartPos - 2 * x * _globals2.default.cubeStartPos, _globals2.default.cubeStartPos - y * (_globals2.default.cubieSize + _globals2.default.cubieOffset), _globals2.default.cubeStartPos - z * (_globals2.default.cubieSize + _globals2.default.cubieOffset));
+
+        var d = _globals2.default.cubeDimensions - 1;
+        if (x === 0 && y === 0 && z === 0) _faceDetector2.default.setAnchor1(cubie);
+        if (x === 1 && y === d && z === d) _faceDetector2.default.setAnchor2(cubie);
       }
     }
   }
@@ -59974,8 +60138,12 @@ var createFrontAndBack = function createFrontAndBack() {
   }
 };
 
-},{"./camera":5,"./globals":7,"./renderer":10,"./scene":12,"three":3}],9:[function(require,module,exports){
+},{"./camera":5,"./face-detector":7,"./globals":8,"./renderer":11,"./scene":13,"three":3}],10:[function(require,module,exports){
 'use strict';
+
+var _windows = require('./windows');
+
+var _windows2 = _interopRequireDefault(_windows);
 
 var _jquery = require('jquery');
 
@@ -60007,6 +60175,7 @@ var _init2 = _interopRequireDefault(_init);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// REMEMBER TO KILL ME WHEN YOU NEED TO
 (0, _jquery2.default)(document).ready(function () {
 
   var $canvas = (0, _jquery2.default)('#canvas');
@@ -60022,7 +60191,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   (0, _addEvents2.default)();
 });
 
-},{"./add-events":4,"./camera":5,"./init":8,"./renderer":10,"./scene":12,"jquery":2,"three":3}],10:[function(require,module,exports){
+},{"./add-events":4,"./camera":5,"./init":9,"./renderer":11,"./scene":13,"./windows":14,"jquery":2,"three":3}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60037,7 +60206,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = new _three2.default.WebGLRenderer();
 
-},{"three":3}],11:[function(require,module,exports){
+},{"three":3}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60069,7 +60238,7 @@ var RubiksCube = function () {
 
 exports.default = new RubiksCube();
 
-},{"three":3}],12:[function(require,module,exports){
+},{"three":3}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60084,4 +60253,55 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = new _three2.default.Scene();
 
-},{"three":3}]},{},[9]);
+},{"three":3}],14:[function(require,module,exports){
+'use strict';
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _gsap = require('gsap');
+
+var _gsap2 = _interopRequireDefault(_gsap);
+
+var _three = require('three');
+
+var _three2 = _interopRequireDefault(_three);
+
+var _scene = require('./scene');
+
+var _scene2 = _interopRequireDefault(_scene);
+
+var _camera = require('./camera');
+
+var _camera2 = _interopRequireDefault(_camera);
+
+var _renderer = require('./renderer');
+
+var _renderer2 = _interopRequireDefault(_renderer);
+
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
+
+var _faceDetector = require('./face-detector');
+
+var _faceDetector2 = _interopRequireDefault(_faceDetector);
+
+var _eventHandler = require('./event-handler');
+
+var _eventHandler2 = _interopRequireDefault(_eventHandler);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+window.$ = _jquery2.default;
+window.TweenMax = _gsap2.default;
+window.THREE = _three2.default;
+window.scene = _scene2.default;
+window.camera = _camera2.default;
+window.renderer = _renderer2.default;
+window.g = _globals2.default;
+window.faceDetector = _faceDetector2.default;
+window.eventHandler = _eventHandler2.default;
+
+},{"./camera":5,"./event-handler":6,"./face-detector":7,"./globals":8,"./renderer":11,"./scene":13,"gsap":1,"jquery":2,"three":3}]},{},[10]);

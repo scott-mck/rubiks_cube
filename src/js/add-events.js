@@ -68,6 +68,7 @@ export default () => {
           $select.hide()
           $backdrop.hide()
           init()
+          eventHandler.start()
         }
       })
 
