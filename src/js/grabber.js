@@ -31,15 +31,16 @@ class Grabber {
       this._face.anchor.position,
       new THREE.Vector3()[setAxis](1 * this._face.dir)
     )
-    let intersects = this.raycast(raycaster)
+
+    let intersects = this._raycast(raycaster)
     intersects.push(this._face.anchor)
-    this.filterIntersects(intersects)
-    this.fillOutFace(intersects)
+    this._filterIntersects(intersects)
+    this._fillOutFace(intersects)
 
     return intersects
   }
 
-  filterIntersects(intersects) {
+  _filterIntersects(intersects) {
     let cubes = []
     let i
     let object
@@ -57,7 +58,7 @@ class Grabber {
     }
   }
 
-  fillOutFace(intersects) {
+  _fillOutFace(intersects) {
     let setAxis = 'set' + this._face.shoot[1].toUpperCase()
     let raycastDir = new THREE.Vector3()[setAxis](1 * this._face.dir)
     let cubes = intersects
@@ -79,20 +80,20 @@ class Grabber {
     }
   }
 
-  raycast(raycaster) {
+  _raycast(raycaster) {
     return raycaster.intersectObjects(scene.children).map((data) => {
       return data.object
     })
   }
 
-  test(str) {
-    let i
-    let face = this.getFace(str)
-    for (i = 0; i < face.length; i++) {
-      scene.remove(face[i])
-    }
-    renderer.render(scene, camera)
-  }
+  // test(str) {
+  //   let i
+  //   let face = this.getFace(str)
+  //   for (i = 0; i < face.length; i++) {
+  //     scene.remove(face[i])
+  //   }
+  //   renderer.render(scene, camera)
+  // }
 }
 
 export default new Grabber()
