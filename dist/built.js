@@ -59911,11 +59911,26 @@ var FaceDetector = function () {
       this.anchor2 = cubie;
     }
   }, {
-    key: 'right',
-    value: function right() {
-      var raycaster = new _three2.default.Raycaster(this.anchor1.position, new _three2.default.Vector3().setZ(-1));
+    key: 'init',
+    value: function init() {
+      this._faceMap = {
+        r: { anchor: this.anchor1, shoot: ['z', 'y'], dir: -1 },
+        u: { anchor: this.anchor1, shoot: ['z', 'x'], dir: -1 },
+        f: { anchor: this.anchor1, shoot: ['x', 'y'], dir: -1 },
+        l: { anchor: this.anchor2, shoot: ['z', 'y'], dir: 1 },
+        d: { anchor: this.anchor2, shoot: ['z', 'x'], dir: 1 },
+        b: { anchor: this.anchor2, shoot: ['x', 'y'], dir: 1 }
+      };
+    }
+  }, {
+    key: 'getFace',
+    value: function getFace(str) {
+      this._face = this._faceMap[str];
+      var setAxis = 'set' + this._face.shoot[0].toUpperCase();
+
+      var raycaster = new _three2.default.Raycaster(this._face.anchor.position, new _three2.default.Vector3()[setAxis](1 * this._face.dir));
       var intersects = this.raycast(raycaster);
-      intersects.push(this.anchor1);
+      intersects.push(this._face.anchor);
       this.filterIntersects(intersects);
       this.fillOutFace(intersects);
 
@@ -59943,13 +59958,14 @@ var FaceDetector = function () {
   }, {
     key: 'fillOutFace',
     value: function fillOutFace(intersects) {
+      var setAxis = 'set' + this._face.shoot[1].toUpperCase();
+      var raycastDir = new _three2.default.Vector3()[setAxis](1 * this._face.dir);
       var cubes = intersects;
-      var raycastDir = new _three2.default.Vector3().setY(-1);
       var captures = [];
+
       var i = void 0;
       var cube = void 0;
       var raycaster = void 0;
-
       for (i = 0; i < intersects.length; i++) {
         cube = intersects[i];
         raycaster = new _three2.default.Raycaster(cube.position, raycastDir);
@@ -59971,11 +59987,11 @@ var FaceDetector = function () {
     }
   }, {
     key: 'test',
-    value: function test() {
+    value: function test(str) {
       var i = void 0;
-      var right = this.right();
-      for (i = 0; i < right.length; i++) {
-        _scene2.default.remove(right[i]);
+      var face = this.getFace(str);
+      for (i = 0; i < face.length; i++) {
+        _scene2.default.remove(face[i]);
       }
       renderer.render(_scene2.default, camera);
     }
@@ -60062,6 +60078,7 @@ exports.default = function () {
   createUpAndDown();
   createFrontAndBack();
 
+  _faceDetector2.default.init();
   _renderer2.default.render(_scene2.default, _camera2.default);
 };
 

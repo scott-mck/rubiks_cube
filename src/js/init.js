@@ -14,6 +14,7 @@ export default () => {
   createUpAndDown()
   createFrontAndBack()
 
+  faceDetector.init()
   renderer.render(scene, camera)
 }
 
