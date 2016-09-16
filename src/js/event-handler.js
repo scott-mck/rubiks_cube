@@ -1,11 +1,12 @@
 import $ from 'jquery'
 import THREE from 'three'
 import g from './globals'
-import grabber from './grabber'
 import rubiksCube from './rubiks-cube'
 import renderer from './renderer'
 import camera from './camera'
 import scene from './scene'
+import keyMap from './key-map'
+import grabber from './grabber'
 
 class EventHandler {
   constructor() {
@@ -17,11 +18,7 @@ class EventHandler {
   }
 
   addEvents() {
-    $(window).on('keyup', (e) => {
-      let letter = String.fromCharCode(e.keyCode)
-      // rubiksCube.move(letter)
-    })
-
+    $(window).on('keyup', this.type.bind(this))
     $(window).on('click', this.click.bind(this))
   }
 
@@ -41,6 +38,12 @@ class EventHandler {
     if (this.doTheThing) {
       grabber.right()
     }
+  }
+
+  type(e) {
+    let letter = String.fromCharCode(e.keyCode).toLowerCase()
+    let moveStr = keyMap.getNotation(letter)
+    rubiksCube.move(moveStr)
   }
 }
 

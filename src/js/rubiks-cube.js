@@ -1,4 +1,5 @@
 import THREE from 'three'
+import grabber from './grabber'
 
 class RubiksCube {
   constructor() {
@@ -6,7 +7,7 @@ class RubiksCube {
   }
 
   move(letter) {
-    
+    let objects = grabber.getFace(letter)
   }
 }
 

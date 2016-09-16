@@ -4,12 +4,12 @@ import scene from './scene'
 class Grabber {
   constructor() {}
 
-  setAnchor1(cubie) {
-    this.anchor1 = cubie
+  setAnchor1(cube) {
+    this.anchor1 = cube
   }
 
-  setAnchor2(cubie) {
-    this.anchor2 = cubie
+  setAnchor2(cube) {
+    this.anchor2 = cube
   }
 
   init() {
