@@ -59655,6 +59655,22 @@ var _gsap = require('gsap');
 
 var _gsap2 = _interopRequireDefault(_gsap);
 
+var _scene = require('./scene');
+
+var _scene2 = _interopRequireDefault(_scene);
+
+var _camera = require('./camera');
+
+var _camera2 = _interopRequireDefault(_camera);
+
+var _renderer = require('./renderer');
+
+var _renderer2 = _interopRequireDefault(_renderer);
+
+var _eventHandler = require('./event-handler');
+
+var _eventHandler2 = _interopRequireDefault(_eventHandler);
+
 var _init = require('./init');
 
 var _init2 = _interopRequireDefault(_init);
@@ -59662,12 +59678,43 @@ var _init2 = _interopRequireDefault(_init);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var DURATION = 0.7;
+var eventHandler = new _eventHandler2.default();
+
+var resizeWindow = function resizeWindow() {
+  var $canvas = (0, _jquery2.default)('#canvas');
+  var width = $canvas.width();
+  var height = $canvas.height();
+  var windowWidth = window.innerWidth;
+  var windowHeight = window.innerHeight;
+  var canvasSize = 0.9;
+  var scale = void 0;
+
+  if (windowWidth > windowHeight) {
+    scale = windowWidth / width;
+    if (height * scale > windowHeight) scale = windowHeight / height;
+  } else {
+    scale = windowHeight / height;
+    if (width * scale > windowWidth) scale = windowWidth / width;
+  }
+
+  (0, _jquery2.default)('#canvas').css('width', width * scale * canvasSize + 'px');
+  (0, _jquery2.default)('#canvas').css('height', height * scale * canvasSize + 'px');
+
+  _camera2.default.aspect = width * scale / (height * scale);
+  _camera2.default.updateProjectionMatrix();
+  _renderer2.default.setSize(width * scale * canvasSize, height * scale * canvasSize);
+  _renderer2.default.render(_scene2.default, _camera2.default);
+};
 
 exports.default = function () {
+
+  resizeWindow();
 
   (0, _jquery2.default)(window).click(function (e) {
     e.preventDefault();
   });
+
+  (0, _jquery2.default)(window).resize(resizeWindow);
 
   (0, _jquery2.default)(document).ready(function () {
     var $select = (0, _jquery2.default)('.select');
@@ -59693,7 +59740,7 @@ exports.default = function () {
   });
 };
 
-},{"./init":7,"gsap":1,"jquery":2}],5:[function(require,module,exports){
+},{"./camera":5,"./event-handler":6,"./init":8,"./renderer":10,"./scene":11,"gsap":1,"jquery":2}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59728,6 +59775,29 @@ camera.lookAt(new _three2.default.Vector3());
 exports.default = camera;
 
 },{"three":3}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var EventHandler = function EventHandler() {
+  _classCallCheck(this, EventHandler);
+
+  console.log('i made it!');
+};
+
+exports.default = EventHandler;
+
+},{"jquery":2}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59777,7 +59847,7 @@ g.geometry.faces[11].color.setRGB(0, 1, 0);
 
 exports.default = g;
 
-},{"three":3}],7:[function(require,module,exports){
+},{"three":3}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59871,7 +59941,7 @@ var createFrontAndBack = function createFrontAndBack() {
   }
 };
 
-},{"./camera":5,"./globals":6,"./renderer":9,"./scene":10,"three":3}],8:[function(require,module,exports){
+},{"./camera":5,"./globals":7,"./renderer":10,"./scene":11,"three":3}],9:[function(require,module,exports){
 'use strict';
 
 var _jquery = require('jquery');
@@ -59916,38 +59986,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
   (0, _camera.setCamera)(70, canvasWidth / canvasHeight, 1, 1000);
 
-  var resizeWindow = function resizeWindow() {
-    var width = $canvas.width();
-    var height = $canvas.height();
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-    var canvasSize = 0.9;
-    var scale = void 0;
-
-    if (windowWidth > windowHeight) {
-      scale = windowWidth / width;
-      if (height * scale > windowHeight) scale = windowHeight / height;
-    } else {
-      scale = windowHeight / height;
-      if (width * scale > windowWidth) scale = windowWidth / width;
-    }
-
-    (0, _jquery2.default)('#canvas').css('width', width * scale * canvasSize + 'px');
-    (0, _jquery2.default)('#canvas').css('height', height * scale * canvasSize + 'px');
-
-    _camera2.default.aspect = width * scale / (height * scale);
-    _camera2.default.updateProjectionMatrix();
-    _renderer2.default.setSize(width * scale * canvasSize, height * scale * canvasSize);
-    _renderer2.default.render(_scene2.default, _camera2.default);
-  };
-
-  (0, _jquery2.default)(window).resize(resizeWindow);
-  resizeWindow();
-
   (0, _addEvents2.default)();
 });
 
-},{"./add-events":4,"./camera":5,"./init":7,"./renderer":9,"./scene":10,"jquery":2,"three":3}],9:[function(require,module,exports){
+},{"./add-events":4,"./camera":5,"./init":8,"./renderer":10,"./scene":11,"jquery":2,"three":3}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59962,7 +60004,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = new _three2.default.WebGLRenderer();
 
-},{"three":3}],10:[function(require,module,exports){
+},{"three":3}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59977,4 +60019,4 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = new _three2.default.Scene();
 
-},{"three":3}]},{},[8]);
+},{"three":3}]},{},[9]);

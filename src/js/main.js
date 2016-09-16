@@ -19,34 +19,6 @@ $(document).ready(() => {
 
   setCamera(70, canvasWidth / canvasHeight, 1, 1000)
 
-  let resizeWindow = () => {
-    let width = $canvas.width()
-    let height = $canvas.height()
-    let windowWidth = window.innerWidth
-    let windowHeight = window.innerHeight
-    let canvasSize = 0.9
-    let scale
-
-    if (windowWidth > windowHeight) {
-      scale = windowWidth / width
-      if (height * scale > windowHeight) scale = windowHeight / height
-    } else {
-      scale = windowHeight / height
-      if (width * scale > windowWidth) scale = windowWidth / width
-    }
-
-    $('#canvas').css('width', width * scale * canvasSize + 'px')
-    $('#canvas').css('height', height * scale * canvasSize + 'px')
-
-    camera.aspect = (width * scale) / (height * scale)
-    camera.updateProjectionMatrix()
-    renderer.setSize(width * scale * canvasSize, height * scale * canvasSize)
-    renderer.render(scene, camera)
-  }
-
-  $(window).resize(resizeWindow)
-  resizeWindow()
-
   addEvents()
 
 })
