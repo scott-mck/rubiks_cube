@@ -59821,7 +59821,8 @@ var Animator = function () {
       }
 
       _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', function onComplete() {
-        _this._complete(axis, dir);
+        _this._rotater.rotation[axis] = Math.PI / 2 * dir;
+        _this._wait(_this._reset.bind(_this));
       }), _TweenMax$to));
     }
   }, {
@@ -59830,21 +59831,37 @@ var Animator = function () {
       _renderer2.default.render(_scene2.default, _camera2.default);
     }
   }, {
-    key: '_complete',
-    value: function _complete(axis, dir) {
-      this._rotater.rotation[axis] = Math.PI / 2 * dir;
-      requestAnimationFrame(this._reset.bind(this));
+    key: '_wait',
+    value: function _wait(callback) {
+      var count = 2;
+
+      var loop = function loop() {
+        if (count === 0) {
+          callback();
+          return;
+        }
+
+        count -= 1;
+        requestAnimationFrame(loop);
+      };
+
+      loop();
     }
   }, {
     key: '_reset',
     value: function _reset() {
+      var _this2 = this;
+
       var i = 0;
       while (this._rotater.children[i]) {
         _three2.default.SceneUtils.detach(this._rotater.children[i], this._rotater, _scene2.default);
       }
 
-      this._rotater.rotation.x = this._rotater.rotation.y = this._rotater.rotation.z = 0;
-      this._animating = false;
+      this._rotater.rotation.set(0, 0, 0);
+
+      this._wait(function () {
+        _this2._animating = false;
+      });
     }
   }]);
 

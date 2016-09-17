@@ -36,7 +36,8 @@ class Animator {
     TweenMax.to(this._rotater.rotation, DURATION, {
       [axis]: `+=${Math.PI / 2 * dir}`,
       onComplete: () => {
-        this._complete(axis, dir)
+        this._rotater.rotation[axis] = Math.PI / 2 * dir
+        this._wait(this._reset.bind(this))
       }
     })
   }
@@ -45,9 +46,20 @@ class Animator {
     renderer.render(scene, camera)
   }
 
-  _complete(axis, dir) {
-    this._rotater.rotation[axis] = Math.PI / 2 * dir
-    requestAnimationFrame(this._reset.bind(this))
+  _wait(callback) {
+    let count = 2
+
+    let loop = () => {
+      if (count === 0) {
+        callback()
+        return
+      }
+
+      count -= 1
+      requestAnimationFrame(loop)
+    }
+
+    loop()
   }
 
   _reset() {
@@ -56,8 +68,11 @@ class Animator {
       THREE.SceneUtils.detach(this._rotater.children[i], this._rotater, scene)
     }
 
-    this._rotater.rotation.x = this._rotater.rotation.y = this._rotater.rotation.z = 0
-    this._animating = false
+    this._rotater.rotation.set(0, 0, 0)
+
+    this._wait(() => {
+      this._animating = false
+    })
   }
 }
 
