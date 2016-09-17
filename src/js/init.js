@@ -1,8 +1,7 @@
 import THREE from 'three'
-import grabber from './grabber'
 import scene from './scene'
-import camera from './camera'
-import renderer from './renderer'
+import grabber from './grabber'
+import inputHandler from './input-handler'
 import animator from './animator'
 
 let material
@@ -12,7 +11,6 @@ let cubieOffset
 let cubieSize
 let cubeStartPos
 let scrambleLength
-
 
 export default (dimensions) => {
   cubeDimensions = dimensions
@@ -26,8 +24,9 @@ export default (dimensions) => {
   createUpAndDown()
   createFrontAndBack()
 
+  inputHandler.init()
   grabber.init()
-  animator.start()
+  animator.init()
 }
 
 const createMesh = () => {

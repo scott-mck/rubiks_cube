@@ -2,26 +2,8 @@
 import windows from './windows'
 
 import $ from 'jquery'
-import THREE from 'three'
-import scene from './scene'
-import renderer from './renderer'
-import camera, { setCamera } from './camera'
-import eventHandler from './event-handler'
-import init from './init'
-
+import EventHandler from './event-handler'
 
 $(document).ready(() => {
-
-  let $canvas = $('#canvas')
-  let canvasWidth = $canvas.width()
-  let canvasHeight = $canvas.height()
-
-  renderer.setPixelRatio(devicePixelRatio)
-  renderer.setSize(canvasWidth, canvasHeight)
-  $canvas.append(renderer.domElement)
-
-  setCamera(70, canvasWidth / canvasHeight, 1, 1000)
-
-  eventHandler()
-
+  EventHandler.init()
 })

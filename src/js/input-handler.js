@@ -5,14 +5,11 @@ import renderer from './renderer'
 import camera from './camera'
 import scene from './scene'
 import keyMap from './key-map'
-import grabber from './grabber'
 
 class inputHandler {
-  constructor() {
+  constructor() {}
 
-  }
-
-  start() {
+  init() {
     this.addEvents()
   }
 
@@ -37,11 +34,11 @@ class inputHandler {
 
   type(e) {
     let letter = String.fromCharCode(e.keyCode).toLowerCase()
+
     // this is pretty annoying.
     if (e.keyCode === 186) letter = ';'
 
     let move = keyMap.getNotation(letter)
-
     if (!move) {
       return
     }

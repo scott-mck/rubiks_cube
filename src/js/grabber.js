@@ -25,9 +25,7 @@ class Grabber {
 
   grab(str) {
     if (str[0] === 'x' || str[0] === 'y') {
-      return scene.children.filter((object) => {
-        return object.name === 'cubie'
-      })
+      return scene.children.filter(object => object.name === 'cubie')
     }
 
     this._face = this._faceMap[str]
@@ -88,9 +86,7 @@ class Grabber {
   }
 
   _raycast(raycaster) {
-    return raycaster.intersectObjects(scene.children).map((data) => {
-      return data.object
-    })
+    return raycaster.intersectObjects(scene.children).map(data => data.object)
   }
 }
 

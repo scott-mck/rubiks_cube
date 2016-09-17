@@ -2,7 +2,6 @@ import TweenMax from 'gsap'
 import THREE from 'three'
 import scene from './scene'
 import camera from './camera'
-import grabber from './grabber'
 import renderer from './renderer'
 import rubiksCube from './rubiks-cube'
 
@@ -16,12 +15,8 @@ class Animator {
     scene.add(this._rotater)
   }
 
-  start() {
+  init() {
     TweenMax.ticker.addEventListener('tick', this.render.bind(this))
-  }
-
-  end() {
-    TweenMax.ticker.removeEventListener('tick', this.render.bind(this))
   }
 
   animate({ objects, axis, dir }) {
