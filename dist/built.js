@@ -59811,17 +59811,18 @@ var Animator = function () {
       _gsap2.default.ticker.removeEventListener('tick', this.render.bind(this));
     }
   }, {
-    key: 'continue',
-    value: function _continue() {
-      if (this.animating) {
-        return;
-      }
-      this._next();
-    }
-  }, {
     key: 'animate',
-    value: function animate(objects, axis, dir) {
-      var animation = this._animate.bind(this, objects, axis, dir);
+    value: function animate(_ref) {
+      var objects = _ref.objects;
+      var axis = _ref.axis;
+      var dir = _ref.dir;
+
+      if (this.animating) {
+        return false;
+      } else {
+        this._animate({ objects: objects, axis: axis, dir: dir });
+        return true;
+      }
     }
   }, {
     key: '_next',
@@ -59835,29 +59836,27 @@ var Animator = function () {
     }
   }, {
     key: '_animate',
-    value: function _animate(_ref) {
+    value: function _animate(_ref2) {
       var _this = this,
           _TweenMax$to;
 
-      var move = _ref.move;
-      var axis = _ref.axis;
-      var dir = _ref.dir;
+      var objects = _ref2.objects;
+      var axis = _ref2.axis;
+      var dir = _ref2.dir;
 
-      var objects = _grabber2.default.grab(move);
+      this.animating = true;
 
       var i = void 0;
       for (i = 0; i < objects.length; i++) {
         _three2.default.SceneUtils.attach(objects[i], _scene2.default, this._rotater);
       }
 
-      var finishAnimation = function finishAnimation() {
+      var onComplete = function onComplete() {
         _this._rotater.rotation[axis] = Math.PI / 2 * dir;
+        _this._wait(_this._complete.bind(_this));
       };
 
-      _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', function onComplete() {
-        finishAnimation();
-        _this._wait(_this._complete.bind(_this));
-      }), _TweenMax$to));
+      _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', onComplete), _TweenMax$to));
     }
   }, {
     key: 'render',
@@ -60509,24 +60508,12 @@ var RubiksCube = function () {
   _createClass(RubiksCube, [{
     key: 'move',
     value: function move(_move) {
-      /* Things that are for sure: */
-      // -- Grabbing the correct cubes is TIME-SENSITIVE
-      // -- Therefore! using the grabber belongs in ANIMATOR
-      // -- RubiksCube should hold the chain of moves
-      // -- Animator, when ready, should ask RubiksCube for the next move
-
-      /* Steps: */
-      // 1) RubiksCube immediately stores the move in a queue  --  ['r', 'd', 'f']
-      // 2) RubiksCube tells animator "go for it!" --> animator.beSureToCheckMeIfYouHaveTimeOrSomething...!()
-      //    --> useful only when the animator is not currently animating
-      //    --> should be simple: early return if animating or just rubiksCube.nextMove()
-      // 3) Animator asks RubiksCube for move details --> rubiksCube.nextMove()
-      //    --> returns { move, axis, dir }
-      // 4) Animator grabs correct cubes from `move` and animates
-      // 5) On completion, animator asks RubiksCube for move details again
-
-      this._queue.push(_move);
-      _animator2.default.continue();
+      var details = this._getMoveDetails(_move);
+      if (_animator2.default.animate(details)) {
+        return;
+      } else {
+        this._queue.push(_move);
+      }
     }
   }, {
     key: 'nextMove',
@@ -60536,9 +60523,15 @@ var RubiksCube = function () {
         return false;
       }
 
+      return this._getMoveDetails(move);
+    }
+  }, {
+    key: '_getMoveDetails',
+    value: function _getMoveDetails(move) {
       var face = move[0];
       var faceDetails = this._rotateMap[face];
 
+      var objects = _grabber2.default.grab(face);
       var axis = faceDetails.axis;
       var dir = faceDetails.dir;
 
@@ -60546,7 +60539,7 @@ var RubiksCube = function () {
         dir *= -1;
       }
 
-      return { face: face, axis: axis, dir: dir };
+      return { objects: objects, axis: axis, dir: dir };
     }
   }]);
 

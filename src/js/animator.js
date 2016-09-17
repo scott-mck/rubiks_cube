@@ -22,15 +22,13 @@ class Animator {
     TweenMax.ticker.removeEventListener('tick', this.render.bind(this))
   }
 
-  continue() {
+  animate({ objects, axis, dir }) {
     if (this.animating) {
-      return
+      return false
+    } else {
+      this._animate({ objects, axis, dir })
+      return true
     }
-    this._next()
-  }
-
-  animate(objects, axis, dir) {
-    let animation = this._animate.bind(this, objects, axis, dir)
   }
 
   _next() {
@@ -42,24 +40,22 @@ class Animator {
     this._animate(nextMove)
   }
 
-  _animate({ move, axis, dir }) {
-    let objects = grabber.grab(move)
+  _animate({ objects, axis, dir }) {
+    this.animating = true
 
     let i
     for (i = 0; i < objects.length; i++) {
       THREE.SceneUtils.attach(objects[i], scene, this._rotater)
     }
 
-    let finishAnimation = () => {
+    let onComplete = () => {
       this._rotater.rotation[axis] = Math.PI / 2 * dir
+      this._wait(this._complete.bind(this))
     }
 
     TweenMax.to(this._rotater.rotation, DURATION, {
       [axis]: `+=${Math.PI / 2 * dir}`,
-      onComplete: () => {
-        finishAnimation()
-        this._wait(this._complete.bind(this))
-      }
+      onComplete: onComplete
     })
   }
 
