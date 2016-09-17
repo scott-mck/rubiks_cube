@@ -2,3 +2,5 @@
 -- color only outer cubies
 -- why isn't Animator#end working?
 -- dynamic duration: speed up animation when typing quickly
+-- allow switching between dimensions
+-- make the site look nice
