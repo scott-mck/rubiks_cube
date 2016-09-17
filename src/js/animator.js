@@ -4,6 +4,8 @@ import scene from './scene'
 import camera from './camera'
 import renderer from './renderer'
 
+const DURATION = 0.3
+
 class Animator {
   constructor() {
     this._rotater = new THREE.Object3D()
@@ -31,7 +33,7 @@ class Animator {
       THREE.SceneUtils.attach(objects[i], scene, this._rotater)
     }
 
-    TweenMax.to(this._rotater.rotation, 0.5, {
+    TweenMax.to(this._rotater.rotation, DURATION, {
       [axis]: `+=${Math.PI / 2 * dir}`,
       onComplete: () => {
         this._complete(axis, dir)
@@ -54,8 +56,8 @@ class Animator {
       THREE.SceneUtils.detach(this._rotater.children[i], this._rotater, scene)
     }
 
-    this._animating = false
     this._rotater.rotation.x = this._rotater.rotation.y = this._rotater.rotation.z = 0
+    this._animating = false
   }
 }
 
