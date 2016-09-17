@@ -10,7 +10,7 @@ import grabber from './grabber'
 
 class EventHandler {
   constructor() {
-    
+
   }
 
   start() {

@@ -4,6 +4,7 @@ import grabber from './grabber'
 import scene from './scene'
 import camera from './camera'
 import renderer from './renderer'
+import animator from './animator'
 
 let material
 let geometry
@@ -15,13 +16,14 @@ export default () => {
   createFrontAndBack()
 
   grabber.init()
-  renderer.render(scene, camera)
+  animator.start()
 }
 
 const createMesh = () => {
   material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
-    vertexColors: THREE.FaceColors
+    vertexColors: THREE.FaceColors,
+    side: THREE.DoubleSide
   })
 
   geometry = new THREE.BoxGeometry(

@@ -5,11 +5,11 @@ class Grabber {
   constructor() {}
 
   setAnchor1(cube) {
-    this.anchor1 = cube
+    this.anchor1 = cube.position.clone()
   }
 
   setAnchor2(cube) {
-    this.anchor2 = cube
+    this.anchor2 = cube.position.clone()
   }
 
   init() {
@@ -28,12 +28,12 @@ class Grabber {
     let setAxis = 'set' + this._face.shoot[0].toUpperCase()
 
     let raycaster = new THREE.Raycaster(
-      this._face.anchor.position,
+      this._face.anchor,
       new THREE.Vector3()[setAxis](1 * this._face.dir)
     )
 
     let intersects = this._raycast(raycaster)
-    intersects.push(this._face.anchor)
+    // intersects.push(this._face.anchor)
     this._filterIntersects(intersects)
     this._fillOutFace(intersects)
 

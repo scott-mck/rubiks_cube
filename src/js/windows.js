@@ -3,6 +3,7 @@ import TweenMax from 'gsap'
 import THREE from 'three'
 import scene from './scene'
 import camera from './camera'
+import animator from './animator'
 import renderer from './renderer'
 import g from './globals'
 import grabber from './grabber'
@@ -17,3 +18,4 @@ window.renderer = renderer
 window.g = g
 window.grabber = grabber
 window.eventHandler = eventHandler
+window.animator = animator

@@ -5,12 +5,12 @@ import animator from './animator'
 class RubiksCube {
   constructor() {
     this._rotateMap = {
-      r: { axis: 'x', dir: 1 },
+      r: { axis: 'x', dir: -1 },
       l: { axis: 'x', dir: -1 },
-      u: { axis: 'y', dir: 1 },
-      d: { axis: 'y', dir: -1 },
-      f: { axis: 'z', dir: 1 },
-      b: { axis: 'z', dir: -1 },
+      u: { axis: 'y', dir: -1 },
+      d: { axis: 'y', dir: 1 },
+      f: { axis: 'z', dir: -1 },
+      b: { axis: 'z', dir: 1 },
     }
   }
 
@@ -18,7 +18,13 @@ class RubiksCube {
     let face = move[0]
     let faceData = this._rotateMap[face]
     let objects = grabber.getFace(face)
-    animator.rotate(objects, faceData.axis, faceData.dir)
+
+    let dir = faceData.dir
+    if (move.indexOf('Prime') > -1) {
+      dir *= -1
+    }
+
+    animator.rotate(objects, faceData.axis, dir)
   }
 }
 

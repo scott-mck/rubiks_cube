@@ -59785,6 +59785,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Animator = function () {
   function Animator() {
     _classCallCheck(this, Animator);
+
+    this._rotater = new _three2.default.Object3D();
+    _scene2.default.add(this._rotater);
   }
 
   _createClass(Animator, [{
@@ -59800,16 +59803,39 @@ var Animator = function () {
   }, {
     key: 'rotate',
     value: function rotate(objects, axis, dir) {
-      var timeline = new TimelineLite({ paused: true });
-      var i = void 0;
-      for (i = 0; i < objects.length; i++) {
-        timeline.to(objects[i].rotation, 2, _defineProperty({}, 'axis', '+=' + Math.PI / 4 * dir));
+      var _TweenMax$to;
+
+      if (this._animating) {
+        return;
       }
+      this._animating = true;
+
+      var face = new _three2.default.Object3D();
+      var i = void 0;
+
+      for (i = 0; i < objects.length; i++) {
+        // this._rotater.add(objects[i])
+        _three2.default.SceneUtils.attach(objects[i], _scene2.default, this._rotater);
+      }
+
+      _gsap2.default.to(this._rotater.rotation, 0.5, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', this._reset.bind(this)), _TweenMax$to));
     }
   }, {
     key: 'render',
     value: function render() {
       _renderer2.default.render(_scene2.default, _camera2.default);
+    }
+  }, {
+    key: '_reset',
+    value: function _reset() {
+      var i = 0;
+      while (this._rotater.children[i]) {
+        // this._rotater.remove(this._rotater.children[i])
+        _three2.default.SceneUtils.detach(this._rotater.children[i], this._rotater, _scene2.default);
+      }
+
+      this._animating = false;
+      this._rotater.rotation.x = this._rotater.rotation.y = this._rotater.rotation.z = 0;
     }
   }]);
 
@@ -60009,12 +60035,12 @@ var Grabber = function () {
   _createClass(Grabber, [{
     key: 'setAnchor1',
     value: function setAnchor1(cube) {
-      this.anchor1 = cube;
+      this.anchor1 = cube.position.clone();
     }
   }, {
     key: 'setAnchor2',
     value: function setAnchor2(cube) {
-      this.anchor2 = cube;
+      this.anchor2 = cube.position.clone();
     }
   }, {
     key: 'init',
@@ -60034,10 +60060,10 @@ var Grabber = function () {
       this._face = this._faceMap[str];
       var setAxis = 'set' + this._face.shoot[0].toUpperCase();
 
-      var raycaster = new _three2.default.Raycaster(this._face.anchor.position, new _three2.default.Vector3()[setAxis](1 * this._face.dir));
+      var raycaster = new _three2.default.Raycaster(this._face.anchor, new _three2.default.Vector3()[setAxis](1 * this._face.dir));
 
       var intersects = this._raycast(raycaster);
-      intersects.push(this._face.anchor);
+      // intersects.push(this._face.anchor)
       this._filterIntersects(intersects);
       this._fillOutFace(intersects);
 
@@ -60079,6 +60105,8 @@ var Grabber = function () {
         captures = this._raycast(raycaster);
         cubes = cubes.concat(captures);
       }
+
+      this._filterIntersects(cubes);
 
       intersects.splice(0);
       for (i = 0; i < cubes.length; i++) {
@@ -60130,6 +60158,10 @@ var _renderer = require('./renderer');
 
 var _renderer2 = _interopRequireDefault(_renderer);
 
+var _animator = require('./animator');
+
+var _animator2 = _interopRequireDefault(_animator);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var material = void 0;
@@ -60142,13 +60174,14 @@ exports.default = function () {
   createFrontAndBack();
 
   _grabber2.default.init();
-  _renderer2.default.render(_scene2.default, _camera2.default);
+  _animator2.default.start();
 };
 
 var createMesh = function createMesh() {
   material = new _three2.default.MeshBasicMaterial({
     color: 0xffffff,
-    vertexColors: _three2.default.FaceColors
+    vertexColors: _three2.default.FaceColors,
+    side: _three2.default.DoubleSide
   });
 
   geometry = new _three2.default.BoxGeometry(_globals2.default.cubieSize, _globals2.default.cubieSize, _globals2.default.cubieSize);
@@ -60233,7 +60266,7 @@ var createFrontAndBack = function createFrontAndBack() {
   }
 };
 
-},{"./camera":6,"./globals":8,"./grabber":9,"./renderer":13,"./scene":15,"three":3}],11:[function(require,module,exports){
+},{"./animator":5,"./camera":6,"./globals":8,"./grabber":9,"./renderer":13,"./scene":15,"three":3}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60374,12 +60407,12 @@ var RubiksCube = function () {
     _classCallCheck(this, RubiksCube);
 
     this._rotateMap = {
-      r: { axis: 'x', dir: 1 },
+      r: { axis: 'x', dir: -1 },
       l: { axis: 'x', dir: -1 },
-      u: { axis: 'y', dir: 1 },
-      d: { axis: 'y', dir: -1 },
-      f: { axis: 'z', dir: 1 },
-      b: { axis: 'z', dir: -1 }
+      u: { axis: 'y', dir: -1 },
+      d: { axis: 'y', dir: 1 },
+      f: { axis: 'z', dir: -1 },
+      b: { axis: 'z', dir: 1 }
     };
   }
 
@@ -60389,7 +60422,13 @@ var RubiksCube = function () {
       var face = _move[0];
       var faceData = this._rotateMap[face];
       var objects = _grabber2.default.getFace(face);
-      _animator2.default.rotate(objects, faceData.axis, faceData.dir);
+
+      var dir = faceData.dir;
+      if (_move.indexOf('Prime') > -1) {
+        dir *= -1;
+      }
+
+      _animator2.default.rotate(objects, faceData.axis, dir);
     }
   }]);
 
@@ -60436,6 +60475,10 @@ var _camera = require('./camera');
 
 var _camera2 = _interopRequireDefault(_camera);
 
+var _animator = require('./animator');
+
+var _animator2 = _interopRequireDefault(_animator);
+
 var _renderer = require('./renderer');
 
 var _renderer2 = _interopRequireDefault(_renderer);
@@ -60463,5 +60506,6 @@ window.renderer = _renderer2.default;
 window.g = _globals2.default;
 window.grabber = _grabber2.default;
 window.eventHandler = _eventHandler2.default;
+window.animator = _animator2.default;
 
-},{"./camera":6,"./event-handler":7,"./globals":8,"./grabber":9,"./renderer":13,"./scene":15,"gsap":1,"jquery":2,"three":3}]},{},[12]);
+},{"./animator":5,"./camera":6,"./event-handler":7,"./globals":8,"./grabber":9,"./renderer":13,"./scene":15,"gsap":1,"jquery":2,"three":3}]},{},[12]);

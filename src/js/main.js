@@ -6,7 +6,6 @@ import THREE from 'three'
 import scene from './scene'
 import renderer from './renderer'
 import camera, { setCamera } from './camera'
-
 import addEvents from './add-events'
 import init from './init'
 
