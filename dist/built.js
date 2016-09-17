@@ -59790,7 +59790,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var DURATION = 0.3;
+var DURATION = 0.1;
+var EASE = 'linear';
+var WAIT_COUNT = 1;
 
 var Animator = function () {
   function Animator() {
@@ -59856,7 +59858,7 @@ var Animator = function () {
         _this._wait(_this._complete.bind(_this));
       };
 
-      _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', onComplete), _TweenMax$to));
+      _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'ease', EASE), _defineProperty(_TweenMax$to, 'onComplete', onComplete), _TweenMax$to));
     }
   }, {
     key: 'render',
@@ -59878,7 +59880,7 @@ var Animator = function () {
   }, {
     key: '_wait',
     value: function _wait(callback) {
-      var count = 2;
+      var count = arguments.length <= 1 || arguments[1] === undefined ? WAIT_COUNT : arguments[1];
 
       var loop = function loop() {
         if (count === 0) {

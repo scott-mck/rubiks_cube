@@ -6,7 +6,9 @@ import grabber from './grabber'
 import renderer from './renderer'
 import rubiksCube from './rubiks-cube'
 
-const DURATION = 0.3
+const DURATION = 0.1
+const EASE = 'linear'
+const WAIT_COUNT = 1
 
 class Animator {
   constructor() {
@@ -55,6 +57,7 @@ class Animator {
 
     TweenMax.to(this._rotater.rotation, DURATION, {
       [axis]: `+=${Math.PI / 2 * dir}`,
+      ease: EASE,
       onComplete: onComplete
     })
   }
@@ -72,9 +75,7 @@ class Animator {
     })
   }
 
-  _wait(callback) {
-    let count = 2
-
+  _wait(callback, count = WAIT_COUNT) {
     let loop = () => {
       if (count === 0) {
         callback()
