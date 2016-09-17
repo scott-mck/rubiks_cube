@@ -1,2 +1,3 @@
 -- remove or refactor './add-events'
 -- color only outer cubies
+-- why isn't Animator#end working?
