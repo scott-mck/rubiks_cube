@@ -39,6 +39,11 @@ class EventHandler {
   type(e) {
     let letter = String.fromCharCode(e.keyCode).toLowerCase()
     let move = keyMap.getNotation(letter)
+
+    if (!move) {
+      return
+    }
+
     rubiksCube.move(move)
   }
 }
