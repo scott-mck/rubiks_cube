@@ -1,54 +1,77 @@
 import $ from 'jquery'
-import THREE from 'three'
-import g from './globals'
-import rubiksCube from './rubiks-cube'
-import renderer from './renderer'
-import camera from './camera'
+import TweenMax from 'gsap'
+import { set } from './globals'
 import scene from './scene'
-import keyMap from './key-map'
-import grabber from './grabber'
+import camera from './camera'
+import renderer from './renderer'
+import inputHandler from './input-handler'
+import init from './init'
 
-class EventHandler {
-  constructor() {
+let DURATION = 0.7
 
+const resizeWindow = () => {
+  let $canvas = $('#canvas')
+  let width = $canvas.width()
+  let height = $canvas.height()
+  let windowWidth = window.innerWidth
+  let windowHeight = window.innerHeight
+  let canvasSize = 0.9
+  let scale
+
+  if (windowWidth > windowHeight) {
+    scale = windowWidth / width
+    if (height * scale > windowHeight) scale = windowHeight / height
+  } else {
+    scale = windowHeight / height
+    if (width * scale > windowWidth) scale = windowWidth / width
   }
 
-  start() {
-    this.addEvents()
-  }
+  $('#canvas').css('width', width * scale * canvasSize + 'px')
+  $('#canvas').css('height', height * scale * canvasSize + 'px')
 
-  addEvents() {
-    $(window).on('keyup', this.type.bind(this))
-    $(window).on('click', this.click.bind(this))
-  }
-
-  click(e) {
-    let canvasBox = renderer.domElement.getBoundingClientRect()
-    let canvasMouseX = event.clientX - canvasBox.left
-    let canvasMouseY = event.clientY - canvasBox.top
-
-    let mouse = new THREE.Vector2()
-    mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1
-    mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1
-
-    let raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera(mouse, camera)
-    let objects = raycaster.intersectObjects(scene.children)
-  }
-
-  type(e) {
-    let letter = String.fromCharCode(e.keyCode).toLowerCase()
-    // this is pretty annoying.
-    if (e.keyCode === 186) letter = ';'
-
-    let move = keyMap.getNotation(letter)
-
-    if (!move) {
-      return
-    }
-
-    rubiksCube.move(move)
-  }
+  camera.aspect = (width * scale) / (height * scale)
+  camera.updateProjectionMatrix()
+  renderer.setSize(width * scale * canvasSize, height * scale * canvasSize)
+  renderer.render(scene, camera)
 }
 
-export default EventHandler
+export default () => {
+
+  resizeWindow()
+
+  $(window).click((e) => {
+    e.preventDefault()
+  })
+
+  $(window).resize(resizeWindow)
+
+  $(document).ready(() => {
+    let $backdrop = $('.backdrop')
+    let $select = $('.select')
+
+    TweenMax.to($select, DURATION, {
+      opacity: 1,
+      y: 50,
+      ease: Power3.easeOut
+    })
+
+    $select.click((e) => {
+      let dimensions = +e.target.getAttribute('id')
+      set(dimensions)
+
+      TweenMax.to($select, DURATION, {
+        opacity: 0,
+        y: 0,
+        ease: Power3.easeOut,
+        onComplete: () => {
+          $select.hide()
+          $backdrop.hide()
+          init()
+          inputHandler.start()
+        }
+      })
+
+    })
+  })
+
+}

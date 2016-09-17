@@ -7,7 +7,7 @@ import animator from './animator'
 import renderer from './renderer'
 import g from './globals'
 import grabber from './grabber'
-import eventHandler from './event-handler'
+import inputHandler from './input-handler'
 
 window.$ = $
 window.TweenMax = TweenMax
@@ -17,5 +17,5 @@ window.camera = camera
 window.renderer = renderer
 window.g = g
 window.grabber = grabber
-window.eventHandler = eventHandler
+window.inputHandler = inputHandler
 window.animator = animator
