@@ -1,2 +1,3 @@
 -- use TimelineLite
 -- remove or refactor './add-events'
+-- no errors when irrelevant keys are pressed
