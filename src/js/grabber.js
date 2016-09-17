@@ -74,6 +74,8 @@ class Grabber {
       cubes = cubes.concat(captures)
     }
 
+    this._filterIntersects(cubes)
+
     intersects.splice(0)
     for (i = 0; i < cubes.length; i++) {
       intersects.push(cubes[i])
