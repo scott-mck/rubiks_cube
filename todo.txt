@@ -5,3 +5,4 @@
 -- allow switching between dimensions
 -- make the site look nice
 -- make sass not horrible
+-- fix canvas positioning (some dimensions are cut off)
