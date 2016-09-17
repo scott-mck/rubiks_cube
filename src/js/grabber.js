@@ -70,7 +70,7 @@ class Grabber {
     for (i = 0; i < intersects.length; i++) {
       cube = intersects[i]
       raycaster = new THREE.Raycaster(cube.position, raycastDir)
-      captures = this.raycast(raycaster)
+      captures = this._raycast(raycaster)
       cubes = cubes.concat(captures)
     }
 
@@ -85,15 +85,6 @@ class Grabber {
       return data.object
     })
   }
-
-  // test(str) {
-  //   let i
-  //   let face = this.getFace(str)
-  //   for (i = 0; i < face.length; i++) {
-  //     scene.remove(face[i])
-  //   }
-  //   renderer.render(scene, camera)
-  // }
 }
 
 export default new Grabber()

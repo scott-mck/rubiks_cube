@@ -10,7 +10,7 @@ import grabber from './grabber'
 
 class EventHandler {
   constructor() {
-    this.doTheThing = true
+    
   }
 
   start() {
@@ -34,10 +34,6 @@ class EventHandler {
     let raycaster = new THREE.Raycaster()
     raycaster.setFromCamera(mouse, camera)
     let objects = raycaster.intersectObjects(scene.children)
-
-    if (this.doTheThing) {
-      grabber.right()
-    }
   }
 
   type(e) {
