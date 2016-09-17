@@ -10,14 +10,17 @@ class RubiksCube {
       u: { axis: 'y', dir: -1 },
       d: { axis: 'y', dir: 1 },
       f: { axis: 'z', dir: -1 },
-      b: { axis: 'z', dir: 1 },
+      b: { axis: 'z', dir: 1 }
     }
+
+    this._rotateMap.x = this._rotateMap.r
+    this._rotateMap.y = this._rotateMap.u
   }
 
   move(move) {
     let face = move[0]
     let faceData = this._rotateMap[face]
-    let objects = grabber.getFace(face)
+    let objects = grabber.get(face)
 
     let dir = faceData.dir
     if (move.indexOf('Prime') > -1) {

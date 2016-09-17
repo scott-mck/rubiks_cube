@@ -1,5 +1,6 @@
 import THREE from 'three'
 import scene from './scene'
+import g from './globals'
 
 class Grabber {
   constructor() {}
@@ -23,7 +24,11 @@ class Grabber {
     }
   }
 
-  getFace(str) {
+  get(str) {
+    if (str[0] === 'x' || str[0] === 'y') {
+      return g.allCubes
+    }
+
     this._face = this._faceMap[str]
     let setAxis = 'set' + this._face.shoot[0].toUpperCase()
 
@@ -33,7 +38,6 @@ class Grabber {
     )
 
     let intersects = this._raycast(raycaster)
-    // intersects.push(this._face.anchor)
     this._filterIntersects(intersects)
     this._fillOutFace(intersects)
 

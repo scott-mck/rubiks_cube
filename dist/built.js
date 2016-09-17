@@ -59782,6 +59782,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var DURATION = 0.3;
+
 var Animator = function () {
   function Animator() {
     _classCallCheck(this, Animator);
@@ -59803,7 +59805,8 @@ var Animator = function () {
   }, {
     key: 'rotate',
     value: function rotate(objects, axis, dir) {
-      var _TweenMax$to;
+      var _this = this,
+          _TweenMax$to;
 
       if (this._animating) {
         return;
@@ -59817,12 +59820,20 @@ var Animator = function () {
         _three2.default.SceneUtils.attach(objects[i], _scene2.default, this._rotater);
       }
 
-      _gsap2.default.to(this._rotater.rotation, 0.5, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', this._reset.bind(this)), _TweenMax$to));
+      _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', function onComplete() {
+        _this._complete(axis, dir);
+      }), _TweenMax$to));
     }
   }, {
     key: 'render',
     value: function render() {
       _renderer2.default.render(_scene2.default, _camera2.default);
+    }
+  }, {
+    key: '_complete',
+    value: function _complete(axis, dir) {
+      this._rotater.rotation[axis] = Math.PI / 2 * dir;
+      requestAnimationFrame(this._reset.bind(this));
     }
   }, {
     key: '_reset',
@@ -59832,8 +59843,8 @@ var Animator = function () {
         _three2.default.SceneUtils.detach(this._rotater.children[i], this._rotater, _scene2.default);
       }
 
-      this._animating = false;
       this._rotater.rotation.x = this._rotater.rotation.y = this._rotater.rotation.z = 0;
+      this._animating = false;
     }
   }]);
 
@@ -59960,7 +59971,15 @@ var EventHandler = function () {
     key: 'type',
     value: function type(e) {
       var letter = String.fromCharCode(e.keyCode).toLowerCase();
+      // this is pretty annoying.
+      if (e.keyCode === 186) letter = ';';
+
       var move = _keyMap2.default.getNotation(letter);
+
+      if (!move) {
+        return;
+      }
+
       _rubiksCube2.default.move(move);
     }
   }]);
@@ -60021,6 +60040,10 @@ var _scene = require('./scene');
 
 var _scene2 = _interopRequireDefault(_scene);
 
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -60053,15 +60076,18 @@ var Grabber = function () {
       };
     }
   }, {
-    key: 'getFace',
-    value: function getFace(str) {
+    key: 'get',
+    value: function get(str) {
+      if (str[0] === 'x' || str[0] === 'y') {
+        return _globals2.default.allCubes;
+      }
+
       this._face = this._faceMap[str];
       var setAxis = 'set' + this._face.shoot[0].toUpperCase();
 
       var raycaster = new _three2.default.Raycaster(this._face.anchor, new _three2.default.Vector3()[setAxis](1 * this._face.dir));
 
       var intersects = this._raycast(raycaster);
-      // intersects.push(this._face.anchor)
       this._filterIntersects(intersects);
       this._fillOutFace(intersects);
 
@@ -60125,7 +60151,7 @@ var Grabber = function () {
 
 exports.default = new Grabber();
 
-},{"./scene":15,"three":3}],10:[function(require,module,exports){
+},{"./globals":8,"./scene":15,"three":3}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60291,7 +60317,11 @@ var KeyMap = function () {
       e: 'l',
       d: 'lPrime',
       q: 'b',
-      p: 'bPrime'
+      p: 'bPrime',
+      ';': 'y',
+      a: 'yPrime',
+      y: 'x',
+      n: 'xPrime'
     };
   }
 
@@ -60412,6 +60442,9 @@ var RubiksCube = function () {
       f: { axis: 'z', dir: -1 },
       b: { axis: 'z', dir: 1 }
     };
+
+    this._rotateMap.x = this._rotateMap.r;
+    this._rotateMap.y = this._rotateMap.u;
   }
 
   _createClass(RubiksCube, [{
@@ -60419,7 +60452,7 @@ var RubiksCube = function () {
     value: function move(_move) {
       var face = _move[0];
       var faceData = this._rotateMap[face];
-      var objects = _grabber2.default.getFace(face);
+      var objects = _grabber2.default.get(face);
 
       var dir = faceData.dir;
       if (_move.indexOf('Prime') > -1) {

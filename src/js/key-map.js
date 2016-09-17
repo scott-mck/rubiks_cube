@@ -12,7 +12,11 @@ class KeyMap {
       e: 'l',
       d: 'lPrime',
       q: 'b',
-      p: 'bPrime'
+      p: 'bPrime',
+      ';': 'y',
+      a: 'yPrime',
+      y: 'x',
+      n: 'xPrime'
     }
   }
 
