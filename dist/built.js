@@ -59814,7 +59814,6 @@ var Animator = function () {
       var i = void 0;
 
       for (i = 0; i < objects.length; i++) {
-        // this._rotater.add(objects[i])
         _three2.default.SceneUtils.attach(objects[i], _scene2.default, this._rotater);
       }
 
@@ -59830,7 +59829,6 @@ var Animator = function () {
     value: function _reset() {
       var i = 0;
       while (this._rotater.children[i]) {
-        // this._rotater.remove(this._rotater.children[i])
         _three2.default.SceneUtils.detach(this._rotater.children[i], this._rotater, _scene2.default);
       }
 

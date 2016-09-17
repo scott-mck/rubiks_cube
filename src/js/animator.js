@@ -28,7 +28,6 @@ class Animator {
     let i
 
     for (i = 0; i < objects.length; i++) {
-      // this._rotater.add(objects[i])
       THREE.SceneUtils.attach(objects[i], scene, this._rotater)
     }
 
@@ -45,7 +44,6 @@ class Animator {
   _reset() {
     let i = 0
     while (this._rotater.children[i]) {
-      // this._rotater.remove(this._rotater.children[i])
       THREE.SceneUtils.detach(this._rotater.children[i], this._rotater, scene)
     }
 
