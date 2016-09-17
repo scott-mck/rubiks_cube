@@ -38,6 +38,9 @@ class EventHandler {
 
   type(e) {
     let letter = String.fromCharCode(e.keyCode).toLowerCase()
+    // this is pretty annoying.
+    if (e.keyCode === 186) letter = ';'
+
     let move = keyMap.getNotation(letter)
 
     if (!move) {
