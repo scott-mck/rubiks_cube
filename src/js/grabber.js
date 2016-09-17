@@ -1,6 +1,5 @@
 import THREE from 'three'
 import scene from './scene'
-import g from './globals'
 
 class Grabber {
   constructor() {}
@@ -26,7 +25,9 @@ class Grabber {
 
   grab(str) {
     if (str[0] === 'x' || str[0] === 'y') {
-      return g.allCubes
+      return scene.children.filter((object) => {
+        return object.name === 'cubie'
+      })
     }
 
     this._face = this._faceMap[str]

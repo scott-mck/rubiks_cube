@@ -5,7 +5,6 @@ import scene from './scene'
 import camera from './camera'
 import animator from './animator'
 import renderer from './renderer'
-import g from './globals'
 import grabber from './grabber'
 import inputHandler from './input-handler'
 
@@ -15,7 +14,6 @@ window.THREE = THREE
 window.scene = scene
 window.camera = camera
 window.renderer = renderer
-window.g = g
 window.grabber = grabber
 window.inputHandler = inputHandler
 window.animator = animator

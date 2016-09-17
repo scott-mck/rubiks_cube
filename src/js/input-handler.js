@@ -1,6 +1,5 @@
 import $ from 'jquery'
 import THREE from 'three'
-import g from './globals'
 import rubiksCube from './rubiks-cube'
 import renderer from './renderer'
 import camera from './camera'
