@@ -24,7 +24,7 @@ class Grabber {
     }
   }
 
-  get(str) {
+  grab(str) {
     if (str[0] === 'x' || str[0] === 'y') {
       return g.allCubes
     }

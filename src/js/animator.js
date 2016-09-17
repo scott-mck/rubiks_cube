@@ -2,7 +2,9 @@ import TweenMax from 'gsap'
 import THREE from 'three'
 import scene from './scene'
 import camera from './camera'
+import grabber from './grabber'
 import renderer from './renderer'
+import rubiksCube from './rubiks-cube'
 
 const DURATION = 0.3
 
@@ -20,30 +22,58 @@ class Animator {
     TweenMax.ticker.removeEventListener('tick', this.render.bind(this))
   }
 
-  rotate(objects, axis, dir) {
-    if (this._animating) {
+  continue() {
+    if (this.animating) {
       return
     }
-    this._animating = true
+    this._next()
+  }
 
-    let face = new THREE.Object3D()
+  animate(objects, axis, dir) {
+    let animation = this._animate.bind(this, objects, axis, dir)
+  }
+
+  _next() {
+    let nextMove = rubiksCube.nextMove()
+    if (!nextMove) {
+      return
+    }
+
+    this._animate(nextMove)
+  }
+
+  _animate({ move, axis, dir }) {
+    let objects = grabber.grab(move)
+
     let i
-
     for (i = 0; i < objects.length; i++) {
       THREE.SceneUtils.attach(objects[i], scene, this._rotater)
+    }
+
+    let finishAnimation = () => {
+      this._rotater.rotation[axis] = Math.PI / 2 * dir
     }
 
     TweenMax.to(this._rotater.rotation, DURATION, {
       [axis]: `+=${Math.PI / 2 * dir}`,
       onComplete: () => {
-        this._rotater.rotation[axis] = Math.PI / 2 * dir
-        this._wait(this._reset.bind(this))
+        finishAnimation()
+        this._wait(this._complete.bind(this))
       }
     })
   }
 
   render() {
     renderer.render(scene, camera)
+  }
+
+  _complete() {
+    this._reset()
+
+    this._wait(() => {
+      this.animating = false
+      this._next()
+    })
   }
 
   _wait(callback) {
@@ -69,10 +99,6 @@ class Animator {
     }
 
     this._rotater.rotation.set(0, 0, 0)
-
-    this._wait(() => {
-      this._animating = false
-    })
   }
 }
 

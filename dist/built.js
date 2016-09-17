@@ -59772,9 +59772,17 @@ var _camera = require('./camera');
 
 var _camera2 = _interopRequireDefault(_camera);
 
+var _grabber = require('./grabber');
+
+var _grabber2 = _interopRequireDefault(_grabber);
+
 var _renderer = require('./renderer');
 
 var _renderer2 = _interopRequireDefault(_renderer);
+
+var _rubiksCube = require('./rubiks-cube');
+
+var _rubiksCube2 = _interopRequireDefault(_rubiksCube);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -59803,32 +59811,70 @@ var Animator = function () {
       _gsap2.default.ticker.removeEventListener('tick', this.render.bind(this));
     }
   }, {
-    key: 'rotate',
-    value: function rotate(objects, axis, dir) {
+    key: 'continue',
+    value: function _continue() {
+      if (this.animating) {
+        return;
+      }
+      this._next();
+    }
+  }, {
+    key: 'animate',
+    value: function animate(objects, axis, dir) {
+      var animation = this._animate.bind(this, objects, axis, dir);
+    }
+  }, {
+    key: '_next',
+    value: function _next() {
+      var nextMove = _rubiksCube2.default.nextMove();
+      if (!nextMove) {
+        return;
+      }
+
+      this._animate(nextMove);
+    }
+  }, {
+    key: '_animate',
+    value: function _animate(_ref) {
       var _this = this,
           _TweenMax$to;
 
-      if (this._animating) {
-        return;
-      }
-      this._animating = true;
+      var move = _ref.move;
+      var axis = _ref.axis;
+      var dir = _ref.dir;
 
-      var face = new _three2.default.Object3D();
+      var objects = _grabber2.default.grab(move);
+
       var i = void 0;
-
       for (i = 0; i < objects.length; i++) {
         _three2.default.SceneUtils.attach(objects[i], _scene2.default, this._rotater);
       }
 
-      _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', function onComplete() {
+      var finishAnimation = function finishAnimation() {
         _this._rotater.rotation[axis] = Math.PI / 2 * dir;
-        _this._wait(_this._reset.bind(_this));
+      };
+
+      _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'onComplete', function onComplete() {
+        finishAnimation();
+        _this._wait(_this._complete.bind(_this));
       }), _TweenMax$to));
     }
   }, {
     key: 'render',
     value: function render() {
       _renderer2.default.render(_scene2.default, _camera2.default);
+    }
+  }, {
+    key: '_complete',
+    value: function _complete() {
+      var _this2 = this;
+
+      this._reset();
+
+      this._wait(function () {
+        _this2.animating = false;
+        _this2._next();
+      });
     }
   }, {
     key: '_wait',
@@ -59850,18 +59896,12 @@ var Animator = function () {
   }, {
     key: '_reset',
     value: function _reset() {
-      var _this2 = this;
-
       var i = 0;
       while (this._rotater.children[i]) {
         _three2.default.SceneUtils.detach(this._rotater.children[i], this._rotater, _scene2.default);
       }
 
       this._rotater.rotation.set(0, 0, 0);
-
-      this._wait(function () {
-        _this2._animating = false;
-      });
     }
   }]);
 
@@ -59870,7 +59910,7 @@ var Animator = function () {
 
 exports.default = new Animator();
 
-},{"./camera":6,"./renderer":13,"./scene":15,"gsap":1,"three":3}],6:[function(require,module,exports){
+},{"./camera":6,"./grabber":9,"./renderer":13,"./rubiks-cube":14,"./scene":15,"gsap":1,"three":3}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60093,8 +60133,8 @@ var Grabber = function () {
       };
     }
   }, {
-    key: 'get',
-    value: function get(str) {
+    key: 'grab',
+    value: function grab(str) {
       if (str[0] === 'x' || str[0] === 'y') {
         return _globals2.default.allCubes;
       }
@@ -60462,21 +60502,51 @@ var RubiksCube = function () {
 
     this._rotateMap.x = this._rotateMap.r;
     this._rotateMap.y = this._rotateMap.u;
+
+    this._queue = [];
   }
 
   _createClass(RubiksCube, [{
     key: 'move',
     value: function move(_move) {
-      var face = _move[0];
-      var faceData = this._rotateMap[face];
-      var objects = _grabber2.default.get(face);
+      /* Things that are for sure: */
+      // -- Grabbing the correct cubes is TIME-SENSITIVE
+      // -- Therefore! using the grabber belongs in ANIMATOR
+      // -- RubiksCube should hold the chain of moves
+      // -- Animator, when ready, should ask RubiksCube for the next move
 
-      var dir = faceData.dir;
-      if (_move.indexOf('Prime') > -1) {
+      /* Steps: */
+      // 1) RubiksCube immediately stores the move in a queue  --  ['r', 'd', 'f']
+      // 2) RubiksCube tells animator "go for it!" --> animator.beSureToCheckMeIfYouHaveTimeOrSomething...!()
+      //    --> useful only when the animator is not currently animating
+      //    --> should be simple: early return if animating or just rubiksCube.nextMove()
+      // 3) Animator asks RubiksCube for move details --> rubiksCube.nextMove()
+      //    --> returns { move, axis, dir }
+      // 4) Animator grabs correct cubes from `move` and animates
+      // 5) On completion, animator asks RubiksCube for move details again
+
+      this._queue.push(_move);
+      _animator2.default.continue();
+    }
+  }, {
+    key: 'nextMove',
+    value: function nextMove() {
+      var move = this._queue.shift();
+      if (!move) {
+        return false;
+      }
+
+      var face = move[0];
+      var faceDetails = this._rotateMap[face];
+
+      var axis = faceDetails.axis;
+      var dir = faceDetails.dir;
+
+      if (move.indexOf('Prime') > -1) {
         dir *= -1;
       }
 
-      _animator2.default.rotate(objects, faceData.axis, dir);
+      return { face: face, axis: axis, dir: dir };
     }
   }]);
 
