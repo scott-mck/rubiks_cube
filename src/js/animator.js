@@ -33,12 +33,19 @@ class Animator {
 
     TweenMax.to(this._rotater.rotation, 0.5, {
       [axis]: `+=${Math.PI / 2 * dir}`,
-      onComplete: this._reset.bind(this)
+      onComplete: () => {
+        this._complete(axis, dir)
+      }
     })
   }
 
   render() {
     renderer.render(scene, camera)
+  }
+
+  _complete(axis, dir) {
+    this._rotater.rotation[axis] = Math.PI / 2 * dir
+    requestAnimationFrame(this._reset.bind(this))
   }
 
   _reset() {
