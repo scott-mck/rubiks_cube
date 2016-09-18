@@ -13,6 +13,10 @@ let cubeStartPos
 let scrambleLength
 let lineHelperWidth
 
+export const dimensions = () => cubeDimensions
+export const startPoint = () => cubeStartPos
+export const cubieDistance = () => cubieSize + cubieOffset
+
 export default (dimensions) => {
   cubeDimensions = dimensions
   cubieOffset = 0.5

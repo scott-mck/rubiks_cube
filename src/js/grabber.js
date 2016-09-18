@@ -1,5 +1,6 @@
 import THREE from 'three'
 import scene from './scene'
+import { dimensions, cubieDistance, startPoint } from './init'
 
 class Grabber {
   constructor() {}
@@ -23,7 +24,30 @@ class Grabber {
     }
   }
 
-  grabAtPos(x, y) {
+  grabFace(str) {
+    if (str[0] === 'x' || str[0] === 'y') {
+      return scene.children.filter(object => object.name === 'cubie')
+    }
+
+    this._face = this._faceMap[str]
+
+    let shootAxis = this._face.shoot[0].toUpperCase()
+    let shootDir = new THREE.Vector3()[`set${shootAxis}`](1 * this._face.dir)
+
+    let fillAxis = this._face.shoot[1].toUpperCase()
+    let fillDir = new THREE.Vector3()[`set${fillAxis}`](1)
+
+    let raycaster = new THREE.Raycaster(this._face.anchor, shootDir)
+    let intersects = this._raycast(raycaster)
+
+    this._filterIntersects(intersects)
+
+    this.fillOutFace(intersects, fillDir)
+
+    return intersects
+  }
+
+  getClickData(x, y) {
     let mouse = new THREE.Vector2()
     let raycaster = new THREE.Raycaster()
 
@@ -31,29 +55,53 @@ class Grabber {
     mouse.y = -(y / renderer.domElement.clientHeight) * 2 + 1
 
     raycaster.setFromCamera(mouse, camera)
-    // let objects = raycaster.intersectObjects(scene.children)
-    let objects = this._raycast(raycaster)
-    return objects[0]
+
+    let intersects = raycaster.intersectObjects(scene.children)
+    let object = intersects[0].object
+    let normal = intersects[0].face.normal
+    return { object, normal }
   }
 
-  grabFace(str) {
-    if (str[0] === 'x' || str[0] === 'y') {
-      return scene.children.filter(object => object.name === 'cubie')
+  shoot(cube, normal) {
+    let point = cube.position.clone()
+    let direction = normal.negate().clone()
+    let raycaster = new THREE.Raycaster(point, direction)
+
+    return this._raycast(raycaster)
+  }
+
+  fillOutFace(intersects, dir) {
+    let cubes = intersects
+    let captures = []
+
+    let firstPoint = intersects[0].position.clone()
+    let lastPoint = intersects[intersects.length - 1].position.clone()
+    let point = firstPoint.clone()
+
+    let shootDir = this._getAxisString(firstPoint.sub(lastPoint))
+
+    point = point[`set${shootDir.toUpperCase()}`](startPoint())
+    let inc = new THREE.Vector3()[`set${shootDir.toUpperCase()}`](cubieDistance())
+
+    let i, raycaster
+    for (i = 0; i < dimensions(); i++) {
+      raycaster = new THREE.Raycaster(point, dir)
+      captures = this._raycast(raycaster)
+      cubes = cubes.concat(captures)
+
+      raycaster = new THREE.Raycaster(point, dir.negate())
+      captures = this._raycast(raycaster)
+      cubes = cubes.concat(captures)
+
+      point = point.sub(inc)
     }
 
-    this._face = this._faceMap[str]
-    let setAxis = 'set' + this._face.shoot[0].toUpperCase()
+    this._filterIntersects(cubes)
 
-    let raycaster = new THREE.Raycaster(
-      this._face.anchor,
-      new THREE.Vector3()[setAxis](1 * this._face.dir)
-    )
-
-    let intersects = this._raycast(raycaster)
-    this._filterIntersects(intersects)
-    this._fillOutFace(intersects)
-
-    return intersects
+    intersects.splice(0)
+    for (i = 0; i < cubes.length; i++) {
+      intersects.push(cubes[i])
+    }
   }
 
   _filterIntersects(intersects) {
@@ -74,32 +122,14 @@ class Grabber {
     }
   }
 
-  _fillOutFace(intersects) {
-    let setAxis = 'set' + this._face.shoot[1].toUpperCase()
-    let raycastDir = new THREE.Vector3()[setAxis](1 * this._face.dir)
-    let cubes = intersects
-    let captures = []
-
-    let i
-    let cube
-    let raycaster
-    for (i = 0; i < intersects.length; i++) {
-      cube = intersects[i]
-      raycaster = new THREE.Raycaster(cube.position, raycastDir)
-      captures = this._raycast(raycaster)
-      cubes = cubes.concat(captures)
-    }
-
-    this._filterIntersects(cubes)
-
-    intersects.splice(0)
-    for (i = 0; i < cubes.length; i++) {
-      intersects.push(cubes[i])
-    }
-  }
-
   _raycast(raycaster) {
     return raycaster.intersectObjects(scene.children).map(data => data.object)
+  }
+
+  _getAxisString(vector) {
+    if (vector.x !== 0) return 'x'
+    if (vector.y !== 0) return 'y'
+    if (vector.z !== 0) return 'z'
   }
 }
 

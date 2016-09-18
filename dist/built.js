@@ -59946,6 +59946,8 @@ var _scene = require('./scene');
 
 var _scene2 = _interopRequireDefault(_scene);
 
+var _init = require('./init');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -59978,20 +59980,6 @@ var Grabber = function () {
       };
     }
   }, {
-    key: 'grabAtPos',
-    value: function grabAtPos(x, y) {
-      var mouse = new _three2.default.Vector2();
-      var raycaster = new _three2.default.Raycaster();
-
-      mouse.x = x / renderer.domElement.clientWidth * 2 - 1;
-      mouse.y = -(y / renderer.domElement.clientHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      // let objects = raycaster.intersectObjects(scene.children)
-      var objects = this._raycast(raycaster);
-      return objects[0];
-    }
-  }, {
     key: 'grabFace',
     value: function grabFace(str) {
       if (str[0] === 'x' || str[0] === 'y') {
@@ -60001,15 +59989,82 @@ var Grabber = function () {
       }
 
       this._face = this._faceMap[str];
-      var setAxis = 'set' + this._face.shoot[0].toUpperCase();
 
-      var raycaster = new _three2.default.Raycaster(this._face.anchor, new _three2.default.Vector3()[setAxis](1 * this._face.dir));
+      var shootAxis = this._face.shoot[0].toUpperCase();
+      var shootDir = new _three2.default.Vector3()['set' + shootAxis](1 * this._face.dir);
 
+      var fillAxis = this._face.shoot[1].toUpperCase();
+      var fillDir = new _three2.default.Vector3()['set' + fillAxis](1);
+
+      var raycaster = new _three2.default.Raycaster(this._face.anchor, shootDir);
       var intersects = this._raycast(raycaster);
+
       this._filterIntersects(intersects);
-      this._fillOutFace(intersects);
+
+      this.fillOutFace(intersects, fillDir);
 
       return intersects;
+    }
+  }, {
+    key: 'getClickData',
+    value: function getClickData(x, y) {
+      var mouse = new _three2.default.Vector2();
+      var raycaster = new _three2.default.Raycaster();
+
+      mouse.x = x / renderer.domElement.clientWidth * 2 - 1;
+      mouse.y = -(y / renderer.domElement.clientHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      var intersects = raycaster.intersectObjects(_scene2.default.children);
+      var object = intersects[0].object;
+      var normal = intersects[0].face.normal;
+      return { object: object, normal: normal };
+    }
+  }, {
+    key: 'shoot',
+    value: function shoot(cube, normal) {
+      var point = cube.position.clone();
+      var direction = normal.negate().clone();
+      var raycaster = new _three2.default.Raycaster(point, direction);
+
+      return this._raycast(raycaster);
+    }
+  }, {
+    key: 'fillOutFace',
+    value: function fillOutFace(intersects, dir) {
+      var cubes = intersects;
+      var captures = [];
+
+      var firstPoint = intersects[0].position.clone();
+      var lastPoint = intersects[intersects.length - 1].position.clone();
+      var point = firstPoint.clone();
+
+      var shootDir = this._getAxisString(firstPoint.sub(lastPoint));
+
+      point = point['set' + shootDir.toUpperCase()]((0, _init.startPoint)());
+      var inc = new _three2.default.Vector3()['set' + shootDir.toUpperCase()]((0, _init.cubieDistance)());
+
+      var i = void 0,
+          raycaster = void 0;
+      for (i = 0; i < (0, _init.dimensions)(); i++) {
+        raycaster = new _three2.default.Raycaster(point, dir);
+        captures = this._raycast(raycaster);
+        cubes = cubes.concat(captures);
+
+        raycaster = new _three2.default.Raycaster(point, dir.negate());
+        captures = this._raycast(raycaster);
+        cubes = cubes.concat(captures);
+
+        point = point.sub(inc);
+      }
+
+      this._filterIntersects(cubes);
+
+      intersects.splice(0);
+      for (i = 0; i < cubes.length; i++) {
+        intersects.push(cubes[i]);
+      }
     }
   }, {
     key: '_filterIntersects',
@@ -60031,36 +60086,18 @@ var Grabber = function () {
       }
     }
   }, {
-    key: '_fillOutFace',
-    value: function _fillOutFace(intersects) {
-      var setAxis = 'set' + this._face.shoot[1].toUpperCase();
-      var raycastDir = new _three2.default.Vector3()[setAxis](1 * this._face.dir);
-      var cubes = intersects;
-      var captures = [];
-
-      var i = void 0;
-      var cube = void 0;
-      var raycaster = void 0;
-      for (i = 0; i < intersects.length; i++) {
-        cube = intersects[i];
-        raycaster = new _three2.default.Raycaster(cube.position, raycastDir);
-        captures = this._raycast(raycaster);
-        cubes = cubes.concat(captures);
-      }
-
-      this._filterIntersects(cubes);
-
-      intersects.splice(0);
-      for (i = 0; i < cubes.length; i++) {
-        intersects.push(cubes[i]);
-      }
-    }
-  }, {
     key: '_raycast',
     value: function _raycast(raycaster) {
       return raycaster.intersectObjects(_scene2.default.children).map(function (data) {
         return data.object;
       });
+    }
+  }, {
+    key: '_getAxisString',
+    value: function _getAxisString(vector) {
+      if (vector.x !== 0) return 'x';
+      if (vector.y !== 0) return 'y';
+      if (vector.z !== 0) return 'z';
     }
   }]);
 
@@ -60069,12 +60106,13 @@ var Grabber = function () {
 
 exports.default = new Grabber();
 
-},{"./scene":14,"three":3}],8:[function(require,module,exports){
+},{"./init":8,"./scene":14,"three":3}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.cubieDistance = exports.startPoint = exports.dimensions = undefined;
 
 var _three = require('three');
 
@@ -60106,6 +60144,16 @@ var cubieSize = void 0;
 var cubeStartPos = void 0;
 var scrambleLength = void 0;
 var lineHelperWidth = void 0;
+
+var dimensions = exports.dimensions = function dimensions() {
+  return cubeDimensions;
+};
+var startPoint = exports.startPoint = function startPoint() {
+  return cubeStartPos;
+};
+var cubieDistance = exports.cubieDistance = function cubieDistance() {
+  return cubieSize + cubieOffset;
+};
 
 exports.default = function (dimensions) {
   cubeDimensions = dimensions;
@@ -60262,6 +60310,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var inputHandler = function () {
   function inputHandler() {
     _classCallCheck(this, inputHandler);
+
+    // Captures correct cubes when clicking on a given face (or normal)
+    this._normalMap = {
+      x: { horizontal: 'z', vertical: 'y' },
+      y: { horizontal: 'x', vertical: 'z' },
+      z: { horizontal: 'x', vertical: 'y' }
+    };
   }
 
   _createClass(inputHandler, [{
@@ -60273,16 +60328,64 @@ var inputHandler = function () {
     key: 'addEvents',
     value: function addEvents() {
       (0, _jquery2.default)(window).on('keyup', this.type.bind(this));
-      (0, _jquery2.default)(window).on('click', this.click.bind(this));
+      (0, _jquery2.default)(window).on('mousedown', this.mousedown.bind(this));
     }
   }, {
-    key: 'click',
-    value: function click(e) {
+    key: 'mousedown',
+    value: function mousedown(e) {
       var canvasBox = _renderer2.default.domElement.getBoundingClientRect();
       var canvasMouseX = event.clientX - canvasBox.left;
       var canvasMouseY = event.clientY - canvasBox.top;
 
-      var cube = grabber.grabAtPos(canvasMouseX, canvasMouseY);
+      /* THINGS TO DO */
+      // ---- On MouseDown
+      // 1) Get clicked cube and normal and save to this._clickData
+      this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
+
+      // 2) Shoot through normal and save cubes to this._shotCubes
+      this._shotCubes = grabber.shoot(this._clickData.object, this._clickData.normal);
+
+      // 3) On mousemove, determine whether user moves vertically or horizontally,
+      //    save to this._clickDirection
+      this._currentX = e.clientX;
+      this._currentY = e.clientY;
+      (0, _jquery2.default)(window).one('mousemove', this.mousemove.bind(this));
+    }
+  }, {
+    key: 'mousemove',
+    value: function mousemove(e) {
+      // 3) On mousemove, determine whether user moves vertically or horizontally,
+      //    save to this._clickDirection
+      var magX = e.clientX - this._currentX;
+      var magY = e.clientY - this._currentY;
+
+      // dir: along which axis the mouse moves
+      // mag: positive or negative, used for animation (not grabbing correct cubes)
+
+      var dir = void 0;
+      var mag = void 0;
+      if (Math.abs(magX) >= Math.abs(magY)) {
+        dir = 'horizontal';
+        mag = magX > 0 ? 1 : -1;
+      } else {
+        dir = 'vertical';
+        mag = magY > 0 ? 1 : -1;
+      }
+
+      var normalStr = grabber._getAxisString(this._clickData.normal);
+      var clickDir = this._normalMap[normalStr][dir].toUpperCase();
+      this._clickDirection = new _three2.default.Vector3()['set' + clickDir](1);
+
+      // 4) "Fiil out face" and save to this._currentFace
+      grabber.fillOutFace(this._shotCubes, this._clickDirection);
+      this._shotCubes.forEach(function (object) {
+        return _scene2.default.remove(object);
+      });
+
+      // 5) Animate this._currentFace based on mouse movement
+      // ---- On Mouseup
+      // 1) Animate this._currentFace to nearest "clicked" position
+      // 2) Reset()
     }
   }, {
     key: 'type',

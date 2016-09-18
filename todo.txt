@@ -6,3 +6,4 @@
 -- make the site look nice
 -- make sass not horrible
 -- fix canvas positioning (some dimensions are cut off)
+-- clicking on line helpers don't return correct normals
