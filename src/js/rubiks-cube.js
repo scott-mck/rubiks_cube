@@ -41,7 +41,7 @@ class RubiksCube {
     let face = move[0]
     let faceDetails = this._rotateMap[face]
 
-    let objects = grabber.grab(face)
+    let objects = grabber.grabFace(face)
     let axis = faceDetails.axis
     let dir = faceDetails.dir
 

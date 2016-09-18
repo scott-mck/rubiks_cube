@@ -59978,8 +59978,22 @@ var Grabber = function () {
       };
     }
   }, {
-    key: 'grab',
-    value: function grab(str) {
+    key: 'grabAtPos',
+    value: function grabAtPos(x, y) {
+      var mouse = new _three2.default.Vector2();
+      var raycaster = new _three2.default.Raycaster();
+
+      mouse.x = x / renderer.domElement.clientWidth * 2 - 1;
+      mouse.y = -(y / renderer.domElement.clientHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      // let objects = raycaster.intersectObjects(scene.children)
+      var objects = this._raycast(raycaster);
+      return objects[0];
+    }
+  }, {
+    key: 'grabFace',
+    value: function grabFace(str) {
       if (str[0] === 'x' || str[0] === 'y') {
         return _scene2.default.children.filter(function (object) {
           return object.name === 'cubie';
@@ -60268,13 +60282,7 @@ var inputHandler = function () {
       var canvasMouseX = event.clientX - canvasBox.left;
       var canvasMouseY = event.clientY - canvasBox.top;
 
-      var mouse = new _three2.default.Vector2();
-      mouse.x = canvasMouseX / _renderer2.default.domElement.clientWidth * 2 - 1;
-      mouse.y = -(canvasMouseY / _renderer2.default.domElement.clientHeight) * 2 + 1;
-
-      var raycaster = new _three2.default.Raycaster();
-      raycaster.setFromCamera(mouse, _camera2.default);
-      var objects = raycaster.intersectObjects(_scene2.default.children);
+      var cube = grabber.grabAtPos(canvasMouseX, canvasMouseY);
     }
   }, {
     key: 'type',
@@ -60451,7 +60459,7 @@ var RubiksCube = function () {
       var face = move[0];
       var faceDetails = this._rotateMap[face];
 
-      var objects = _grabber2.default.grab(face);
+      var objects = _grabber2.default.grabFace(face);
       var axis = faceDetails.axis;
       var dir = faceDetails.dir;
 

@@ -23,7 +23,20 @@ class Grabber {
     }
   }
 
-  grab(str) {
+  grabAtPos(x, y) {
+    let mouse = new THREE.Vector2()
+    let raycaster = new THREE.Raycaster()
+
+    mouse.x = (x / renderer.domElement.clientWidth) * 2 - 1
+    mouse.y = -(y / renderer.domElement.clientHeight) * 2 + 1
+
+    raycaster.setFromCamera(mouse, camera)
+    // let objects = raycaster.intersectObjects(scene.children)
+    let objects = this._raycast(raycaster)
+    return objects[0]
+  }
+
+  grabFace(str) {
     if (str[0] === 'x' || str[0] === 'y') {
       return scene.children.filter(object => object.name === 'cubie')
     }

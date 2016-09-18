@@ -23,13 +23,7 @@ class inputHandler {
     let canvasMouseX = event.clientX - canvasBox.left
     let canvasMouseY = event.clientY - canvasBox.top
 
-    let mouse = new THREE.Vector2()
-    mouse.x = (canvasMouseX / renderer.domElement.clientWidth) * 2 - 1
-    mouse.y = -(canvasMouseY / renderer.domElement.clientHeight) * 2 + 1
-
-    let raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera(mouse, camera)
-    let objects = raycaster.intersectObjects(scene.children)
+    let cube = grabber.grabAtPos(canvasMouseX, canvasMouseY)
   }
 
   type(e) {
