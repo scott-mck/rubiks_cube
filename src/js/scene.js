@@ -1,3 +1,6 @@
 import THREE from 'three'
 
-export default new THREE.Scene()
+let scene = new THREE.Scene()
+scene.background = new THREE.Color(0xffffff);
+
+export default scene

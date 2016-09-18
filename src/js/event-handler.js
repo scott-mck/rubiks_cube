@@ -6,19 +6,22 @@ import renderer from './renderer'
 import init from './init'
 
 const SELECT_DURATION = 0.7
-const CANVAS_SIZE = 0.9
 
 let $window
 let $backdrop
 let $select
 let $choices
 let $canvas
+let $expand
+let $sidebar
+
 let canvasWidth
 let canvasHeight
 let windowWidth
 let windowHeight
 let scale
 let dimensions
+
 let timeline = new TimelineMax({ paused: true })
 
 export default {
@@ -29,11 +32,13 @@ export default {
     $select = $('.select')
     $choices = $('.cube-size')
     $canvas = $('#canvas')
+    $expand = $('#expand')
+    $sidebar = $('#sidebar')
 
     renderer.setPixelRatio(devicePixelRatio)
     $canvas.append(renderer.domElement)
 
-    $window.resize(resizeWindow)
+    // $window.resize(resizeWindow)
     $window.click(e => e.preventDefault())
 
     $choices.click((e) => {
@@ -44,6 +49,7 @@ export default {
     createTimeline()
     resizeWindow()
     timeline.play()
+    renderer.render(scene, camera)
   }
 
 }
@@ -54,21 +60,20 @@ let resizeWindow = () => {
   windowWidth = $window.width()
   windowHeight = $window.height()
 
-  if (windowWidth > windowHeight) {
-    scale = windowWidth / canvasWidth
-    if (canvasHeight * scale > windowHeight) scale = windowHeight / canvasHeight
-  } else {
-    scale = windowHeight / canvasHeight
-    if (canvasWidth * scale > windowWidth) scale = windowWidth / canvasWidth
-  }
+  // if (windowWidth > windowHeight) {
+  //   scale = windowWidth / canvasWidth
+  //   if (canvasHeight * scale > windowHeight) scale = windowHeight / canvasHeight
+  // } else {
+  //   scale = windowHeight / canvasHeight
+  //   if (canvasWidth * scale > windowWidth) scale = windowWidth / canvasWidth
+  // }
 
-  $canvas.css('width', canvasWidth * scale * CANVAS_SIZE + 'px')
-  $canvas.css('height', canvasHeight * scale * CANVAS_SIZE + 'px')
+  // $canvas.css('width', canvasWidth + 'px')
+  // $canvas.css('height', canvasHeight + 'px')
 
-  camera.aspect = (canvasWidth * scale) / (canvasHeight * scale)
+  camera.aspect = (canvasWidth) / (canvasHeight)
   camera.updateProjectionMatrix()
-  renderer.setSize(canvasWidth * scale * CANVAS_SIZE, canvasHeight * scale * CANVAS_SIZE)
-  renderer.render(scene, camera)
+  renderer.setSize(canvasWidth, canvasHeight)
 }
 
 let createTimeline = () => {
@@ -82,10 +87,5 @@ let createTimeline = () => {
     $select.hide()
     $backdrop.hide()
     init(dimensions)
-
-    camera.position.x = 250;
-    camera.position.y = 300;
-    camera.position.z = 500;
-    camera.lookAt(new THREE.Vector3());
   })
 }

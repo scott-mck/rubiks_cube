@@ -11,18 +11,25 @@ let cubieOffset
 let cubieSize
 let cubeStartPos
 let scrambleLength
+let lineHelperWidth
 
 export default (dimensions) => {
   cubeDimensions = dimensions
-  cubieOffset = 3
-  cubieSize = 125 - (20 - (cubeDimensions - 2)) * (cubeDimensions - 2)
+  cubieOffset = 0.5
+  cubieSize = 20
   cubeStartPos = ((cubeDimensions - 1) / 2) * (cubieSize + cubieOffset)
   scrambleLength = 25 + 3 * (cubeDimensions - 3)
+  lineHelperWidth = 5 - (cubeDimensions - 2) * 0.3
 
   createMesh()
   createLeftAndRight()
   createUpAndDown()
   createFrontAndBack()
+
+  camera.position.x += 40 + ((cubeDimensions - 2) * 25)
+  camera.position.y += 40 + ((cubeDimensions - 2) * 25)
+  camera.position.z += 60 + ((cubeDimensions - 2) * 35)
+  camera.lookAt(new THREE.Vector3());
 
   inputHandler.init()
   grabber.init()
@@ -64,7 +71,7 @@ const createMesh = () => {
 const addCubie = () => {
   let cubie = new THREE.Mesh(geometry.clone(), material.clone());
   let helper = new THREE.EdgesHelper(cubie, 0x000000);
-  helper.material.linewidth = 7;
+  helper.material.linewidth = lineHelperWidth;
   cubie.name = "cubie";
   scene.add(cubie);
   scene.add(helper);
