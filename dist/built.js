@@ -59844,8 +59844,6 @@ var _init2 = _interopRequireDefault(_init);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var SELECT_DURATION = 0.7;
-var CANVAS_SIZE = 0.9;
-var RATIO = 600 / 800;
 
 var $window = void 0;
 var $backdrop = void 0;
