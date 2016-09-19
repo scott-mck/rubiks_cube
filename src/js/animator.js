@@ -21,11 +21,10 @@ class Animator {
 
   animate({ objects, axis, dir }) {
     if (this.animating) {
-      return false
-    } else {
-      this._animate({ objects, axis, dir })
-      return true
+      return
     }
+
+    this._animate({ objects, axis, dir })
   }
 
   _animate({ objects, axis, dir }) {

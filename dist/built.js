@@ -59704,11 +59704,10 @@ var Animator = function () {
       var dir = _ref.dir;
 
       if (this.animating) {
-        return false;
-      } else {
-        this._animate({ objects: objects, axis: axis, dir: dir });
-        return true;
+        return;
       }
+
+      this._animate({ objects: objects, axis: axis, dir: dir });
     }
   }, {
     key: '_animate',
@@ -60580,11 +60579,10 @@ var RubiksCube = function () {
   _createClass(RubiksCube, [{
     key: 'move',
     value: function move(_move) {
-      var details = this._getMoveDetails(_move);
-      if (_animator2.default.animate(details)) {
-        return;
-      } else {
+      if (_animator2.default.animating) {
         this._queue.push(_move);
+      } else {
+        _animator2.default.animate(this._getMoveDetails(_move));
       }
     }
   }, {

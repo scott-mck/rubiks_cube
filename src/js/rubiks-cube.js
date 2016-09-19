@@ -20,11 +20,10 @@ class RubiksCube {
   }
 
   move(move) {
-    let details = this._getMoveDetails(move)
-    if (animator.animate(details)) {
-      return
-    } else {
+    if (animator.animating) {
       this._queue.push(move)
+    } else {
+      animator.animate(this._getMoveDetails(move))
     }
   }
 
