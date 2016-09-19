@@ -28,15 +28,6 @@ class Animator {
     }
   }
 
-  _next() {
-    let nextMove = rubiksCube.nextMove()
-    if (!nextMove) {
-      return
-    }
-
-    this._animate(nextMove)
-  }
-
   _animate({ objects, axis, dir }) {
     this.animating = true
 
@@ -55,6 +46,32 @@ class Animator {
       ease: EASE,
       onComplete: onComplete
     })
+  }
+
+  setRotationOfFace(objects, axis, mag) {
+    this.animating = true
+
+    // console.log(objects);
+    // console.log(axis);
+    // console.log(mag);
+
+    let i
+    for (i = 0; i < objects.length; i++) {
+      THREE.SceneUtils.attach(objects[i], scene, this._rotater)
+    }
+
+    TweenMax.to(this._rotater.rotation, 0.5, {
+      [axis]: `${mag}`
+    })
+  }
+
+  _next() {
+    let nextMove = rubiksCube.nextMove()
+    if (!nextMove) {
+      return
+    }
+
+    this._animate(nextMove)
   }
 
   render() {

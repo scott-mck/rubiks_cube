@@ -59,7 +59,7 @@ class Grabber {
     let intersects = raycaster.intersectObjects(scene.children)
     let object = intersects[0].object
     let normal = intersects[0].face.normal
-    return { object, normal }
+    return { object, normal: this.axisFromVector(normal) }
   }
 
   shoot(cube, normal) {
@@ -78,7 +78,7 @@ class Grabber {
     let lastPoint = intersects[intersects.length - 1].position.clone()
     let point = firstPoint.clone()
 
-    let shootDir = this._getAxisString(firstPoint.sub(lastPoint))
+    let shootDir = this.axisFromVector(firstPoint.sub(lastPoint))
 
     point = point[`set${shootDir.toUpperCase()}`](startPoint())
     let inc = new THREE.Vector3()[`set${shootDir.toUpperCase()}`](cubieDistance())
@@ -126,10 +126,15 @@ class Grabber {
     return raycaster.intersectObjects(scene.children).map(data => data.object)
   }
 
-  _getAxisString(vector) {
+  axisFromVector(vector) {
     if (vector.x !== 0) return 'x'
     if (vector.y !== 0) return 'y'
     if (vector.z !== 0) return 'z'
+  }
+
+  vectorFromAxis(str) {
+    str = str.toUpperCase()
+    return new THREE.Vector3()[`set${str}`](1)
   }
 }
 
