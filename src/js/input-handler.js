@@ -91,20 +91,8 @@ class inputHandler {
       let magY = e.clientY - this._currentY
 
       this._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical'
-      console.log(this._lockAxis);
       callback && callback()
     })
-
-    //
-    // let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
-    // this._clickData.direction = clickDir
-    //
-    // let normal = grabber.vectorFromAxis(this._clickData.normal)
-    // let direction = grabber.vectorFromAxis(this._clickData.direction)
-    // this._rotationAxis = grabber.axisFromVector(normal.cross(direction))
-    //
-    // grabber.fillOutFace(this._cubes, direction)
-    // animator.grip(this._cubes, this._rotationAxis)
   }
 
   _mousemove(e) {

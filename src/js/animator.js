@@ -12,15 +12,6 @@ const SNAP_DURATION = 0.3
 
 class Animator {
   constructor() {
-    // let material = new THREE.MeshBasicMaterial({
-    //   color: 0xd3d3d3,
-    //   vertexColors: THREE.FaceColors,
-    //   transparent: true,
-    //   opacity: 0.5
-    // })
-    //
-    // let geometry = new THREE.BoxGeometry(10, 100, 100)
-    //
     this._rotater = new THREE.Object3D()
     this._rotater.name = 'rotater'
     scene.add(this._rotater)
