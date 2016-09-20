@@ -3,6 +3,7 @@ import TweenMax from 'gsap'
 import scene from './scene'
 import camera from './camera'
 import renderer from './renderer'
+import g, { init as initGlobals } from './globals'
 import init from './init'
 
 const SELECT_DURATION = 0.7
@@ -86,6 +87,7 @@ let createTimeline = () => {
   timeline.eventCallback('onReverseComplete', () => {
     $select.hide()
     $backdrop.hide()
-    init(dimensions)
+    initGlobals(dimensions)
+    init()
   })
 }

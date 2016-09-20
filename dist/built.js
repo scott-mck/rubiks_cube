@@ -59813,12 +59813,10 @@ var Animator = function () {
       var angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2;
 
       var remainder = currentRotation % angle;
-      // let remainder = Math.abs(currentRotation % angle)
 
       if (Math.abs(remainder) > Math.PI / 4) {
         remainder = angle - remainder;
       } else {
-        // remainder *= negativeRotation ? -1 : 1
         remainder *= -1;
       }
 
@@ -59843,7 +59841,7 @@ var Animator = function () {
 
 exports.default = new Animator();
 
-},{"./camera":5,"./renderer":12,"./rubiks-cube":13,"./scene":14,"gsap":1,"three":3}],5:[function(require,module,exports){
+},{"./camera":5,"./renderer":13,"./rubiks-cube":14,"./scene":15,"gsap":1,"three":3}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59884,6 +59882,10 @@ var _camera2 = _interopRequireDefault(_camera);
 var _renderer = require('./renderer');
 
 var _renderer2 = _interopRequireDefault(_renderer);
+
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
 
 var _init = require('./init');
 
@@ -59973,11 +59975,32 @@ var createTimeline = function createTimeline() {
   timeline.eventCallback('onReverseComplete', function () {
     $select.hide();
     $backdrop.hide();
-    (0, _init2.default)(dimensions);
+    (0, _globals.init)(dimensions);
+    (0, _init2.default)();
   });
 };
 
-},{"./camera":5,"./init":8,"./renderer":12,"./scene":14,"gsap":1,"jquery":2}],7:[function(require,module,exports){
+},{"./camera":5,"./globals":7,"./init":9,"./renderer":13,"./scene":15,"gsap":1,"jquery":2}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var g = {};
+
+var init = exports.init = function init(cubeDimensions) {
+  g.dimensions = cubeDimensions;
+  g.cubieOffset = 0.5;
+  g.cubieSize = 20;
+  g.cubieDistance = g.cubieSize + g.cubieOffset;
+  g.startPos = (g.dimensions - 1) / 2 * (g.cubieSize + g.cubieOffset);
+  g.scrambleLength = 25 + 3 * (g.dimensions - 3);
+  g.lineHelperWidth = 5 - (g.dimensions - 2) * 0.3;
+};
+
+exports.default = g;
+
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -59994,7 +60017,9 @@ var _scene = require('./scene');
 
 var _scene2 = _interopRequireDefault(_scene);
 
-var _init = require('./init');
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60065,14 +60090,17 @@ var Grabber = function () {
       raycaster.setFromCamera(mouse, camera);
 
       var intersects = raycaster.intersectObjects(_scene2.default.children);
+
+      if (intersects.length === 0) {
+        return null;
+      }
+
       var object = intersects[0].object;
       var normal = intersects[0].face.normal;
 
       var normalVector = new _three2.default.Matrix4();
       normalVector = normalVector.extractRotation(object.matrixWorld);
       normalVector = normalVector.multiplyVector3(normal.clone());
-
-      console.log(normalVector);
 
       return { object: object, normal: this.axisFromVector(normalVector) };
     }
@@ -60097,12 +60125,12 @@ var Grabber = function () {
 
       var shootDir = this.axisFromVector(firstPoint.sub(lastPoint));
 
-      point = point['set' + shootDir.toUpperCase()]((0, _init.startPoint)());
-      var inc = new _three2.default.Vector3()['set' + shootDir.toUpperCase()]((0, _init.cubieDistance)());
+      point = point['set' + shootDir.toUpperCase()](_globals2.default.startPos);
+      var inc = new _three2.default.Vector3()['set' + shootDir.toUpperCase()](_globals2.default.cubieDistance);
 
       var i = void 0,
           raycaster = void 0;
-      for (i = 0; i < (0, _init.dimensions)(); i++) {
+      for (i = 0; i < _globals2.default.dimensions; i++) {
         raycaster = new _three2.default.Raycaster(point, dir);
         captures = this._raycast(raycaster);
         cubes = cubes.concat(captures);
@@ -60169,13 +60197,12 @@ var Grabber = function () {
 
 exports.default = new Grabber();
 
-},{"./init":8,"./scene":14,"three":3}],8:[function(require,module,exports){
+},{"./globals":7,"./scene":15,"three":3}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.cubieDistance = exports.startPoint = exports.dimensions = undefined;
 
 var _three = require('three');
 
@@ -60197,49 +60224,30 @@ var _animator = require('./animator');
 
 var _animator2 = _interopRequireDefault(_animator);
 
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var material = void 0;
-var geometry = void 0;
-var cubeDimensions = void 0;
-var cubieOffset = void 0;
-var cubieSize = void 0;
-var cubeStartPos = void 0;
-var scrambleLength = void 0;
-var lineHelperWidth = void 0;
-
-var dimensions = exports.dimensions = function dimensions() {
-  return cubeDimensions;
-};
-var startPoint = exports.startPoint = function startPoint() {
-  return cubeStartPos;
-};
-var cubieDistance = exports.cubieDistance = function cubieDistance() {
-  return cubieSize + cubieOffset;
-};
-
-exports.default = function (dimensions) {
-  cubeDimensions = dimensions;
-  cubieOffset = 0.5;
-  cubieSize = 20;
-  cubeStartPos = (cubeDimensions - 1) / 2 * (cubieSize + cubieOffset);
-  scrambleLength = 25 + 3 * (cubeDimensions - 3);
-  lineHelperWidth = 5 - (cubeDimensions - 2) * 0.3;
-
+exports.default = function () {
   createMesh();
   createLeftAndRight();
   createUpAndDown();
   createFrontAndBack();
 
-  camera.position.x += 40 + (cubeDimensions - 2) * 25;
-  camera.position.y += 40 + (cubeDimensions - 2) * 25;
-  camera.position.z += 60 + (cubeDimensions - 2) * 35;
+  camera.position.x += 40 + (_globals2.default.dimensions - 2) * 25;
+  camera.position.y += 40 + (_globals2.default.dimensions - 2) * 25;
+  camera.position.z += 60 + (_globals2.default.dimensions - 2) * 35;
   camera.lookAt(new _three2.default.Vector3());
 
   _inputHandler2.default.init();
   _grabber2.default.init();
   _animator2.default.init();
 };
+
+var material = void 0;
+var geometry = void 0;
 
 var createMesh = function createMesh() {
   material = new _three2.default.MeshBasicMaterial({
@@ -60248,7 +60256,7 @@ var createMesh = function createMesh() {
     side: _three2.default.DoubleSide
   });
 
-  geometry = new _three2.default.BoxGeometry(cubieSize, cubieSize, cubieSize);
+  geometry = new _three2.default.BoxGeometry(_globals2.default.cubieSize, _globals2.default.cubieSize, _globals2.default.cubieSize);
   // Color right face RED
   geometry.faces[0].color.setRGB(1, 0, 0);
   geometry.faces[1].color.setRGB(1, 0, 0);
@@ -60272,7 +60280,7 @@ var createMesh = function createMesh() {
 var addCubie = function addCubie() {
   var cubie = new _three2.default.Mesh(geometry.clone(), material.clone());
   var helper = new _three2.default.EdgesHelper(cubie, 0x000000);
-  helper.material.linewidth = lineHelperWidth;
+  helper.material.linewidth = _globals2.default.lineHelperWidth;
   cubie.name = "cubie";
   _scene2.default.add(cubie);
   _scene2.default.add(helper);
@@ -60286,12 +60294,12 @@ var createLeftAndRight = function createLeftAndRight() {
   var cubie = void 0;
 
   for (x = 0; x < 2; x++) {
-    for (y = 0; y < cubeDimensions; y++) {
-      for (z = 0; z < cubeDimensions; z++) {
+    for (y = 0; y < _globals2.default.dimensions; y++) {
+      for (z = 0; z < _globals2.default.dimensions; z++) {
         cubie = addCubie();
-        cubie.position.set(cubeStartPos - 2 * x * cubeStartPos, cubeStartPos - y * (cubieSize + cubieOffset), cubeStartPos - z * (cubieSize + cubieOffset));
+        cubie.position.set(_globals2.default.startPos - 2 * x * _globals2.default.startPos, _globals2.default.startPos - y * (_globals2.default.cubieSize + _globals2.default.cubieOffset), _globals2.default.startPos - z * (_globals2.default.cubieSize + _globals2.default.cubieOffset));
 
-        var d = cubeDimensions - 1;
+        var d = _globals2.default.dimensions - 1;
         if (x === 0 && y === 0 && z === 0) _grabber2.default.setAnchor1(cubie);
         if (x === 1 && y === d && z === d) _grabber2.default.setAnchor2(cubie);
       }
@@ -60305,10 +60313,10 @@ var createUpAndDown = function createUpAndDown() {
   var cubie = void 0;
 
   for (y = 0; y < 2; y++) {
-    for (x = 0; x < cubeDimensions - 2; x++) {
-      for (z = 0; z < cubeDimensions; z++) {
+    for (x = 0; x < _globals2.default.dimensions - 2; x++) {
+      for (z = 0; z < _globals2.default.dimensions; z++) {
         cubie = addCubie();
-        cubie.position.set(cubeStartPos - (x + 1) * (cubieSize + cubieOffset), cubeStartPos - 2 * y * cubeStartPos, cubeStartPos - z * (cubieSize + cubieOffset));
+        cubie.position.set(_globals2.default.startPos - (x + 1) * (_globals2.default.cubieSize + _globals2.default.cubieOffset), _globals2.default.startPos - 2 * y * _globals2.default.startPos, _globals2.default.startPos - z * (_globals2.default.cubieSize + _globals2.default.cubieOffset));
       }
     }
   }
@@ -60320,16 +60328,16 @@ var createFrontAndBack = function createFrontAndBack() {
   var cubie = void 0;
 
   for (z = 0; z < 2; z++) {
-    for (y = 0; y < cubeDimensions - 2; y++) {
-      for (x = 0; x < cubeDimensions - 2; x++) {
+    for (y = 0; y < _globals2.default.dimensions - 2; y++) {
+      for (x = 0; x < _globals2.default.dimensions - 2; x++) {
         cubie = addCubie();
-        cubie.position.set(cubeStartPos - (x + 1) * (cubieSize + cubieOffset), cubeStartPos - (y + 1) * (cubieSize + cubieOffset), cubeStartPos - 2 * z * cubeStartPos);
+        cubie.position.set(_globals2.default.startPos - (x + 1) * (_globals2.default.cubieSize + _globals2.default.cubieOffset), _globals2.default.startPos - (y + 1) * (_globals2.default.cubieSize + _globals2.default.cubieOffset), _globals2.default.startPos - 2 * z * _globals2.default.startPos);
       }
     }
   }
 };
 
-},{"./animator":4,"./grabber":7,"./input-handler":9,"./scene":14,"three":3}],9:[function(require,module,exports){
+},{"./animator":4,"./globals":7,"./grabber":8,"./input-handler":10,"./scene":15,"three":3}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60405,54 +60413,82 @@ var inputHandler = function () {
       (0, _jquery2.default)(window).on('keyup', this.type.bind(this));
       (0, _jquery2.default)(window).on('mousedown', this.mousedown.bind(this));
     }
+
+    /* Steps */
+    // ---- On MouseDown:
+    // 1) Get clicked cube and normal and save to this._clickData
+    // 2) Shoot through normal and save cubes to this._cubes
+    // 3) On mousemove, determine whether user moves vertically or horizontally,
+    //    save to this._clickData
+    // 4) "Fill out face"
+    // 5) Animate this._cubes based on mouse movement
+    // ---- On Mouseup:
+    // 1) Snap face to nearest position
+    // 2) Reset()
+
   }, {
     key: 'mousedown',
     value: function mousedown(e) {
+      var _this = this;
+
       var canvasBox = _renderer2.default.domElement.getBoundingClientRect();
       var canvasMouseX = event.clientX - canvasBox.left;
       var canvasMouseY = event.clientY - canvasBox.top;
 
-      /* Steps */
-      // ---- On MouseDown:
-      // 1) Get clicked cube and normal and save to this._clickData
-      // 2) Shoot through normal and save cubes to this._cubes
-      // 3) On mousemove, determine whether user moves vertically or horizontally,
-      //    save to this._clickData
-      // 4) "Fill out face"
-      // 5) Animate this._cubes based on mouse movement
-      // ---- On Mouseup:
-      // 1) Snap face to nearest position
-      // 2) Reset()
-
       this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
-      console.log(this._clickData.normal);
+      if (!this._clickData) {
+        this._detectClickDirection(function () {
+          _animator2.default.grip(_scene2.default.children);
+          (0, _jquery2.default)(window).on('mousemove.input', _this._mousemove.bind(_this));
+          (0, _jquery2.default)(window).one('mouseup', _this._mouseup.bind(_this));
+        });
+        return;
+      }
 
       var normal = grabber.vectorFromAxis(this._clickData.normal);
       this._cubes = grabber.shoot(this._clickData.object, normal);
 
       this._currentX = e.clientX;
       this._currentY = e.clientY;
-      (0, _jquery2.default)(window).one('mousemove', this._detectClickDirection.bind(this));
+
+      this._detectClickDirection(function () {
+        var clickDir = _this._normalMap[_this._clickData.normal][_this._lockAxis].toUpperCase();
+        _this._clickData.direction = clickDir;
+
+        var normal = grabber.vectorFromAxis(_this._clickData.normal);
+        var direction = grabber.vectorFromAxis(_this._clickData.direction);
+        _this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction));
+
+        grabber.fillOutFace(_this._cubes, direction);
+        _animator2.default.grip(_this._cubes, _this._clickData.rotationAxis);
+      });
+
       (0, _jquery2.default)(window).on('mousemove.input', this._mousemove.bind(this));
       (0, _jquery2.default)(window).one('mouseup', this._mouseup.bind(this));
     }
   }, {
     key: '_detectClickDirection',
-    value: function _detectClickDirection(e) {
-      var magX = e.clientX - this._currentX;
-      var magY = e.clientY - this._currentY;
+    value: function _detectClickDirection(callback) {
+      var _this2 = this;
 
-      this._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical';
+      (0, _jquery2.default)(window).one('mousemove', function (e) {
+        var magX = e.clientX - _this2._currentX;
+        var magY = e.clientY - _this2._currentY;
 
-      var clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase();
-      this._clickData.direction = clickDir;
+        _this2._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical';
+        callback && callback();
+      });
 
-      var normal = grabber.vectorFromAxis(this._clickData.normal);
-      var direction = grabber.vectorFromAxis(this._clickData.direction);
-      this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction));
-
-      grabber.fillOutFace(this._cubes, direction);
-      _animator2.default.grip(this._cubes, this._clickData.rotationAxis);
+      //
+      // let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
+      // this._clickData.direction = clickDir
+      //
+      // let normal = grabber.vectorFromAxis(this._clickData.normal)
+      // let direction = grabber.vectorFromAxis(this._clickData.direction)
+      // this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
+      //
+      // grabber.fillOutFace(this._cubes, direction)
+      // animator.grip(this._cubes, this._clickData.rotationAxis)
     }
   }, {
     key: '_mousemove',
@@ -60504,7 +60540,7 @@ var inputHandler = function () {
 
 exports.default = new inputHandler();
 
-},{"./animator":4,"./camera":5,"./key-map":10,"./renderer":12,"./rubiks-cube":13,"./scene":14,"jquery":2,"three":3}],10:[function(require,module,exports){
+},{"./animator":4,"./camera":5,"./key-map":11,"./renderer":13,"./rubiks-cube":14,"./scene":15,"jquery":2,"three":3}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60551,7 +60587,7 @@ var KeyMap = function () {
 
 exports.default = new KeyMap();
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var _windows = require('./windows');
@@ -60572,7 +60608,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   _eventHandler2.default.init();
 }); // REMEMBER TO KILL ME WHEN YOU NEED TO
 
-},{"./event-handler":6,"./windows":15,"jquery":2}],12:[function(require,module,exports){
+},{"./event-handler":6,"./windows":16,"jquery":2}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60587,7 +60623,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = new _three2.default.WebGLRenderer();
 
-},{"three":3}],13:[function(require,module,exports){
+},{"three":3}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60673,7 +60709,7 @@ var RubiksCube = function () {
 
 exports.default = new RubiksCube();
 
-},{"./animator":4,"./grabber":7,"three":3}],14:[function(require,module,exports){
+},{"./animator":4,"./grabber":8,"three":3}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -60691,7 +60727,7 @@ scene.background = new _three2.default.Color(0xffffff);
 
 exports.default = scene;
 
-},{"three":3}],15:[function(require,module,exports){
+},{"three":3}],16:[function(require,module,exports){
 'use strict';
 
 var _jquery = require('jquery');
@@ -60742,4 +60778,4 @@ window.renderer = _renderer2.default;
 window.animator = _animator2.default;
 window.inputHandler = _inputHandler2.default;
 
-},{"./animator":4,"./camera":5,"./grabber":7,"./input-handler":9,"./renderer":12,"./scene":14,"gsap":1,"jquery":2,"three":3}]},{},[11]);
+},{"./animator":4,"./camera":5,"./grabber":8,"./input-handler":10,"./renderer":13,"./scene":15,"gsap":1,"jquery":2,"three":3}]},{},[12]);

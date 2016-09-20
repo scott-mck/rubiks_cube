@@ -1,6 +1,6 @@
 import THREE from 'three'
 import scene from './scene'
-import { dimensions, cubieDistance, startPoint } from './init'
+import g from './globals'
 
 class Grabber {
   constructor() {}
@@ -57,14 +57,17 @@ class Grabber {
     raycaster.setFromCamera(mouse, camera)
 
     let intersects = raycaster.intersectObjects(scene.children)
+
+    if (intersects.length === 0) {
+      return null
+    }
+
     let object = intersects[0].object
     let normal = intersects[0].face.normal
 
     let normalVector = new THREE.Matrix4()
     normalVector = normalVector.extractRotation(object.matrixWorld)
     normalVector = normalVector.multiplyVector3(normal.clone())
-
-    console.log(normalVector);
 
     return { object, normal: this.axisFromVector(normalVector) }
   }
@@ -87,11 +90,11 @@ class Grabber {
 
     let shootDir = this.axisFromVector(firstPoint.sub(lastPoint))
 
-    point = point[`set${shootDir.toUpperCase()}`](startPoint())
-    let inc = new THREE.Vector3()[`set${shootDir.toUpperCase()}`](cubieDistance())
+    point = point[`set${shootDir.toUpperCase()}`](g.startPos)
+    let inc = new THREE.Vector3()[`set${shootDir.toUpperCase()}`](g.cubieDistance)
 
     let i, raycaster
-    for (i = 0; i < dimensions(); i++) {
+    for (i = 0; i < g.dimensions; i++) {
       raycaster = new THREE.Raycaster(point, dir)
       captures = this._raycast(raycaster)
       cubes = cubes.concat(captures)

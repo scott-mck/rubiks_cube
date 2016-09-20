@@ -34,51 +34,73 @@ class inputHandler {
     $(window).on('mousedown', this.mousedown.bind(this))
   }
 
+  /* Steps */
+  // ---- On MouseDown:
+  // 1) Get clicked cube and normal and save to this._clickData
+  // 2) Shoot through normal and save cubes to this._cubes
+  // 3) On mousemove, determine whether user moves vertically or horizontally,
+  //    save to this._clickData
+  // 4) "Fill out face"
+  // 5) Animate this._cubes based on mouse movement
+  // ---- On Mouseup:
+  // 1) Snap face to nearest position
+  // 2) Reset()
   mousedown(e) {
     let canvasBox = renderer.domElement.getBoundingClientRect()
     let canvasMouseX = event.clientX - canvasBox.left
     let canvasMouseY = event.clientY - canvasBox.top
 
-    /* Steps */
-    // ---- On MouseDown:
-    // 1) Get clicked cube and normal and save to this._clickData
-    // 2) Shoot through normal and save cubes to this._cubes
-    // 3) On mousemove, determine whether user moves vertically or horizontally,
-    //    save to this._clickData
-    // 4) "Fill out face"
-    // 5) Animate this._cubes based on mouse movement
-    // ---- On Mouseup:
-    // 1) Snap face to nearest position
-    // 2) Reset()
-
     this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
-    console.log(this._clickData.normal);
+    if (!this._clickData) {
+      this._detectClickDirection(() => {
+        animator.grip(scene.children)
+        $(window).on('mousemove.input', this._mousemove.bind(this))
+        $(window).one('mouseup', this._mouseup.bind(this))
+      })
+      return
+    }
 
     let normal = grabber.vectorFromAxis(this._clickData.normal)
     this._cubes = grabber.shoot(this._clickData.object, normal)
 
     this._currentX = e.clientX
     this._currentY = e.clientY
-    $(window).one('mousemove', this._detectClickDirection.bind(this))
+
+    this._detectClickDirection(() => {
+      let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
+      this._clickData.direction = clickDir
+
+      let normal = grabber.vectorFromAxis(this._clickData.normal)
+      let direction = grabber.vectorFromAxis(this._clickData.direction)
+      this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
+
+      grabber.fillOutFace(this._cubes, direction)
+      animator.grip(this._cubes, this._clickData.rotationAxis)
+    })
+
     $(window).on('mousemove.input', this._mousemove.bind(this))
     $(window).one('mouseup', this._mouseup.bind(this))
   }
 
-  _detectClickDirection(e) {
-    let magX = e.clientX - this._currentX
-    let magY = e.clientY - this._currentY
+  _detectClickDirection(callback) {
+    $(window).one('mousemove', (e) => {
+      let magX = e.clientX - this._currentX
+      let magY = e.clientY - this._currentY
 
-    this._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical'
+      this._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical'
+      callback && callback()
+    })
 
-    let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
-    this._clickData.direction = clickDir
-
-    let normal = grabber.vectorFromAxis(this._clickData.normal)
-    let direction = grabber.vectorFromAxis(this._clickData.direction)
-    this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
-
-    grabber.fillOutFace(this._cubes, direction)
-    animator.grip(this._cubes, this._clickData.rotationAxis)
+    //
+    // let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
+    // this._clickData.direction = clickDir
+    //
+    // let normal = grabber.vectorFromAxis(this._clickData.normal)
+    // let direction = grabber.vectorFromAxis(this._clickData.direction)
+    // this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
+    //
+    // grabber.fillOutFace(this._cubes, direction)
+    // animator.grip(this._cubes, this._clickData.rotationAxis)
   }
 
   _mousemove(e) {

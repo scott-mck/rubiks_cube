@@ -3,42 +3,26 @@ import scene from './scene'
 import grabber from './grabber'
 import inputHandler from './input-handler'
 import animator from './animator'
+import g from './globals'
 
-let material
-let geometry
-let cubeDimensions
-let cubieOffset
-let cubieSize
-let cubeStartPos
-let scrambleLength
-let lineHelperWidth
-
-export const dimensions = () => cubeDimensions
-export const startPoint = () => cubeStartPos
-export const cubieDistance = () => cubieSize + cubieOffset
-
-export default (dimensions) => {
-  cubeDimensions = dimensions
-  cubieOffset = 0.5
-  cubieSize = 20
-  cubeStartPos = ((cubeDimensions - 1) / 2) * (cubieSize + cubieOffset)
-  scrambleLength = 25 + 3 * (cubeDimensions - 3)
-  lineHelperWidth = 5 - (cubeDimensions - 2) * 0.3
-
+export default () => {
   createMesh()
   createLeftAndRight()
   createUpAndDown()
   createFrontAndBack()
 
-  camera.position.x += 40 + ((cubeDimensions - 2) * 25)
-  camera.position.y += 40 + ((cubeDimensions - 2) * 25)
-  camera.position.z += 60 + ((cubeDimensions - 2) * 35)
+  camera.position.x += 40 + ((g.dimensions - 2) * 25)
+  camera.position.y += 40 + ((g.dimensions - 2) * 25)
+  camera.position.z += 60 + ((g.dimensions - 2) * 35)
   camera.lookAt(new THREE.Vector3());
 
   inputHandler.init()
   grabber.init()
   animator.init()
 }
+
+let material
+let geometry
 
 const createMesh = () => {
   material = new THREE.MeshBasicMaterial({
@@ -48,9 +32,9 @@ const createMesh = () => {
   })
 
   geometry = new THREE.BoxGeometry(
-    cubieSize,
-    cubieSize,
-    cubieSize
+    g.cubieSize,
+    g.cubieSize,
+    g.cubieSize
   )
   // Color right face RED
   geometry.faces[0].color.setRGB(1, 0, 0)
@@ -75,7 +59,7 @@ const createMesh = () => {
 const addCubie = () => {
   let cubie = new THREE.Mesh(geometry.clone(), material.clone());
   let helper = new THREE.EdgesHelper(cubie, 0x000000);
-  helper.material.linewidth = lineHelperWidth;
+  helper.material.linewidth = g.lineHelperWidth;
   cubie.name = "cubie";
   scene.add(cubie);
   scene.add(helper);
@@ -89,16 +73,16 @@ const createLeftAndRight = () => {
   let cubie
 
   for (x = 0; x < 2; x++) {
-    for (y = 0; y < cubeDimensions; y++) {
-      for (z = 0; z < cubeDimensions; z++) {
+    for (y = 0; y < g.dimensions; y++) {
+      for (z = 0; z < g.dimensions; z++) {
         cubie = addCubie();
         cubie.position.set(
-          cubeStartPos - (2 * x * cubeStartPos),
-          cubeStartPos - (y * (cubieSize + cubieOffset)),
-          cubeStartPos - (z * (cubieSize + cubieOffset))
+          g.startPos - (2 * x * g.startPos),
+          g.startPos - (y * (g.cubieSize + g.cubieOffset)),
+          g.startPos - (z * (g.cubieSize + g.cubieOffset))
         );
 
-        let d = cubeDimensions - 1
+        let d = g.dimensions - 1
         if (x === 0 && y === 0 && z === 0) grabber.setAnchor1(cubie)
         if (x === 1 && y === d && z === d) grabber.setAnchor2(cubie)
       }
@@ -112,13 +96,13 @@ const createUpAndDown = () => {
   let cubie
 
   for (y = 0; y < 2; y++) {
-    for (x = 0; x < cubeDimensions - 2; x++) {
-      for (z = 0; z < cubeDimensions; z++) {
+    for (x = 0; x < g.dimensions - 2; x++) {
+      for (z = 0; z < g.dimensions; z++) {
         cubie = addCubie();
         cubie.position.set(
-          cubeStartPos - ((x + 1) * (cubieSize + cubieOffset)),
-          cubeStartPos - (2 * y * cubeStartPos),
-          cubeStartPos - (z * (cubieSize + cubieOffset))
+          g.startPos - ((x + 1) * (g.cubieSize + g.cubieOffset)),
+          g.startPos - (2 * y * g.startPos),
+          g.startPos - (z * (g.cubieSize + g.cubieOffset))
         );
       }
     }
@@ -131,13 +115,13 @@ const createFrontAndBack = () => {
   let cubie
 
   for (z = 0; z < 2; z++) {
-    for (y = 0; y < cubeDimensions - 2; y++) {
-      for (x = 0; x < cubeDimensions - 2; x++) {
+    for (y = 0; y < g.dimensions - 2; y++) {
+      for (x = 0; x < g.dimensions - 2; x++) {
         cubie = addCubie();
         cubie.position.set(
-          cubeStartPos - ((x + 1) * (cubieSize + cubieOffset)),
-          cubeStartPos - ((y + 1) * (cubieSize + cubieOffset)),
-          cubeStartPos - (2 * z * cubeStartPos)
+          g.startPos - ((x + 1) * (g.cubieSize + g.cubieOffset)),
+          g.startPos - ((y + 1) * (g.cubieSize + g.cubieOffset)),
+          g.startPos - (2 * z * g.startPos)
         );
       }
     }

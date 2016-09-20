@@ -114,12 +114,10 @@ class Animator {
     let angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2
 
     let remainder = currentRotation % angle
-    // let remainder = Math.abs(currentRotation % angle)
 
     if (Math.abs(remainder) > Math.PI / 4) {
       remainder = angle - remainder
     } else {
-      // remainder *= negativeRotation ? -1 : 1
       remainder *= -1
     }
 
