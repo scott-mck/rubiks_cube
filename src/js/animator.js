@@ -11,7 +11,17 @@ const WAIT_COUNT = 1
 
 class Animator {
   constructor() {
-    this._rotater = new THREE.Object3D()
+    let material = new THREE.MeshBasicMaterial({
+      color: 0xd3d3d3,
+      vertexColors: THREE.FaceColors,
+      transparent: true,
+      opacity: 0.5
+    })
+
+    let geometry = new THREE.BoxGeometry(10, 100, 100)
+
+    this._rotater = new THREE.Mesh(geometry, material)
+    this._rotater.name = 'rotater'
     scene.add(this._rotater)
   }
 
@@ -49,10 +59,6 @@ class Animator {
 
   setRotationOfFace(objects, axis, mag) {
     this.animating = true
-
-    // console.log(objects);
-    // console.log(axis);
-    // console.log(mag);
 
     let i
     for (i = 0; i < objects.length; i++) {

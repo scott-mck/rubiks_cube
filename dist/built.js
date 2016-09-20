@@ -59687,7 +59687,17 @@ var Animator = function () {
   function Animator() {
     _classCallCheck(this, Animator);
 
-    this._rotater = new _three2.default.Object3D();
+    var material = new _three2.default.MeshBasicMaterial({
+      color: 0xd3d3d3,
+      vertexColors: _three2.default.FaceColors,
+      transparent: true,
+      opacity: 0.5
+    });
+
+    var geometry = new _three2.default.BoxGeometry(10, 100, 100);
+
+    this._rotater = new _three2.default.Mesh(geometry, material);
+    this._rotater.name = 'rotater';
     _scene2.default.add(this._rotater);
   }
 
@@ -59737,10 +59747,6 @@ var Animator = function () {
     key: 'setRotationOfFace',
     value: function setRotationOfFace(objects, axis, mag) {
       this.animating = true;
-
-      // console.log(objects);
-      // console.log(axis);
-      // console.log(mag);
 
       var i = void 0;
       for (i = 0; i < objects.length; i++) {
