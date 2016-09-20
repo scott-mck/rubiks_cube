@@ -27,12 +27,16 @@ class inputHandler {
   }
 
   init() {
+    this.$canvas = $('#canvas')
     this.addEvents()
   }
 
   addEvents() {
-    $(window).on('keyup', this.type.bind(this))
-    $(window).on('mousedown', this.mousedown.bind(this))
+    $('#scramble').click(() => {
+      rubiksCube.scramble()
+    })
+    this.$canvas.on('keyup', this.type.bind(this))
+    this.$canvas.on('mousedown', this.mousedown.bind(this))
   }
 
   /* Steps */
@@ -60,8 +64,8 @@ class inputHandler {
       this._detectClickDirection(() => {
         this._rotationAxis = this._lockAxis === 'horizontal' ? 'y' : 'x'
         animator.grip(g.allCubes, this._rotationAxis)
-        $(window).on('mousemove.input', this._mousemove.bind(this))
-        $(window).one('mouseup', this._mouseup.bind(this))
+        this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+        this.$canvas.one('mouseup', this._mouseup.bind(this))
       })
       return
     }
@@ -81,12 +85,12 @@ class inputHandler {
       animator.grip(this._cubes, this._rotationAxis)
     })
 
-    $(window).on('mousemove.input', this._mousemove.bind(this))
-    $(window).one('mouseup', this._mouseup.bind(this))
+    this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+    this.$canvas.one('mouseup', this._mouseup.bind(this))
   }
 
   _detectClickDirection(callback) {
-    $(window).one('mousemove', (e) => {
+    this.$canvas.one('mousemove', (e) => {
       let magX = e.clientX - this._currentX
       let magY = e.clientY - this._currentY
 
@@ -112,7 +116,7 @@ class inputHandler {
 
   _mouseup(e) {
     animator.snap()
-    $(window).off('mousemove.input')
+    this.$canvas.off('mousemove.input')
 
     this._clickData = null
     this._currentX = null

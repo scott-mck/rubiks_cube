@@ -8,14 +8,12 @@ body {
   font-family: 'AMC', sans-serif;
 }
 
-#expand {
-  z-index: 10;
-  position: relative;
-  width: 100px;
+#scramble {
+  display: inline-block;
   text-align: center;
   padding: 10px;
   background: lightgreen;
-  border-radius: 2px;
+  margin: 10px;
   &:hover {
     cursor: pointer;
   }

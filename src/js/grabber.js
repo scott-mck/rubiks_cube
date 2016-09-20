@@ -38,9 +38,9 @@ class Grabber {
     let fillDir = new THREE.Vector3()[`set${fillAxis}`](1)
 
     let raycaster = new THREE.Raycaster(this._face.anchor, shootDir)
-    let intersects = this._raycast(raycaster)
+    let intersects = this.raycast(raycaster)
 
-    this._filterIntersects(intersects)
+    this.filterIntersects(intersects)
 
     this.fillOutFace(intersects, fillDir)
 
@@ -77,7 +77,7 @@ class Grabber {
     let direction = normal.negate().clone()
     let raycaster = new THREE.Raycaster(point, direction)
 
-    return this._filterIntersects(this._raycast(raycaster))
+    return this.filterIntersects(this.raycast(raycaster))
   }
 
   fillOutFace(intersects, dir) {
@@ -96,17 +96,17 @@ class Grabber {
     let i, raycaster
     for (i = 0; i < g.dimensions; i++) {
       raycaster = new THREE.Raycaster(point, dir)
-      captures = this._raycast(raycaster)
+      captures = this.raycast(raycaster)
       cubes = cubes.concat(captures)
 
       raycaster = new THREE.Raycaster(point, dir.negate())
-      captures = this._raycast(raycaster)
+      captures = this.raycast(raycaster)
       cubes = cubes.concat(captures)
 
       point = point.sub(inc)
     }
 
-    this._filterIntersects(cubes)
+    this.filterIntersects(cubes)
 
     intersects.splice(0)
     for (i = 0; i < cubes.length; i++) {
@@ -114,7 +114,7 @@ class Grabber {
     }
   }
 
-  _filterIntersects(intersects) {
+  filterIntersects(intersects) {
     let cubes = []
     let i
     let object
@@ -134,7 +134,7 @@ class Grabber {
     return intersects
   }
 
-  _raycast(raycaster) {
+  raycast(raycaster) {
     return raycaster.intersectObjects(scene.children).map(data => data.object)
   }
 
@@ -144,9 +144,9 @@ class Grabber {
     if (Math.abs(Math.round(vector.z)) >= 1) return 'z'
   }
 
-  vectorFromAxis(str) {
+  vectorFromAxis(str, mag = 1) {
     str = str.toUpperCase()
-    return new THREE.Vector3()[`set${str}`](1)
+    return new THREE.Vector3()[`set${str}`](mag)
   }
 }
 

@@ -59688,15 +59688,6 @@ var Animator = function () {
   function Animator() {
     _classCallCheck(this, Animator);
 
-    // let material = new THREE.MeshBasicMaterial({
-    //   color: 0xd3d3d3,
-    //   vertexColors: THREE.FaceColors,
-    //   transparent: true,
-    //   opacity: 0.5
-    // })
-    //
-    // let geometry = new THREE.BoxGeometry(10, 100, 100)
-    //
     this._rotater = new _three2.default.Object3D();
     this._rotater.name = 'rotater';
     _scene2.default.add(this._rotater);
@@ -59706,6 +59697,17 @@ var Animator = function () {
     key: 'init',
     value: function init() {
       _gsap2.default.ticker.addEventListener('tick', this.render.bind(this));
+    }
+
+    // jump-starts animation sequence: looking for rubiksCube#nextMove and
+    // repeating on completion
+
+  }, {
+    key: 'go',
+    value: function go() {
+      if (!this.animating) {
+        this._next();
+      }
     }
   }, {
     key: 'animate',
@@ -60071,9 +60073,9 @@ var Grabber = function () {
       var fillDir = new _three2.default.Vector3()['set' + fillAxis](1);
 
       var raycaster = new _three2.default.Raycaster(this._face.anchor, shootDir);
-      var intersects = this._raycast(raycaster);
+      var intersects = this.raycast(raycaster);
 
-      this._filterIntersects(intersects);
+      this.filterIntersects(intersects);
 
       this.fillOutFace(intersects, fillDir);
 
@@ -60112,7 +60114,7 @@ var Grabber = function () {
       var direction = normal.negate().clone();
       var raycaster = new _three2.default.Raycaster(point, direction);
 
-      return this._filterIntersects(this._raycast(raycaster));
+      return this.filterIntersects(this.raycast(raycaster));
     }
   }, {
     key: 'fillOutFace',
@@ -60133,17 +60135,17 @@ var Grabber = function () {
           raycaster = void 0;
       for (i = 0; i < _globals2.default.dimensions; i++) {
         raycaster = new _three2.default.Raycaster(point, dir);
-        captures = this._raycast(raycaster);
+        captures = this.raycast(raycaster);
         cubes = cubes.concat(captures);
 
         raycaster = new _three2.default.Raycaster(point, dir.negate());
-        captures = this._raycast(raycaster);
+        captures = this.raycast(raycaster);
         cubes = cubes.concat(captures);
 
         point = point.sub(inc);
       }
 
-      this._filterIntersects(cubes);
+      this.filterIntersects(cubes);
 
       intersects.splice(0);
       for (i = 0; i < cubes.length; i++) {
@@ -60151,8 +60153,8 @@ var Grabber = function () {
       }
     }
   }, {
-    key: '_filterIntersects',
-    value: function _filterIntersects(intersects) {
+    key: 'filterIntersects',
+    value: function filterIntersects(intersects) {
       var cubes = [];
       var i = void 0;
       var object = void 0;
@@ -60172,8 +60174,8 @@ var Grabber = function () {
       return intersects;
     }
   }, {
-    key: '_raycast',
-    value: function _raycast(raycaster) {
+    key: 'raycast',
+    value: function raycast(raycaster) {
       return raycaster.intersectObjects(_scene2.default.children).map(function (data) {
         return data.object;
       });
@@ -60188,8 +60190,10 @@ var Grabber = function () {
   }, {
     key: 'vectorFromAxis',
     value: function vectorFromAxis(str) {
+      var mag = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+
       str = str.toUpperCase();
-      return new _three2.default.Vector3()['set' + str](1);
+      return new _three2.default.Vector3()['set' + str](mag);
     }
   }]);
 
@@ -60411,13 +60415,17 @@ var inputHandler = function () {
   _createClass(inputHandler, [{
     key: 'init',
     value: function init() {
+      this.$canvas = (0, _jquery2.default)('#canvas');
       this.addEvents();
     }
   }, {
     key: 'addEvents',
     value: function addEvents() {
-      (0, _jquery2.default)(window).on('keyup', this.type.bind(this));
-      (0, _jquery2.default)(window).on('mousedown', this.mousedown.bind(this));
+      (0, _jquery2.default)('#scramble').click(function () {
+        _rubiksCube2.default.scramble();
+      });
+      this.$canvas.on('keyup', this.type.bind(this));
+      this.$canvas.on('mousedown', this.mousedown.bind(this));
     }
 
     /* Steps */
@@ -60450,8 +60458,8 @@ var inputHandler = function () {
         this._detectClickDirection(function () {
           _this._rotationAxis = _this._lockAxis === 'horizontal' ? 'y' : 'x';
           _animator2.default.grip(_globals2.default.allCubes, _this._rotationAxis);
-          (0, _jquery2.default)(window).on('mousemove.input', _this._mousemove.bind(_this));
-          (0, _jquery2.default)(window).one('mouseup', _this._mouseup.bind(_this));
+          _this.$canvas.on('mousemove.input', _this._mousemove.bind(_this));
+          _this.$canvas.one('mouseup', _this._mouseup.bind(_this));
         });
         return;
       }
@@ -60471,33 +60479,21 @@ var inputHandler = function () {
         _animator2.default.grip(_this._cubes, _this._rotationAxis);
       });
 
-      (0, _jquery2.default)(window).on('mousemove.input', this._mousemove.bind(this));
-      (0, _jquery2.default)(window).one('mouseup', this._mouseup.bind(this));
+      this.$canvas.on('mousemove.input', this._mousemove.bind(this));
+      this.$canvas.one('mouseup', this._mouseup.bind(this));
     }
   }, {
     key: '_detectClickDirection',
     value: function _detectClickDirection(callback) {
       var _this2 = this;
 
-      (0, _jquery2.default)(window).one('mousemove', function (e) {
+      this.$canvas.one('mousemove', function (e) {
         var magX = e.clientX - _this2._currentX;
         var magY = e.clientY - _this2._currentY;
 
         _this2._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical';
-        console.log(_this2._lockAxis);
         callback && callback();
       });
-
-      //
-      // let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
-      // this._clickData.direction = clickDir
-      //
-      // let normal = grabber.vectorFromAxis(this._clickData.normal)
-      // let direction = grabber.vectorFromAxis(this._clickData.direction)
-      // this._rotationAxis = grabber.axisFromVector(normal.cross(direction))
-      //
-      // grabber.fillOutFace(this._cubes, direction)
-      // animator.grip(this._cubes, this._rotationAxis)
     }
   }, {
     key: '_mousemove',
@@ -60519,7 +60515,7 @@ var inputHandler = function () {
     key: '_mouseup',
     value: function _mouseup(e) {
       _animator2.default.snap();
-      (0, _jquery2.default)(window).off('mousemove.input');
+      this.$canvas.off('mousemove.input');
 
       this._clickData = null;
       this._currentX = null;
@@ -60654,6 +60650,10 @@ var _animator = require('./animator');
 
 var _animator2 = _interopRequireDefault(_animator);
 
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -60680,21 +60680,56 @@ var RubiksCube = function () {
   _createClass(RubiksCube, [{
     key: 'move',
     value: function move(_move) {
-      if (_animator2.default.animating) {
-        this._queue.push(_move);
-      } else {
-        _animator2.default.animate(this._getMoveDetails(_move));
-      }
+      this._queue.push(_move);
+      _animator2.default.go();
     }
   }, {
     key: 'nextMove',
     value: function nextMove() {
       var move = this._queue.shift();
-      if (!move) {
-        return false;
+      if (typeof move === 'string') {
+        return this._getMoveDetails(move);
+      } else if (typeof move === 'function') {
+        return move();
       }
+    }
+  }, {
+    key: 'scramble',
+    value: function scramble() {
+      var i = void 0;
+      for (i = 0; i < 25; i++) {
+        this._queue.push(this.randomMove());
+      }
+      _animator2.default.go();
+    }
+  }, {
+    key: 'randomMove',
+    value: function randomMove() {
+      var axes = ['x', 'y', 'z'];
+      var normal = axes.splice(~~(Math.random() * axes.length), 1)[0];
+      var rayDirection = _grabber2.default.vectorFromAxis(normal, -1);
 
-      return this._getMoveDetails(move);
+      var coord1 = _globals2.default.startPos - _globals2.default.cubieDistance * ~~(Math.random() * _globals2.default.dimensions);
+      var coord2 = _globals2.default.startPos - _globals2.default.cubieDistance * ~~(Math.random() * _globals2.default.dimensions);
+
+      var startPos = new _three2.default.Vector3();
+      startPos['set' + axes[0].toUpperCase()](coord1);
+      startPos['set' + axes[1].toUpperCase()](coord2);
+      startPos['set' + normal.toUpperCase()](_globals2.default.startPos);
+
+      var raycaster = new _three2.default.Raycaster(startPos, rayDirection);
+      var randomFillDir = axes.splice(~~(Math.random() * axes.length), 1)[0];
+
+      return function () {
+        var objects = _grabber2.default.raycast(raycaster);
+        _grabber2.default.filterIntersects(objects);
+
+        _grabber2.default.fillOutFace(objects, _grabber2.default.vectorFromAxis(randomFillDir));
+
+        var dir = Math.random() < 0.5 ? 1 : -1;
+
+        return { objects: objects, axis: axes[0], dir: dir };
+      };
     }
   }, {
     key: '_getMoveDetails',
@@ -60719,7 +60754,7 @@ var RubiksCube = function () {
 
 exports.default = new RubiksCube();
 
-},{"./animator":4,"./grabber":8,"three":3}],15:[function(require,module,exports){
+},{"./animator":4,"./globals":7,"./grabber":8,"three":3}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

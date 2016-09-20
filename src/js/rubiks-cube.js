@@ -1,6 +1,7 @@
 import THREE from 'three'
 import grabber from './grabber'
 import animator from './animator'
+import g from './globals'
 
 class RubiksCube {
   constructor() {
@@ -20,20 +21,53 @@ class RubiksCube {
   }
 
   move(move) {
-    if (animator.animating) {
-      this._queue.push(move)
-    } else {
-      animator.animate(this._getMoveDetails(move))
-    }
+    this._queue.push(move)
+    animator.go()
   }
 
   nextMove() {
     let move = this._queue.shift()
-    if (!move) {
-      return false
+    if (typeof move === 'string') {
+      return this._getMoveDetails(move)
+    } else if (typeof move === 'function') {
+      return move()
     }
+  }
 
-    return this._getMoveDetails(move)
+  scramble() {
+    let i
+    for (i = 0; i < 25; i++) {
+      this._queue.push(this.randomMove())
+    }
+    animator.go()
+  }
+
+  randomMove() {
+    let axes = ['x', 'y', 'z']
+    let normal = axes.splice(~~(Math.random() * axes.length), 1)[0]
+    let rayDirection = grabber.vectorFromAxis(normal, -1)
+
+    let coord1 = g.startPos - (g.cubieDistance * ~~(Math.random() * g.dimensions))
+    let coord2 = g.startPos - (g.cubieDistance * ~~(Math.random() * g.dimensions))
+
+    let startPos = new THREE.Vector3()
+    startPos[`set${axes[0].toUpperCase()}`](coord1)
+    startPos[`set${axes[1].toUpperCase()}`](coord2)
+    startPos[`set${normal.toUpperCase()}`](g.startPos)
+
+    let raycaster = new THREE.Raycaster(startPos, rayDirection)
+    let randomFillDir = axes.splice(~~(Math.random() * axes.length), 1)[0]
+
+    return () => {
+      let objects = grabber.raycast(raycaster)
+      grabber.filterIntersects(objects)
+
+      grabber.fillOutFace(objects, grabber.vectorFromAxis(randomFillDir))
+
+      let dir = Math.random() < 0.5 ? 1 : -1
+
+      return { objects, axis: axes[0], dir }
+    }
   }
 
   _getMoveDetails(move) {

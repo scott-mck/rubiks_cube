@@ -10,3 +10,5 @@
 -- refactor "global" variables and importing them
 -- dragging cubes seems off without velocity
 -- robust-ify detecting click direction
+-- should Grabber#raycast filter intersects? probably.
+-- fill out rubiks cube innards

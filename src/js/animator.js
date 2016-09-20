@@ -21,6 +21,14 @@ class Animator {
     TweenMax.ticker.addEventListener('tick', this.render.bind(this))
   }
 
+  // jump-starts animation sequence: looking for rubiksCube#nextMove and
+  // repeating on completion
+  go() {
+    if (!this.animating) {
+      this._next()
+    }
+  }
+
   animate({ objects, axis, dir }) {
     if (this.animating) {
       return
