@@ -19,9 +19,9 @@ class inputHandler {
     }
 
     this._rotationMap = {
-      x: -1,
-      y: -1,
-      z: 1
+      x: 1,
+      y: 1,
+      z: -1
     }
   }
 
@@ -39,26 +39,32 @@ class inputHandler {
     let canvasMouseX = event.clientX - canvasBox.left
     let canvasMouseY = event.clientY - canvasBox.top
 
-    /* THINGS TO DO */
-    // ---- On MouseDown
+    /* Steps */
+    // ---- On MouseDown:
     // 1) Get clicked cube and normal and save to this._clickData
-    this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
-
     // 2) Shoot through normal and save cubes to this._cubes
+    // 3) On mousemove, determine whether user moves vertically or horizontally,
+    //    save to this._clickData
+    // 4) "Fill out face"
+    // 5) Animate this._cubes based on mouse movement
+    // ---- On Mouseup:
+    // 1) Snap face to nearest position
+    // 2) Reset()
+
+    this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
+    console.log(this._clickData.normal);
+
     let normal = grabber.vectorFromAxis(this._clickData.normal)
     this._cubes = grabber.shoot(this._clickData.object, normal)
 
-    // 3) On mousemove, determine whether user moves vertically or horizontally,
-    //    save to this._clickData
     this._currentX = e.clientX
     this._currentY = e.clientY
     $(window).one('mousemove', this._detectClickDirection.bind(this))
-    $(window).on('mousemove', this._mousemove.bind(this))
+    $(window).on('mousemove.input', this._mousemove.bind(this))
+    $(window).one('mouseup', this._mouseup.bind(this))
   }
 
   _detectClickDirection(e) {
-    // 3) On mousemove, determine whether user moves vertically or horizontally,
-    //    save to this._clickData.direction
     let magX = e.clientX - this._currentX
     let magY = e.clientY - this._currentY
 
@@ -71,12 +77,11 @@ class inputHandler {
     let direction = grabber.vectorFromAxis(this._clickData.direction)
     this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
 
-    // 4) "Fiil out face"
     grabber.fillOutFace(this._cubes, direction)
+    animator.grip(this._cubes, this._clickData.rotationAxis)
   }
 
   _mousemove(e) {
-    // 5) Animate this._cubes based on mouse movement
     let magX = e.clientX - this._currentX
     let magY = e.clientY - this._currentY
 
@@ -85,14 +90,21 @@ class inputHandler {
 
     mag *= this._rotationMap[this._clickData.rotationAxis]
 
-    animator.setRotationOfFace(this._cubes, this._clickData.rotationAxis, mag)
+    animator.setRotation(this._clickData.rotationAxis, mag)
 
     this._currentX = e.clientX
     this._currentY = e.clientY
+  }
 
-    // ---- On Mouseup
-    // 1) Animate this._cubes to nearest "clicked" position
-    // 2) Reset()
+  _mouseup(e) {
+    animator.snap()
+    $(window).off('mousemove.input')
+
+    this._clickData = null
+    this._currentX = null
+    this._currentY = null
+    this._cubes = null
+    this._lockAxis = null
   }
 
   type(e) {

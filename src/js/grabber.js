@@ -59,7 +59,14 @@ class Grabber {
     let intersects = raycaster.intersectObjects(scene.children)
     let object = intersects[0].object
     let normal = intersects[0].face.normal
-    return { object, normal: this.axisFromVector(normal) }
+
+    let normalVector = new THREE.Matrix4()
+    normalVector = normalVector.extractRotation(object.matrixWorld)
+    normalVector = normalVector.multiplyVector3(normal.clone())
+
+    console.log(normalVector);
+
+    return { object, normal: this.axisFromVector(normalVector) }
   }
 
   shoot(cube, normal) {
@@ -67,7 +74,7 @@ class Grabber {
     let direction = normal.negate().clone()
     let raycaster = new THREE.Raycaster(point, direction)
 
-    return this._raycast(raycaster)
+    return this._filterIntersects(this._raycast(raycaster))
   }
 
   fillOutFace(intersects, dir) {
@@ -120,6 +127,8 @@ class Grabber {
     for (i = 0; i < cubes.length; i++) {
       intersects.push(cubes[i])
     }
+
+    return intersects
   }
 
   _raycast(raycaster) {
@@ -127,9 +136,9 @@ class Grabber {
   }
 
   axisFromVector(vector) {
-    if (vector.x !== 0) return 'x'
-    if (vector.y !== 0) return 'y'
-    if (vector.z !== 0) return 'z'
+    if (Math.abs(Math.round(vector.x)) >= 1) return 'x'
+    if (Math.abs(Math.round(vector.y)) >= 1) return 'y'
+    if (Math.abs(Math.round(vector.z)) >= 1) return 'z'
   }
 
   vectorFromAxis(str) {

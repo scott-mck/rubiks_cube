@@ -8,4 +8,4 @@
 -- fix canvas positioning (some dimensions are cut off)
 -- clicking on line helpers don't return correct normals
 -- refactor "global" variables and importing them
--- when dragging cubes, switching directions is a little of
+-- dragging cubes seems off without velocity

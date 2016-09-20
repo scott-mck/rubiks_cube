@@ -59682,21 +59682,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var DURATION = 0.1;
 var EASE = 'linear';
 var WAIT_COUNT = 1;
+var SNAP_DURATION = 0.3;
 
 var Animator = function () {
   function Animator() {
     _classCallCheck(this, Animator);
 
-    var material = new _three2.default.MeshBasicMaterial({
-      color: 0xd3d3d3,
-      vertexColors: _three2.default.FaceColors,
-      transparent: true,
-      opacity: 0.5
-    });
-
-    var geometry = new _three2.default.BoxGeometry(10, 100, 100);
-
-    this._rotater = new _three2.default.Mesh(geometry, material);
+    // let material = new THREE.MeshBasicMaterial({
+    //   color: 0xd3d3d3,
+    //   vertexColors: THREE.FaceColors,
+    //   transparent: true,
+    //   opacity: 0.5
+    // })
+    //
+    // let geometry = new THREE.BoxGeometry(10, 100, 100)
+    //
+    this._rotater = new _three2.default.Object3D();
     this._rotater.name = 'rotater';
     _scene2.default.add(this._rotater);
   }
@@ -59744,16 +59745,9 @@ var Animator = function () {
       _gsap2.default.to(this._rotater.rotation, DURATION, (_TweenMax$to = {}, _defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), _defineProperty(_TweenMax$to, 'ease', EASE), _defineProperty(_TweenMax$to, 'onComplete', onComplete), _TweenMax$to));
     }
   }, {
-    key: 'setRotationOfFace',
-    value: function setRotationOfFace(objects, axis, mag) {
-      this.animating = true;
-
-      var i = void 0;
-      for (i = 0; i < objects.length; i++) {
-        _three2.default.SceneUtils.attach(objects[i], _scene2.default, this._rotater);
-      }
-
-      _gsap2.default.to(this._rotater.rotation, 0.5, _defineProperty({}, axis, '' + mag));
+    key: 'setRotation',
+    value: function setRotation(axis, mag) {
+      _gsap2.default.to(this._rotater.rotation, 0, _defineProperty({}, axis, '+=' + mag));
     }
   }, {
     key: '_next',
@@ -59775,7 +59769,7 @@ var Animator = function () {
     value: function _complete() {
       var _this2 = this;
 
-      this._reset();
+      this.reset();
 
       this._wait(function () {
         _this2.animating = false;
@@ -59800,14 +59794,47 @@ var Animator = function () {
       loop();
     }
   }, {
-    key: '_reset',
-    value: function _reset() {
-      var i = 0;
-      while (this._rotater.children[i]) {
-        _three2.default.SceneUtils.detach(this._rotater.children[i], this._rotater, _scene2.default);
+    key: 'grip',
+    value: function grip(cubes, axis) {
+      var i = void 0;
+      for (i = 0; i < cubes.length; i++) {
+        _three2.default.SceneUtils.attach(cubes[i], _scene2.default, this._rotater);
+      }
+      this._rotatingAxis = axis;
+    }
+  }, {
+    key: 'snap',
+    value: function snap() {
+      var _this3 = this,
+          _TweenMax$to3;
+
+      var currentRotation = this._rotater.rotation[this._rotatingAxis];
+      var negativeRotation = currentRotation < 0;
+      var angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2;
+
+      var remainder = currentRotation % angle;
+      // let remainder = Math.abs(currentRotation % angle)
+
+      if (Math.abs(remainder) > Math.PI / 4) {
+        remainder = angle - remainder;
+      } else {
+        // remainder *= negativeRotation ? -1 : 1
+        remainder *= -1;
+      }
+
+      _gsap2.default.to(this._rotater.rotation, SNAP_DURATION, (_TweenMax$to3 = {}, _defineProperty(_TweenMax$to3, this._rotatingAxis, '+=' + remainder), _defineProperty(_TweenMax$to3, 'onComplete', function onComplete() {
+        _this3.reset();
+      }), _TweenMax$to3));
+    }
+  }, {
+    key: 'reset',
+    value: function reset() {
+      while (this._rotater.children[0]) {
+        _three2.default.SceneUtils.detach(this._rotater.children[0], this._rotater, _scene2.default);
       }
 
       this._rotater.rotation.set(0, 0, 0);
+      this._rotatingAxis = null;
     }
   }]);
 
@@ -60040,7 +60067,14 @@ var Grabber = function () {
       var intersects = raycaster.intersectObjects(_scene2.default.children);
       var object = intersects[0].object;
       var normal = intersects[0].face.normal;
-      return { object: object, normal: this.axisFromVector(normal) };
+
+      var normalVector = new _three2.default.Matrix4();
+      normalVector = normalVector.extractRotation(object.matrixWorld);
+      normalVector = normalVector.multiplyVector3(normal.clone());
+
+      console.log(normalVector);
+
+      return { object: object, normal: this.axisFromVector(normalVector) };
     }
   }, {
     key: 'shoot',
@@ -60049,7 +60083,7 @@ var Grabber = function () {
       var direction = normal.negate().clone();
       var raycaster = new _three2.default.Raycaster(point, direction);
 
-      return this._raycast(raycaster);
+      return this._filterIntersects(this._raycast(raycaster));
     }
   }, {
     key: 'fillOutFace',
@@ -60105,6 +60139,8 @@ var Grabber = function () {
       for (i = 0; i < cubes.length; i++) {
         intersects.push(cubes[i]);
       }
+
+      return intersects;
     }
   }, {
     key: '_raycast',
@@ -60116,9 +60152,9 @@ var Grabber = function () {
   }, {
     key: 'axisFromVector',
     value: function axisFromVector(vector) {
-      if (vector.x !== 0) return 'x';
-      if (vector.y !== 0) return 'y';
-      if (vector.z !== 0) return 'z';
+      if (Math.abs(Math.round(vector.x)) >= 1) return 'x';
+      if (Math.abs(Math.round(vector.y)) >= 1) return 'y';
+      if (Math.abs(Math.round(vector.z)) >= 1) return 'z';
     }
   }, {
     key: 'vectorFromAxis',
@@ -60352,9 +60388,9 @@ var inputHandler = function () {
     };
 
     this._rotationMap = {
-      x: -1,
-      y: -1,
-      z: 1
+      x: 1,
+      y: 1,
+      z: -1
     };
   }
 
@@ -60376,27 +60412,33 @@ var inputHandler = function () {
       var canvasMouseX = event.clientX - canvasBox.left;
       var canvasMouseY = event.clientY - canvasBox.top;
 
-      /* THINGS TO DO */
-      // ---- On MouseDown
+      /* Steps */
+      // ---- On MouseDown:
       // 1) Get clicked cube and normal and save to this._clickData
-      this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
-
       // 2) Shoot through normal and save cubes to this._cubes
+      // 3) On mousemove, determine whether user moves vertically or horizontally,
+      //    save to this._clickData
+      // 4) "Fill out face"
+      // 5) Animate this._cubes based on mouse movement
+      // ---- On Mouseup:
+      // 1) Snap face to nearest position
+      // 2) Reset()
+
+      this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
+      console.log(this._clickData.normal);
+
       var normal = grabber.vectorFromAxis(this._clickData.normal);
       this._cubes = grabber.shoot(this._clickData.object, normal);
 
-      // 3) On mousemove, determine whether user moves vertically or horizontally,
-      //    save to this._clickData
       this._currentX = e.clientX;
       this._currentY = e.clientY;
       (0, _jquery2.default)(window).one('mousemove', this._detectClickDirection.bind(this));
-      (0, _jquery2.default)(window).on('mousemove', this._mousemove.bind(this));
+      (0, _jquery2.default)(window).on('mousemove.input', this._mousemove.bind(this));
+      (0, _jquery2.default)(window).one('mouseup', this._mouseup.bind(this));
     }
   }, {
     key: '_detectClickDirection',
     value: function _detectClickDirection(e) {
-      // 3) On mousemove, determine whether user moves vertically or horizontally,
-      //    save to this._clickData.direction
       var magX = e.clientX - this._currentX;
       var magY = e.clientY - this._currentY;
 
@@ -60409,13 +60451,12 @@ var inputHandler = function () {
       var direction = grabber.vectorFromAxis(this._clickData.direction);
       this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction));
 
-      // 4) "Fiil out face"
       grabber.fillOutFace(this._cubes, direction);
+      _animator2.default.grip(this._cubes, this._clickData.rotationAxis);
     }
   }, {
     key: '_mousemove',
     value: function _mousemove(e) {
-      // 5) Animate this._cubes based on mouse movement
       var magX = e.clientX - this._currentX;
       var magY = e.clientY - this._currentY;
 
@@ -60424,14 +60465,22 @@ var inputHandler = function () {
 
       mag *= this._rotationMap[this._clickData.rotationAxis];
 
-      _animator2.default.setRotationOfFace(this._cubes, this._clickData.rotationAxis, mag);
+      _animator2.default.setRotation(this._clickData.rotationAxis, mag);
 
       this._currentX = e.clientX;
       this._currentY = e.clientY;
+    }
+  }, {
+    key: '_mouseup',
+    value: function _mouseup(e) {
+      _animator2.default.snap();
+      (0, _jquery2.default)(window).off('mousemove.input');
 
-      // ---- On Mouseup
-      // 1) Animate this._cubes to nearest "clicked" position
-      // 2) Reset()
+      this._clickData = null;
+      this._currentX = null;
+      this._currentY = null;
+      this._cubes = null;
+      this._lockAxis = null;
     }
   }, {
     key: 'type',
