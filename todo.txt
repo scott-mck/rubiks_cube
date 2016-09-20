@@ -9,3 +9,4 @@
 -- clicking on line helpers don't return correct normals
 -- refactor "global" variables and importing them
 -- dragging cubes seems off without velocity
+-- robust-ify detecting click direction

@@ -59987,6 +59987,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var g = {};
+g.allCubes = [];
 
 var init = exports.init = function init(cubeDimensions) {
   g.dimensions = cubeDimensions;
@@ -60282,6 +60283,7 @@ var addCubie = function addCubie() {
   var helper = new _three2.default.EdgesHelper(cubie, 0x000000);
   helper.material.linewidth = _globals2.default.lineHelperWidth;
   cubie.name = "cubie";
+  _globals2.default.allCubes.push(cubie);
   _scene2.default.add(cubie);
   _scene2.default.add(helper);
   return cubie;
@@ -60378,6 +60380,10 @@ var _keyMap = require('./key-map');
 
 var _keyMap2 = _interopRequireDefault(_keyMap);
 
+var _globals = require('./globals');
+
+var _globals2 = _interopRequireDefault(_globals);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -60435,10 +60441,15 @@ var inputHandler = function () {
       var canvasMouseX = event.clientX - canvasBox.left;
       var canvasMouseY = event.clientY - canvasBox.top;
 
+      this._currentX = e.clientX;
+      this._currentY = e.clientY;
+
       this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
+
       if (!this._clickData) {
         this._detectClickDirection(function () {
-          _animator2.default.grip(_scene2.default.children);
+          _this._rotationAxis = _this._lockAxis === 'horizontal' ? 'y' : 'x';
+          _animator2.default.grip(_globals2.default.allCubes, _this._rotationAxis);
           (0, _jquery2.default)(window).on('mousemove.input', _this._mousemove.bind(_this));
           (0, _jquery2.default)(window).one('mouseup', _this._mouseup.bind(_this));
         });
@@ -60448,19 +60459,16 @@ var inputHandler = function () {
       var normal = grabber.vectorFromAxis(this._clickData.normal);
       this._cubes = grabber.shoot(this._clickData.object, normal);
 
-      this._currentX = e.clientX;
-      this._currentY = e.clientY;
-
       this._detectClickDirection(function () {
         var clickDir = _this._normalMap[_this._clickData.normal][_this._lockAxis].toUpperCase();
         _this._clickData.direction = clickDir;
 
         var normal = grabber.vectorFromAxis(_this._clickData.normal);
         var direction = grabber.vectorFromAxis(_this._clickData.direction);
-        _this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction));
+        _this._rotationAxis = grabber.axisFromVector(normal.cross(direction));
 
         grabber.fillOutFace(_this._cubes, direction);
-        _animator2.default.grip(_this._cubes, _this._clickData.rotationAxis);
+        _animator2.default.grip(_this._cubes, _this._rotationAxis);
       });
 
       (0, _jquery2.default)(window).on('mousemove.input', this._mousemove.bind(this));
@@ -60476,6 +60484,7 @@ var inputHandler = function () {
         var magY = e.clientY - _this2._currentY;
 
         _this2._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical';
+        console.log(_this2._lockAxis);
         callback && callback();
       });
 
@@ -60485,10 +60494,10 @@ var inputHandler = function () {
       //
       // let normal = grabber.vectorFromAxis(this._clickData.normal)
       // let direction = grabber.vectorFromAxis(this._clickData.direction)
-      // this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
+      // this._rotationAxis = grabber.axisFromVector(normal.cross(direction))
       //
       // grabber.fillOutFace(this._cubes, direction)
-      // animator.grip(this._cubes, this._clickData.rotationAxis)
+      // animator.grip(this._cubes, this._rotationAxis)
     }
   }, {
     key: '_mousemove',
@@ -60499,9 +60508,9 @@ var inputHandler = function () {
       var mag = this._lockAxis === 'horizontal' ? magX : magY;
       mag *= Math.PI / 2 * DRAG_COEFFICIENT;
 
-      mag *= this._rotationMap[this._clickData.rotationAxis];
+      mag *= this._rotationMap[this._rotationAxis];
 
-      _animator2.default.setRotation(this._clickData.rotationAxis, mag);
+      _animator2.default.setRotation(this._rotationAxis, mag);
 
       this._currentX = e.clientX;
       this._currentY = e.clientY;
@@ -60517,6 +60526,7 @@ var inputHandler = function () {
       this._currentY = null;
       this._cubes = null;
       this._lockAxis = null;
+      this._rotationAxis = null;
     }
   }, {
     key: 'type',
@@ -60540,7 +60550,7 @@ var inputHandler = function () {
 
 exports.default = new inputHandler();
 
-},{"./animator":4,"./camera":5,"./key-map":11,"./renderer":13,"./rubiks-cube":14,"./scene":15,"jquery":2,"three":3}],11:[function(require,module,exports){
+},{"./animator":4,"./camera":5,"./globals":7,"./key-map":11,"./renderer":13,"./rubiks-cube":14,"./scene":15,"jquery":2,"three":3}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

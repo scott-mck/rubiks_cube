@@ -61,6 +61,7 @@ const addCubie = () => {
   let helper = new THREE.EdgesHelper(cubie, 0x000000);
   helper.material.linewidth = g.lineHelperWidth;
   cubie.name = "cubie";
+  g.allCubes.push(cubie)
   scene.add(cubie);
   scene.add(helper);
   return cubie;

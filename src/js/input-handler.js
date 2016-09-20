@@ -6,6 +6,7 @@ import renderer from './renderer'
 import camera from './camera'
 import scene from './scene'
 import keyMap from './key-map'
+import g from './globals'
 
 const DRAG_COEFFICIENT = 1 / 200
 
@@ -50,10 +51,15 @@ class inputHandler {
     let canvasMouseX = event.clientX - canvasBox.left
     let canvasMouseY = event.clientY - canvasBox.top
 
+    this._currentX = e.clientX
+    this._currentY = e.clientY
+
     this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
+
     if (!this._clickData) {
       this._detectClickDirection(() => {
-        animator.grip(scene.children)
+        this._rotationAxis = this._lockAxis === 'horizontal' ? 'y' : 'x'
+        animator.grip(g.allCubes, this._rotationAxis)
         $(window).on('mousemove.input', this._mousemove.bind(this))
         $(window).one('mouseup', this._mouseup.bind(this))
       })
@@ -63,19 +69,16 @@ class inputHandler {
     let normal = grabber.vectorFromAxis(this._clickData.normal)
     this._cubes = grabber.shoot(this._clickData.object, normal)
 
-    this._currentX = e.clientX
-    this._currentY = e.clientY
-
     this._detectClickDirection(() => {
       let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
       this._clickData.direction = clickDir
 
       let normal = grabber.vectorFromAxis(this._clickData.normal)
       let direction = grabber.vectorFromAxis(this._clickData.direction)
-      this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
+      this._rotationAxis = grabber.axisFromVector(normal.cross(direction))
 
       grabber.fillOutFace(this._cubes, direction)
-      animator.grip(this._cubes, this._clickData.rotationAxis)
+      animator.grip(this._cubes, this._rotationAxis)
     })
 
     $(window).on('mousemove.input', this._mousemove.bind(this))
@@ -88,6 +91,7 @@ class inputHandler {
       let magY = e.clientY - this._currentY
 
       this._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical'
+      console.log(this._lockAxis);
       callback && callback()
     })
 
@@ -97,10 +101,10 @@ class inputHandler {
     //
     // let normal = grabber.vectorFromAxis(this._clickData.normal)
     // let direction = grabber.vectorFromAxis(this._clickData.direction)
-    // this._clickData.rotationAxis = grabber.axisFromVector(normal.cross(direction))
+    // this._rotationAxis = grabber.axisFromVector(normal.cross(direction))
     //
     // grabber.fillOutFace(this._cubes, direction)
-    // animator.grip(this._cubes, this._clickData.rotationAxis)
+    // animator.grip(this._cubes, this._rotationAxis)
   }
 
   _mousemove(e) {
@@ -110,9 +114,9 @@ class inputHandler {
     let mag = this._lockAxis === 'horizontal' ? magX : magY
     mag *= (Math.PI / 2) * DRAG_COEFFICIENT
 
-    mag *= this._rotationMap[this._clickData.rotationAxis]
+    mag *= this._rotationMap[this._rotationAxis]
 
-    animator.setRotation(this._clickData.rotationAxis, mag)
+    animator.setRotation(this._rotationAxis, mag)
 
     this._currentX = e.clientX
     this._currentY = e.clientY
@@ -127,6 +131,7 @@ class inputHandler {
     this._currentY = null
     this._cubes = null
     this._lockAxis = null
+    this._rotationAxis = null
   }
 
   type(e) {

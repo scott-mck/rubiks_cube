@@ -1,4 +1,5 @@
 let g = {}
+g.allCubes = []
 
 export const init = (cubeDimensions) => {
   g.dimensions = cubeDimensions
