@@ -17,3 +17,6 @@ window.grabber = grabber
 window.renderer = renderer
 window.animator = animator
 window.inputHandler = inputHandler
+
+// no breakage
+export default 0

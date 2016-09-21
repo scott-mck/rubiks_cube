@@ -6,11 +6,15 @@ const del = require('del')
 const cleancss = require('gulp-clean-css')
 const watch = require('gulp-watch')
 const sass = require('gulp-sass')
-const babel = require('gulp-babel')
 const plumber = require('gulp-plumber')
 const browserify = require('browserify')
 const source = require('vinyl-source-stream')
 const buffer = require('vinyl-buffer')
+const shell = require('gulp-shell')
+
+gulp.task('shell', shell.task('rollup -c'))
+gulp.task('thing', ['sass'])
+gulp.task('test', ['shell', 'thing'])
 
 // Clean
 gulp.task('clean', () => {
