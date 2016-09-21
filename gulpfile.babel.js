@@ -18,7 +18,7 @@ gulp.task('clean', () => {
 })
 
 // JavaScript
-gulp.task('js', function () {
+gulp.task('js', () => {
   browserify('./src/js/main.js')
     .transform('babelify', { presets: ['es2015'] })
     .bundle()
