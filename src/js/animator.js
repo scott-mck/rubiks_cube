@@ -54,7 +54,6 @@ class Animator {
 
     let onComplete = () => {
       this._currentRotater.rotation[axis] = Math.PI / 2 * dir
-      // this._complete()
       this._wait(this._complete.bind(this))
     }
 
@@ -87,10 +86,8 @@ class Animator {
   _complete() {
     this.reset()
 
-    // this._wait(() => {
     this.animating = false
     this._next()
-    // })
   }
 
   _wait(callback, count = WAIT_COUNT) {

@@ -60118,7 +60118,6 @@ var Animator = function () {
 
       var onComplete = function onComplete() {
         _this._currentRotater.rotation[axis] = Math.PI / 2 * dir;
-        // this._complete()
         _this._wait(_this._complete.bind(_this));
       };
 
@@ -60149,10 +60148,8 @@ var Animator = function () {
     value: function _complete() {
       this.reset();
 
-      // this._wait(() => {
       this.animating = false;
       this._next();
-      // })
     }
   }, {
     key: '_wait',
