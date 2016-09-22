@@ -4,7 +4,16 @@
   "description": "A Rubik's Cube Browser Simulator",
   "main": "rubiks_cube.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm-run-all clean js:ugly css:ugly",
+    "dev": "npm-run-all -p css:watch js:watch",
+    "clean": "rm -rf dist/*",
+    "css": "node-sass src/scss/main.scss dist/built.css",
+    "css:ugly": "node-sass src/scss/main.scss dist/built.css --output-style=compressed",
+    "css:watch": "npm run css && onchange 'src/scss/**/*.scss' -- npm run css",
+    "js": "rollup -c",
+    "js:ugly": "rollup -c && uglifyjs dist/built.js -mc -o dist/built.js",
+    "js:watch": "npm run js && onchange 'src/js/**/*.js' -- npm run js"
   },
   "repository": {
     "type": "git",
@@ -39,9 +48,12 @@
     "gulp-shell": "^0.5.2",
     "gulp-uglify": "^1.5.4",
     "gulp-watch": "^4.3.9",
+    "node-sass": "^3.10.0",
+    "onchange": "^3.0.2",
     "rollup": "^0.36.0",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-uglify": "^1.0.1",
+    "uglify-js": "^2.7.3",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
