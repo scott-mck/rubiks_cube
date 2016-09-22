@@ -60126,7 +60126,7 @@ var Animator = function () {
   }, {
     key: 'setRotation',
     value: function setRotation(axis, mag) {
-      TweenMax.to(this._rotater.rotation, 0, defineProperty({}, axis, '+=' + mag));
+      TweenMax.to(this._currentRotater.rotation, 0, defineProperty({}, axis, '+=' + mag));
     }
   }, {
     key: '_next',
@@ -60171,9 +60171,11 @@ var Animator = function () {
   }, {
     key: 'grip',
     value: function grip(cubes, axis) {
+      this._currentRotater = this._emptyRotaters.shift();
+
       var i = void 0;
       for (i = 0; i < cubes.length; i++) {
-        three.SceneUtils.attach(cubes[i], scene, this._rotater);
+        three.SceneUtils.attach(cubes[i], scene, this._currentRotater);
       }
       this._rotatingAxis = axis;
     }
@@ -60183,7 +60185,7 @@ var Animator = function () {
       var _this2 = this,
           _TweenMax$to3;
 
-      var currentRotation = this._rotater.rotation[this._rotatingAxis];
+      var currentRotation = this._currentRotater.rotation[this._rotatingAxis];
       var negativeRotation = currentRotation < 0;
       var angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2;
 
@@ -60195,7 +60197,7 @@ var Animator = function () {
         remainder *= -1;
       }
 
-      TweenMax.to(this._rotater.rotation, SNAP_DURATION, (_TweenMax$to3 = {}, defineProperty(_TweenMax$to3, this._rotatingAxis, '+=' + remainder), defineProperty(_TweenMax$to3, 'onComplete', function onComplete() {
+      TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, (_TweenMax$to3 = {}, defineProperty(_TweenMax$to3, this._rotatingAxis, '+=' + remainder), defineProperty(_TweenMax$to3, 'onComplete', function onComplete() {
         _this2.reset();
       }), _TweenMax$to3));
     }

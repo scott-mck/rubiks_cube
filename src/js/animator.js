@@ -65,7 +65,7 @@ class Animator {
   }
 
   setRotation(axis, mag) {
-    TweenMax.to(this._rotater.rotation, 0, {
+    TweenMax.to(this._currentRotater.rotation, 0, {
       [axis]: `+=${mag}`
     })
   }
@@ -105,15 +105,17 @@ class Animator {
   }
 
   grip(cubes, axis) {
+    this._currentRotater = this._emptyRotaters.shift()
+
     let i
     for (i = 0; i < cubes.length; i++) {
-      THREE.SceneUtils.attach(cubes[i], scene, this._rotater)
+      THREE.SceneUtils.attach(cubes[i], scene, this._currentRotater)
     }
     this._rotatingAxis = axis
   }
 
   snap() {
-    let currentRotation = this._rotater.rotation[this._rotatingAxis]
+    let currentRotation = this._currentRotater.rotation[this._rotatingAxis]
     let negativeRotation = currentRotation < 0
     let angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2
 
@@ -125,7 +127,7 @@ class Animator {
       remainder *= -1
     }
 
-    TweenMax.to(this._rotater.rotation, SNAP_DURATION, {
+    TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, {
       [this._rotatingAxis]: `+=${remainder}`,
       onComplete: () => {
         this.reset()
