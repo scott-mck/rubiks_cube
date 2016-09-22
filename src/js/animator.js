@@ -12,9 +12,14 @@ const SNAP_DURATION = 0.3
 
 class Animator {
   constructor() {
-    this._rotater = new THREE.Object3D()
-    this._rotater.name = 'rotater'
-    scene.add(this._rotater)
+    this._rotater1 = new THREE.Object3D()
+    this._rotater2 = new THREE.Object3D()
+    this._rotater1.name = 'rotater'
+    this._rotater2.name = 'rotater'
+    scene.add(this._rotater1)
+    scene.add(this._rotater2)
+
+    this._emptyRotaters = [this._rotater1, this._rotater2]
   }
 
   init() {
@@ -40,17 +45,20 @@ class Animator {
   _animate({ objects, axis, dir }) {
     this.animating = true
 
+    this._currentRotater = this._emptyRotaters.shift()
+
     let i
     for (i = 0; i < objects.length; i++) {
-      THREE.SceneUtils.attach(objects[i], scene, this._rotater)
+      THREE.SceneUtils.attach(objects[i], scene, this._currentRotater)
     }
 
     let onComplete = () => {
-      this._rotater.rotation[axis] = Math.PI / 2 * dir
+      this._currentRotater.rotation[axis] = Math.PI / 2 * dir
+      // this._complete()
       this._wait(this._complete.bind(this))
     }
 
-    TweenMax.to(this._rotater.rotation, DURATION, {
+    TweenMax.to(this._currentRotater.rotation, DURATION, {
       [axis]: `+=${Math.PI / 2 * dir}`,
       ease: EASE,
       onComplete: onComplete
@@ -79,10 +87,10 @@ class Animator {
   _complete() {
     this.reset()
 
-    this._wait(() => {
-      this.animating = false
-      this._next()
-    })
+    // this._wait(() => {
+    this.animating = false
+    this._next()
+    // })
   }
 
   _wait(callback, count = WAIT_COUNT) {
@@ -129,12 +137,14 @@ class Animator {
   }
 
   reset() {
-    while (this._rotater.children[0]) {
-      THREE.SceneUtils.detach(this._rotater.children[0], this._rotater, scene)
+    while (this._currentRotater.children[0]) {
+      THREE.SceneUtils.detach(this._currentRotater.children[0], this._currentRotater, scene)
     }
 
-    this._rotater.rotation.set(0, 0, 0)
+    this._currentRotater.rotation.set(0, 0, 0)
     this._rotatingAxis = null
+
+    this._emptyRotaters.push(this._currentRotater)
   }
 }
 
