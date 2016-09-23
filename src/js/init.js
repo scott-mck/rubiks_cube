@@ -4,6 +4,7 @@ import grabber from './grabber'
 import inputHandler from './input-handler'
 import animator from './animator'
 import g from './globals'
+import timer from './timer'
 
 export default () => {
   createMesh()
@@ -19,6 +20,7 @@ export default () => {
   inputHandler.init()
   grabber.init()
   animator.init()
+  timer.init()
 }
 
 let material

@@ -60419,6 +60419,24 @@ window.inputHandler = inputHandler$1;
 
 // no breakage
 
+var Timer = function () {
+  function Timer() {
+    classCallCheck(this, Timer);
+
+    this.$el = jquery$1('<div id="timer">').text('0.00');
+  }
+
+  createClass(Timer, [{
+    key: 'init',
+    value: function init() {
+      jquery$1('body').append(this.$el);
+    }
+  }]);
+  return Timer;
+}();
+
+var timer = new Timer();
+
 var init$2 = (function () {
   createMesh();
   createLeftAndRight();
@@ -60433,6 +60451,7 @@ var init$2 = (function () {
   inputHandler$1.init();
   grabber$1.init();
   animator.init();
+  timer.init();
 });
 
 var material = void 0;
