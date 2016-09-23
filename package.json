@@ -9,13 +9,11 @@
     "css": "node-sass src/scss/main.scss dist/built.css",
     "css:ugly": "node-sass src/scss/main.scss dist/built.css --output-style=compressed",
     "css:watch": "onchange -i 'src/scss/**/*.scss' -- npm run css",
-    "js": "npm-run-all log-js-begin rollup log-js-end",
-    "js:ugly": "npm-run-all log-js-begin rollup:ugly log-js-end",
+    "js": "rollup -c",
+    "js:ugly": "npm run js && uglifyjs dist/built.js -mc -o dist/built.js",
     "js:watch": "onchange -i 'src/js/**/*.js' -- npm run js",
-    "log-js-begin": "babel-node scripts/js-start.js",
-    "log-js-end": "babel-node scripts/js-end.js",
-    "rollup": "rollup -c",
-    "rollup:ugly": "npm run rollup && uglifyjs dist/built.js -mc -o dist/built.js",
+    "prejs": "babel-node scripts/js-start.js",
+    "postjs": "babel-node scripts/js-end.js",
     "watch": "npm-run-all -p css:watch js:watch"
   },
   "repository": {
