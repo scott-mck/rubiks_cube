@@ -7,7 +7,7 @@
     "build": "npm-run-all clean css:ugly js:ugly",
     "clean": "rm -rf dist/*",
     "css": "node-sass src/scss/main.scss dist/built.css",
-    "css:ugly": "node-sass src/scss/main.scss dist/built.css --output-style=compressed",
+    "css:ugly": "npm run css -- --output-style=compressed",
     "css:watch": "onchange -i 'src/scss/**/*.scss' -- npm run css",
     "js": "rollup -c",
     "js:ugly": "npm run js && uglifyjs dist/built.js -mc -o dist/built.js",
