@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm-run-all clean js:ugly css:ugly",
-    "dev": "npm-run-all -p css:watch js:watch",
+    "watch": "npm-run-all -p css:watch js:watch",
     "clean": "rm -rf dist/*",
     "css": "node-sass src/scss/main.scss dist/built.css",
     "css:ugly": "node-sass src/scss/main.scss dist/built.css --output-style=compressed",
