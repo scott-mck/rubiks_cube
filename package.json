@@ -4,16 +4,19 @@
   "description": "A Rubik's Cube Browser Simulator",
   "main": "rubiks_cube.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm-run-all clean js:ugly css:ugly",
-    "watch": "npm-run-all -p css:watch js:watch",
+    "build": "npm-run-all clean css:ugly js:ugly",
     "clean": "rm -rf dist/*",
     "css": "node-sass src/scss/main.scss dist/built.css",
     "css:ugly": "node-sass src/scss/main.scss dist/built.css --output-style=compressed",
     "css:watch": "onchange -i 'src/scss/**/*.scss' -- npm run css",
-    "js": "babel-node scripts/js-start.js && rollup -c && babel-node scripts/js-end.js",
-    "js:ugly": "rollup -c && uglifyjs dist/built.js -mc -o dist/built.js",
-    "js:watch": "onchange -i 'src/js/**/*.js' -- npm run js"
+    "js": "npm-run-all log-js-begin rollup log-js-end",
+    "js:ugly": "npm-run-all log-js-begin rollup:ugly log-js-end",
+    "js:watch": "onchange -i 'src/js/**/*.js' -- npm run js",
+    "log-js-begin": "babel-node scripts/js-start.js",
+    "log-js-end": "babel-node scripts/js-end.js",
+    "rollup": "rollup -c",
+    "rollup:ugly": "npm run rollup && uglifyjs dist/built.js -mc -o dist/built.js",
+    "watch": "npm-run-all -p css:watch js:watch"
   },
   "repository": {
     "type": "git",
