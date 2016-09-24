@@ -72,15 +72,23 @@ class Grabber {
     return { object, normal: this.axisFromVector(normalVector) }
   }
 
-  shoot(cube, normal) {
+  shoot(cube, direction) {
+    if (typeof direction === 'string') {
+      direction = this.vectorFromAxis(direction)
+    }
+
     let point = cube.position.clone()
-    let direction = normal.negate().clone()
+    direction.negate()
     let raycaster = new THREE.Raycaster(point, direction)
 
     return this.filterIntersects(this.raycast(raycaster))
   }
 
   fillOutFace(intersects, dir) {
+    if (typeof dir === 'string') {
+      dir = this.vectorFromAxis(dir)
+    }
+
     let cubes = intersects
     let captures = []
 
