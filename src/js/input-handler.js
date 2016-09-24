@@ -119,7 +119,9 @@ class inputHandler {
   }
 
   _mouseup(e) {
-    animator.snap()
+    animator.snap().then(() => {
+      rubiksCube.checkIfSolved()
+    })
     this.$canvas.off('mousemove.input')
 
     this._clickData = null

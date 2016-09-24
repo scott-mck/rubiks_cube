@@ -35,10 +35,7 @@ class RubiksCube {
   }
 
   nextMove() {
-    if (this._isScrambled && this.isSolved()) {
-      this._queue = []
-      timer.stop()
-      this._isScrambled = false
+    if (this.checkIfSolved()) {
       return
     }
 
@@ -86,6 +83,21 @@ class RubiksCube {
 
       return { objects, axis: axes[0], dir }
     }
+  }
+
+  checkIfSolved() {
+    if (!this._isScrambled) {
+      return false
+    }
+
+    if (this.isSolved()) {
+      timer.stop()
+      this._queue = []
+      this._isScrambled = false
+      return true
+    }
+
+    return false
   }
 
   isSolved() {

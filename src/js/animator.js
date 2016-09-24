@@ -127,12 +127,17 @@ class Animator {
       remainder *= -1
     }
 
-    TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, {
-      [this._rotatingAxis]: `+=${remainder}`,
-      onComplete: () => {
-        this.reset()
-      }
+    let promise = new Promise((resolve) => {
+      TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, {
+        [this._rotatingAxis]: `+=${remainder}`,
+        onComplete: () => {
+          this.reset()
+          resolve()
+        }
+      })
     })
+
+    return promise
   }
 
   reset() {

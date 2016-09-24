@@ -59991,10 +59991,7 @@ var RubiksCube = function () {
   }, {
     key: 'nextMove',
     value: function nextMove() {
-      if (this._isScrambled && this.isSolved()) {
-        this._queue = [];
-        timer.stop();
-        this._isScrambled = false;
+      if (this.checkIfSolved()) {
         return;
       }
 
@@ -60044,6 +60041,22 @@ var RubiksCube = function () {
 
         return { objects: objects, axis: axes[0], dir: dir };
       };
+    }
+  }, {
+    key: 'checkIfSolved',
+    value: function checkIfSolved() {
+      if (!this._isScrambled) {
+        return false;
+      }
+
+      if (this.isSolved()) {
+        timer.stop();
+        this._queue = [];
+        this._isScrambled = false;
+        return true;
+      }
+
+      return false;
     }
   }, {
     key: 'isSolved',
@@ -60238,8 +60251,7 @@ var Animator = function () {
   }, {
     key: 'snap',
     value: function snap() {
-      var _this2 = this,
-          _TweenMax$to3;
+      var _this2 = this;
 
       var currentRotation = this._currentRotater.rotation[this._rotatingAxis];
       var negativeRotation = currentRotation < 0;
@@ -60253,9 +60265,16 @@ var Animator = function () {
         remainder *= -1;
       }
 
-      TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, (_TweenMax$to3 = {}, defineProperty(_TweenMax$to3, this._rotatingAxis, '+=' + remainder), defineProperty(_TweenMax$to3, 'onComplete', function onComplete() {
-        _this2.reset();
-      }), _TweenMax$to3));
+      var promise = new Promise(function (resolve) {
+        var _TweenMax$to3;
+
+        TweenMax.to(_this2._currentRotater.rotation, SNAP_DURATION, (_TweenMax$to3 = {}, defineProperty(_TweenMax$to3, _this2._rotatingAxis, '+=' + remainder), defineProperty(_TweenMax$to3, 'onComplete', function onComplete() {
+          _this2.reset();
+          resolve();
+        }), _TweenMax$to3));
+      });
+
+      return promise;
     }
   }, {
     key: 'reset',
@@ -60493,7 +60512,9 @@ var inputHandler = function () {
   }, {
     key: '_mouseup',
     value: function _mouseup(e) {
-      animator.snap();
+      animator.snap().then(function () {
+        rubiksCube.checkIfSolved();
+      });
       this.$canvas.off('mousemove.input');
 
       this._clickData = null;
