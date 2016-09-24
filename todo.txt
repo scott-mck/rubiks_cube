@@ -13,3 +13,4 @@
 -- fill out rubiks cube innards
 -- un-version dist/
 -- double-moves
+-- separate sass files

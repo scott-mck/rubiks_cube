@@ -59978,6 +59978,10 @@ var RubiksCube = function () {
     value: function move(_move) {
       this._queue.push(_move);
       animator.go();
+
+      if (this._willAlter(_move) && this._isScrambled()) {
+        timer.start();
+      }
     }
   }, {
     key: 'nextMove',
@@ -59992,8 +59996,9 @@ var RubiksCube = function () {
   }, {
     key: 'scramble',
     value: function scramble() {
-      var i = void 0;
-      for (i = 0; i < 25; i++) {
+      this._scrambled = true;
+
+      for (var i = 0; i < 25; i++) {
         this._queue.push(this.randomMove());
       }
       animator.go();
@@ -60042,6 +60047,21 @@ var RubiksCube = function () {
       }
 
       return { objects: objects, axis: axis, dir: dir };
+    }
+  }, {
+    key: '_willAlter',
+    value: function _willAlter(move) {
+      return ['x', 'y'].indexOf(move[0]) === -1;
+    }
+  }, {
+    key: '_isScrambled',
+    value: function _isScrambled() {
+      return this._scrambled;
+    }
+  }, {
+    key: '_isValidMove',
+    value: function _isValidMove(move) {
+      // do things here
     }
   }]);
   return RubiksCube;
@@ -60219,6 +60239,56 @@ var Animator = function () {
 
 var animator = new Animator();
 
+var Timer = function () {
+  function Timer() {
+    classCallCheck(this, Timer);
+
+    this.fps = 30;
+    this._elapsedTime = 0;
+    this.content = '0:00';
+  }
+
+  createClass(Timer, [{
+    key: 'init',
+    value: function init() {
+      this.$el = jquery$1('#timer');
+      this.$textEl = jquery$1('<p>').text(this.content);
+      this.$el.append(this.$textEl);
+    }
+  }, {
+    key: 'start',
+    value: function start() {
+      var _this = this;
+
+      if (this.timing) {
+        return;
+      }
+      this.timing = true;
+
+      this._startTime = new Date();
+      this._interval = setInterval(function () {
+        _this._elapsedTime = (new Date() - _this._startTime) / 1000;
+        var second = ~~_this._elapsedTime;
+        var milli = (_this._elapsedTime - second).toFixed(2).slice(2);
+
+        _this.content = second + ':' + milli;
+        _this.$textEl.text(_this.content);
+      }, 1000 / this.fps);
+    }
+  }, {
+    key: 'stop',
+    value: function stop() {
+      clearInterval(this._interval);
+      this.timing = false;
+      this._startTime = null;
+      this._elapsedTime = 0;
+    }
+  }]);
+  return Timer;
+}();
+
+var timer$1 = new Timer();
+
 var KeyMap = function () {
   function KeyMap() {
     classCallCheck(this, KeyMap);
@@ -60363,6 +60433,9 @@ var inputHandler = function () {
       var magX = e.clientX - this._currentX;
       var magY = e.clientY - this._currentY;
 
+      this._currentX = e.clientX;
+      this._currentY = e.clientY;
+
       var mag = this._lockAxis === 'horizontal' ? magX : magY;
       mag *= Math.PI / 2 * DRAG_COEFFICIENT;
 
@@ -60370,8 +60443,9 @@ var inputHandler = function () {
 
       animator.setRotation(this._rotationAxis, mag);
 
-      this._currentX = e.clientX;
-      this._currentY = e.clientY;
+      if (this._cubes && rubiksCube._isScrambled()) {
+        timer.start();
+      }
     }
   }, {
     key: '_mouseup',
@@ -60415,27 +60489,11 @@ window.camera = camera$1;
 window.grabber = grabber$1;
 window.renderer = renderer$1;
 window.animator = animator;
+window.timer = timer$1;
 window.inputHandler = inputHandler$1;
+window.rubiksCube = rubiksCube;
 
 // no breakage
-
-var Timer = function () {
-  function Timer() {
-    classCallCheck(this, Timer);
-
-    this.$el = jquery$1('<div id="timer">').text('0.00');
-  }
-
-  createClass(Timer, [{
-    key: 'init',
-    value: function init() {
-      jquery$1('body').append(this.$el);
-    }
-  }]);
-  return Timer;
-}();
-
-var timer = new Timer();
 
 var init$2 = (function () {
   createMesh();
@@ -60451,7 +60509,7 @@ var init$2 = (function () {
   inputHandler$1.init();
   grabber$1.init();
   animator.init();
-  timer.init();
+  timer$1.init();
 });
 
 var material = void 0;

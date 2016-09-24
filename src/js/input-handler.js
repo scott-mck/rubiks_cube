@@ -103,6 +103,9 @@ class inputHandler {
     let magX = e.clientX - this._currentX
     let magY = e.clientY - this._currentY
 
+    this._currentX = e.clientX
+    this._currentY = e.clientY
+
     let mag = this._lockAxis === 'horizontal' ? magX : magY
     mag *= (Math.PI / 2) * DRAG_COEFFICIENT
 
@@ -110,8 +113,9 @@ class inputHandler {
 
     animator.setRotation(this._rotationAxis, mag)
 
-    this._currentX = e.clientX
-    this._currentY = e.clientY
+    if (this._cubes && rubiksCube._isScrambled()) {
+      timer.start()
+    }
   }
 
   _mouseup(e) {

@@ -23,6 +23,10 @@ class RubiksCube {
   move(move) {
     this._queue.push(move)
     animator.go()
+
+    if (this._willAlter(move) && this._isScrambled()) {
+      timer.start()
+    }
   }
 
   nextMove() {
@@ -35,8 +39,9 @@ class RubiksCube {
   }
 
   scramble() {
-    let i
-    for (i = 0; i < 25; i++) {
+    this._scrambled = true
+
+    for (let i = 0; i < 25; i++) {
       this._queue.push(this.randomMove())
     }
     animator.go()
@@ -83,6 +88,18 @@ class RubiksCube {
     }
 
     return { objects, axis, dir }
+  }
+
+  _willAlter(move) {
+    return ['x', 'y'].indexOf(move[0]) === -1
+  }
+
+  _isScrambled() {
+    return this._scrambled
+  }
+
+  _isValidMove(move) {
+    // do things here
   }
 }
 

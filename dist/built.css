@@ -6,6 +6,15 @@ body {
   margin: 0px;
   font-family: 'AMC', sans-serif; }
 
+#timer {
+  z-index: -1;
+  position: absolute;
+  font-size: 50px;
+  width: 100%; }
+  #timer p {
+    width: 100px;
+    margin: auto; }
+
 #scramble {
   display: inline-block;
   text-align: center;
