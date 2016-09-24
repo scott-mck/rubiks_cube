@@ -60486,7 +60486,7 @@ var inputHandler = function () {
 
       animator.setRotation(this._rotationAxis, mag);
 
-      if (this._cubes && rubiksCube._isScrambled()) {
+      if (this._cubes && rubiksCube._isScrambled) {
         timer.start();
       }
     }
