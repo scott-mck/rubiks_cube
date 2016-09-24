@@ -59976,6 +59976,11 @@ var RubiksCube = function () {
   createClass(RubiksCube, [{
     key: 'move',
     value: function move(_move) {
+      if (_move === 'scramble') {
+        this.scramble();
+        return;
+      }
+
       this._queue.push(_move);
       animator.go();
 
@@ -60309,7 +60314,8 @@ var KeyMap = function () {
       ';': 'y',
       a: 'yPrime',
       y: 'x',
-      n: 'xPrime'
+      n: 'xPrime',
+      ' ': 'scramble'
     };
   }
 

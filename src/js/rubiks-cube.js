@@ -21,6 +21,11 @@ class RubiksCube {
   }
 
   move(move) {
+    if (move === 'scramble') {
+      this.scramble()
+      return
+    }
+
     this._queue.push(move)
     animator.go()
 
