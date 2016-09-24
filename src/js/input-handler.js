@@ -12,11 +12,13 @@ const DRAG_COEFFICIENT = 1 / 200
 
 class inputHandler {
   constructor() {
-    // Captures correct cubes when clicking on a given face (or normal)
     this._normalMap = {
-      x: { horizontal: 'z', vertical: 'y'},
-      y: { horizontal: 'x', vertical: 'z'},
-      z: { horizontal: 'x', vertical: 'y'}
+      // "normal of clicked face": { "drag direction": "axis of rotation" }
+      // e.x.: Clicking on the right face returns a normal 'x'
+      // Dragging vertically ('y') will "fill out" the face in the 'y' direction
+      x: { x: 'z', y: 'y'},
+      y: { x: 'x', y: 'z'},
+      z: { x: 'x', y: 'y'}
     }
 
     this._rotationMap = {
@@ -58,45 +60,55 @@ class inputHandler {
     this._currentX = e.clientX
     this._currentY = e.clientY
 
-    this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
+    let clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
 
-    if (!this._clickData) {
-      this._detectClickDirection(() => {
-        this._rotationAxis = this._lockAxis === 'horizontal' ? 'y' : 'x'
-        animator.grip(g.allCubes, this._rotationAxis)
-        this.$canvas.on('mousemove.input', this._mousemove.bind(this))
-        this.$canvas.one('mouseup', this._mouseup.bind(this))
-      })
-      return
+    if (!clickData) {
+      this._clickOffCube(clickData)
+    } else {
+      this._clickOnCube(clickData)
     }
 
-    let normal = grabber.vectorFromAxis(this._clickData.normal)
-    this._cubes = grabber.shoot(this._clickData.object, normal)
-
-    this._detectClickDirection(() => {
-      let clickDir = this._normalMap[this._clickData.normal][this._lockAxis].toUpperCase()
-      this._clickData.direction = clickDir
-
-      let normal = grabber.vectorFromAxis(this._clickData.normal)
-      let direction = grabber.vectorFromAxis(this._clickData.direction)
-      this._rotationAxis = grabber.axisFromVector(normal.cross(direction))
-
-      grabber.fillOutFace(this._cubes, direction)
-      animator.grip(this._cubes, this._rotationAxis)
-    })
-
-    this.$canvas.on('mousemove.input', this._mousemove.bind(this))
     this.$canvas.one('mouseup', this._mouseup.bind(this))
   }
 
-  _detectClickDirection(callback) {
-    this.$canvas.one('mousemove', (e) => {
-      let magX = e.clientX - this._currentX
-      let magY = e.clientY - this._currentY
+  _clickOffCube(clickData) {
+    this._detectClickDirection().then(() => {
+      this._rotationAxis = this._clickDirection === 'x' ? 'y' : 'x'
+      animator.grip(g.allCubes, this._rotationAxis)
 
-      this._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical'
-      callback && callback()
+      this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+      this.$canvas.one('mouseup', this._mouseup.bind(this))
     })
+  }
+
+  _clickOnCube(clickData) {
+    this._cubes = grabber.shoot(clickData.object, clickData.normal)
+
+    this._detectClickDirection().then(() => {
+      let normalVector = grabber.vectorFromAxis(clickData.normal)
+      let fillOutAxis = this._normalMap[clickData.normal][this._clickDirection]
+      let fillOutVector = grabber.vectorFromAxis(fillOutAxis)
+
+      this._rotationAxis = grabber.axisFromVector(normalVector.cross(fillOutVector))
+      grabber.fillOutFace(this._cubes, fillOutVector)
+
+      animator.grip(this._cubes, this._rotationAxis)
+      this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+    })
+  }
+
+  _detectClickDirection() {
+    let promise = new Promise((resolve) => {
+      this.$canvas.one('mousemove', (e) => {
+        let magX = e.clientX - this._currentX
+        let magY = e.clientY - this._currentY
+
+        this._clickDirection = Math.abs(magX) >= Math.abs(magY) ? 'x' : 'y'
+        resolve()
+      })
+    })
+
+    return promise
   }
 
   _mousemove(e) {
@@ -106,7 +118,7 @@ class inputHandler {
     this._currentX = e.clientX
     this._currentY = e.clientY
 
-    let mag = this._lockAxis === 'horizontal' ? magX : magY
+    let mag = this._clickDirection === 'x' ? magX : magY
     mag *= (Math.PI / 2) * DRAG_COEFFICIENT
 
     mag *= this._rotationMap[this._rotationAxis]
@@ -124,11 +136,9 @@ class inputHandler {
     })
     this.$canvas.off('mousemove.input')
 
-    this._clickData = null
     this._currentX = null
     this._currentY = null
     this._cubes = null
-    this._lockAxis = null
     this._rotationAxis = null
   }
 

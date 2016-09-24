@@ -59860,9 +59860,13 @@ var Grabber = function () {
     }
   }, {
     key: 'shoot',
-    value: function shoot(cube, normal) {
+    value: function shoot(cube, direction) {
+      if (typeof direction === 'string') {
+        direction = this.vectorFromAxis(direction);
+      }
+
       var point = cube.position.clone();
-      var direction = normal.negate().clone();
+      direction.negate();
       var raycaster = new three.Raycaster(point, direction);
 
       return this.filterIntersects(this.raycast(raycaster));
@@ -59870,6 +59874,10 @@ var Grabber = function () {
   }, {
     key: 'fillOutFace',
     value: function fillOutFace(intersects, dir) {
+      if (typeof dir === 'string') {
+        dir = this.vectorFromAxis(dir);
+      }
+
       var cubes = intersects;
       var captures = [];
 
@@ -60392,11 +60400,13 @@ var inputHandler = function () {
   function inputHandler() {
     classCallCheck(this, inputHandler);
 
-    // Captures correct cubes when clicking on a given face (or normal)
     this._normalMap = {
-      x: { horizontal: 'z', vertical: 'y' },
-      y: { horizontal: 'x', vertical: 'z' },
-      z: { horizontal: 'x', vertical: 'y' }
+      // "normal of clicked face": { "drag direction": "axis of rotation" }
+      // e.x.: Clicking on the right face returns a normal 'x'
+      // Dragging vertically ('y') will "fill out" the face in the 'y' direction
+      x: { x: 'z', y: 'y' },
+      y: { x: 'x', y: 'z' },
+      z: { x: 'x', y: 'y' }
     };
 
     this._rotationMap = {
@@ -60437,8 +60447,6 @@ var inputHandler = function () {
   }, {
     key: 'mousedown',
     value: function mousedown(e) {
-      var _this = this;
-
       var canvasBox = renderer$1.domElement.getBoundingClientRect();
       var canvasMouseX = event.clientX - canvasBox.left;
       var canvasMouseY = event.clientY - canvasBox.top;
@@ -60446,48 +60454,64 @@ var inputHandler = function () {
       this._currentX = e.clientX;
       this._currentY = e.clientY;
 
-      this._clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
+      var clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
 
-      if (!this._clickData) {
-        this._detectClickDirection(function () {
-          _this._rotationAxis = _this._lockAxis === 'horizontal' ? 'y' : 'x';
-          animator.grip(g.allCubes, _this._rotationAxis);
-          _this.$canvas.on('mousemove.input', _this._mousemove.bind(_this));
-          _this.$canvas.one('mouseup', _this._mouseup.bind(_this));
-        });
-        return;
+      if (!clickData) {
+        this._clickOffCube(clickData);
+      } else {
+        this._clickOnCube(clickData);
       }
 
-      var normal = grabber.vectorFromAxis(this._clickData.normal);
-      this._cubes = grabber.shoot(this._clickData.object, normal);
-
-      this._detectClickDirection(function () {
-        var clickDir = _this._normalMap[_this._clickData.normal][_this._lockAxis].toUpperCase();
-        _this._clickData.direction = clickDir;
-
-        var normal = grabber.vectorFromAxis(_this._clickData.normal);
-        var direction = grabber.vectorFromAxis(_this._clickData.direction);
-        _this._rotationAxis = grabber.axisFromVector(normal.cross(direction));
-
-        grabber.fillOutFace(_this._cubes, direction);
-        animator.grip(_this._cubes, _this._rotationAxis);
-      });
-
-      this.$canvas.on('mousemove.input', this._mousemove.bind(this));
       this.$canvas.one('mouseup', this._mouseup.bind(this));
     }
   }, {
-    key: '_detectClickDirection',
-    value: function _detectClickDirection(callback) {
+    key: '_clickOffCube',
+    value: function _clickOffCube(clickData) {
+      var _this = this;
+
+      this._detectClickDirection().then(function () {
+        _this._rotationAxis = _this._clickDirection === 'x' ? 'y' : 'x';
+        animator.grip(g.allCubes, _this._rotationAxis);
+
+        _this.$canvas.on('mousemove.input', _this._mousemove.bind(_this));
+        _this.$canvas.one('mouseup', _this._mouseup.bind(_this));
+      });
+    }
+  }, {
+    key: '_clickOnCube',
+    value: function _clickOnCube(clickData) {
       var _this2 = this;
 
-      this.$canvas.one('mousemove', function (e) {
-        var magX = e.clientX - _this2._currentX;
-        var magY = e.clientY - _this2._currentY;
+      this._cubes = grabber.shoot(clickData.object, clickData.normal);
 
-        _this2._lockAxis = Math.abs(magX) >= Math.abs(magY) ? 'horizontal' : 'vertical';
-        callback && callback();
+      this._detectClickDirection().then(function () {
+        var normalVector = grabber.vectorFromAxis(clickData.normal);
+        var fillOutAxis = _this2._normalMap[clickData.normal][_this2._clickDirection];
+        var fillOutVector = grabber.vectorFromAxis(fillOutAxis);
+
+        _this2._rotationAxis = grabber.axisFromVector(normalVector.cross(fillOutVector));
+        grabber.fillOutFace(_this2._cubes, fillOutVector);
+
+        animator.grip(_this2._cubes, _this2._rotationAxis);
+        _this2.$canvas.on('mousemove.input', _this2._mousemove.bind(_this2));
       });
+    }
+  }, {
+    key: '_detectClickDirection',
+    value: function _detectClickDirection() {
+      var _this3 = this;
+
+      var promise = new Promise(function (resolve) {
+        _this3.$canvas.one('mousemove', function (e) {
+          var magX = e.clientX - _this3._currentX;
+          var magY = e.clientY - _this3._currentY;
+
+          _this3._clickDirection = Math.abs(magX) >= Math.abs(magY) ? 'x' : 'y';
+          resolve();
+        });
+      });
+
+      return promise;
     }
   }, {
     key: '_mousemove',
@@ -60498,7 +60522,7 @@ var inputHandler = function () {
       this._currentX = e.clientX;
       this._currentY = e.clientY;
 
-      var mag = this._lockAxis === 'horizontal' ? magX : magY;
+      var mag = this._clickDirection === 'x' ? magX : magY;
       mag *= Math.PI / 2 * DRAG_COEFFICIENT;
 
       mag *= this._rotationMap[this._rotationAxis];
@@ -60517,11 +60541,9 @@ var inputHandler = function () {
       });
       this.$canvas.off('mousemove.input');
 
-      this._clickData = null;
       this._currentX = null;
       this._currentY = null;
       this._cubes = null;
-      this._lockAxis = null;
       this._rotationAxis = null;
     }
   }, {
