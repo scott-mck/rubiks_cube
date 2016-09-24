@@ -14,3 +14,4 @@
 -- un-version dist/
 -- double-moves
 -- separate sass files
+-- overflow timer seconds to minutes
