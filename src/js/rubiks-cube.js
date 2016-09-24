@@ -29,12 +29,19 @@ class RubiksCube {
     this._queue.push(move)
     animator.go()
 
-    if (this._willAlter(move) && this._isScrambled()) {
+    if (this._willAlter(move) && this._isScrambled) {
       timer.start()
     }
   }
 
   nextMove() {
+    if (this._isScrambled && this.isSolved()) {
+      this._queue = []
+      timer.stop()
+      this._isScrambled = false
+      return
+    }
+
     let move = this._queue.shift()
     if (typeof move === 'string') {
       return this._getMoveDetails(move)
@@ -44,12 +51,12 @@ class RubiksCube {
   }
 
   scramble() {
-    this._scrambled = true
-
     for (let i = 0; i < 25; i++) {
       this._queue.push(this.randomMove())
     }
     animator.go()
+
+    this._isScrambled = true
   }
 
   randomMove() {
@@ -80,6 +87,32 @@ class RubiksCube {
     }
   }
 
+  isSolved() {
+    return this._isFaceSolved('r') && this._isFaceSolved('u') && this._isFaceSolved('f')
+  }
+
+  _isFaceSolved(face) {
+    let cubes = grabber.grabFace(face)
+    let axis = this._rotateMap[face].axis
+    let normal = grabber.vectorFromAxis(axis)
+
+    let color
+    let isSolved = true
+
+    cubes.forEach((cube, idx) => {
+      let raycaster = new THREE.Raycaster(cube.position.clone(), normal)
+      let cubeColor = raycaster.intersectObjects(scene.children)[0].face.color
+
+      if (!color) {
+        color = cubeColor
+      } else if (!cubeColor.equals(color)) {
+        isSolved = false
+      }
+    })
+
+    return isSolved
+  }
+
   _getMoveDetails(move) {
     let face = move[0]
     let faceDetails = this._rotateMap[face]
@@ -97,10 +130,6 @@ class RubiksCube {
 
   _willAlter(move) {
     return ['x', 'y'].indexOf(move[0]) === -1
-  }
-
-  _isScrambled() {
-    return this._scrambled
   }
 
   _isValidMove(move) {

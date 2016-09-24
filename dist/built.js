@@ -59655,8 +59655,8 @@ THREE.MorphBlendMesh.prototype.update = function ( delta ) {
 };
 });
 
-var scene = new three.Scene();
-scene.background = new three.Color(0xffffff);
+var scene$1 = new three.Scene();
+scene$1.background = new three.Color(0xffffff);
 
 var camera$1 = new three.PerspectiveCamera();
 
@@ -59810,7 +59810,7 @@ var Grabber = function () {
     key: 'grabFace',
     value: function grabFace(str) {
       if (str[0] === 'x' || str[0] === 'y') {
-        return scene.children.filter(function (object) {
+        return scene$1.children.filter(function (object) {
           return object.name === 'cubie';
         });
       }
@@ -59843,7 +59843,7 @@ var Grabber = function () {
 
       raycaster.setFromCamera(mouse, camera);
 
-      var intersects = raycaster.intersectObjects(scene.children);
+      var intersects = raycaster.intersectObjects(scene$1.children);
 
       if (intersects.length === 0) {
         return null;
@@ -59927,7 +59927,7 @@ var Grabber = function () {
   }, {
     key: 'raycast',
     value: function raycast(raycaster) {
-      return raycaster.intersectObjects(scene.children).map(function (data) {
+      return raycaster.intersectObjects(scene$1.children).map(function (data) {
         return data.object;
       });
     }
@@ -59984,13 +59984,20 @@ var RubiksCube = function () {
       this._queue.push(_move);
       animator.go();
 
-      if (this._willAlter(_move) && this._isScrambled()) {
+      if (this._willAlter(_move) && this._isScrambled) {
         timer.start();
       }
     }
   }, {
     key: 'nextMove',
     value: function nextMove() {
+      if (this._isScrambled && this.isSolved()) {
+        this._queue = [];
+        timer.stop();
+        this._isScrambled = false;
+        return;
+      }
+
       var move = this._queue.shift();
       if (typeof move === 'string') {
         return this._getMoveDetails(move);
@@ -60001,12 +60008,12 @@ var RubiksCube = function () {
   }, {
     key: 'scramble',
     value: function scramble() {
-      this._scrambled = true;
-
       for (var i = 0; i < 25; i++) {
         this._queue.push(this.randomMove());
       }
       animator.go();
+
+      this._isScrambled = true;
     }
   }, {
     key: 'randomMove',
@@ -60038,6 +60045,34 @@ var RubiksCube = function () {
       };
     }
   }, {
+    key: 'isSolved',
+    value: function isSolved() {
+      return this._isFaceSolved('r') && this._isFaceSolved('u') && this._isFaceSolved('f');
+    }
+  }, {
+    key: '_isFaceSolved',
+    value: function _isFaceSolved(face) {
+      var cubes = grabber$1.grabFace(face);
+      var axis = this._rotateMap[face].axis;
+      var normal = grabber$1.vectorFromAxis(axis);
+
+      var color = void 0;
+      var isSolved = true;
+
+      cubes.forEach(function (cube, idx) {
+        var raycaster = new three.Raycaster(cube.position.clone(), normal);
+        var cubeColor = raycaster.intersectObjects(scene.children)[0].face.color;
+
+        if (!color) {
+          color = cubeColor;
+        } else if (!cubeColor.equals(color)) {
+          isSolved = false;
+        }
+      });
+
+      return isSolved;
+    }
+  }, {
     key: '_getMoveDetails',
     value: function _getMoveDetails(move) {
       var face = move[0];
@@ -60057,11 +60092,6 @@ var RubiksCube = function () {
     key: '_willAlter',
     value: function _willAlter(move) {
       return ['x', 'y'].indexOf(move[0]) === -1;
-    }
-  }, {
-    key: '_isScrambled',
-    value: function _isScrambled() {
-      return this._scrambled;
     }
   }, {
     key: '_isValidMove',
@@ -60087,8 +60117,8 @@ var Animator = function () {
     this._rotater2 = new three.Object3D();
     this._rotater1.name = 'rotater';
     this._rotater2.name = 'rotater';
-    scene.add(this._rotater1);
-    scene.add(this._rotater2);
+    scene$1.add(this._rotater1);
+    scene$1.add(this._rotater2);
 
     this._emptyRotaters = [this._rotater1, this._rotater2];
   }
@@ -60138,7 +60168,7 @@ var Animator = function () {
 
       var i = void 0;
       for (i = 0; i < objects.length; i++) {
-        three.SceneUtils.attach(objects[i], scene, this._currentRotater);
+        three.SceneUtils.attach(objects[i], scene$1, this._currentRotater);
       }
 
       var onComplete = function onComplete() {
@@ -60166,7 +60196,7 @@ var Animator = function () {
   }, {
     key: 'render',
     value: function render() {
-      renderer$1.render(scene, camera$1);
+      renderer$1.render(scene$1, camera$1);
     }
   }, {
     key: '_complete',
@@ -60200,7 +60230,7 @@ var Animator = function () {
 
       var i = void 0;
       for (i = 0; i < cubes.length; i++) {
-        three.SceneUtils.attach(cubes[i], scene, this._currentRotater);
+        three.SceneUtils.attach(cubes[i], scene$1, this._currentRotater);
       }
       this._rotatingAxis = axis;
     }
@@ -60230,7 +60260,7 @@ var Animator = function () {
     key: 'reset',
     value: function reset() {
       while (this._currentRotater.children[0]) {
-        three.SceneUtils.detach(this._currentRotater.children[0], this._currentRotater, scene);
+        three.SceneUtils.detach(this._currentRotater.children[0], this._currentRotater, scene$1);
       }
 
       this._currentRotater.rotation.set(0, 0, 0);
@@ -60490,7 +60520,7 @@ var inputHandler$1 = new inputHandler();
 window.$ = jquery$1;
 window.TweenMax = TweenMax;
 window.THREE = three;
-window.scene = scene;
+window.scene = scene$1;
 window.camera = camera$1;
 window.grabber = grabber$1;
 window.renderer = renderer$1;
@@ -60555,8 +60585,8 @@ var addCubie = function addCubie() {
   helper.material.linewidth = g.lineHelperWidth;
   cubie.name = "cubie";
   g.allCubes.push(cubie);
-  scene.add(cubie);
-  scene.add(helper);
+  scene$1.add(cubie);
+  scene$1.add(helper);
   return cubie;
 };
 
@@ -60654,7 +60684,7 @@ var EventHandler = {
     createTimeline();
     resizeWindow();
     timeline.play();
-    renderer$1.render(scene, camera$1);
+    renderer$1.render(scene$1, camera$1);
   }
 };
 
