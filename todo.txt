@@ -15,3 +15,4 @@
 -- double-moves
 -- separate sass files
 -- overflow timer seconds to minutes
+-- Grabber#vectorFromAxis --> #vectorFromString
