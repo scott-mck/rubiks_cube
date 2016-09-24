@@ -60014,6 +60014,7 @@ var RubiksCube = function () {
       animator.go();
 
       this._isScrambled = true;
+      timer.reset();
     }
   }, {
     key: 'randomMove',
@@ -60317,6 +60318,12 @@ var Timer = function () {
       this.timing = false;
       this._startTime = null;
       this._elapsedTime = 0;
+    }
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this.content = '0:00';
+      this.$textEl.text(this.content);
     }
   }]);
   return Timer;

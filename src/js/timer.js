@@ -36,6 +36,11 @@ class Timer {
     this._startTime = null
     this._elapsedTime = 0
   }
+
+  reset() {
+    this.content = '0:00'
+    this.$textEl.text(this.content)
+  }
 }
 
 export default new Timer()

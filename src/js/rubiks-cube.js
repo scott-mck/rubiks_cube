@@ -57,6 +57,7 @@ class RubiksCube {
     animator.go()
 
     this._isScrambled = true
+    timer.reset()
   }
 
   randomMove() {
