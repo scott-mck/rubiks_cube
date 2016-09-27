@@ -15,34 +15,41 @@ class Grabber {
 
   init() {
     this._faceMap = {
-      r: { anchor: this.anchor1, shoot: ['z', 'y'], dir: -1 },
-      u: { anchor: this.anchor1, shoot: ['z', 'x'], dir: -1 },
-      f: { anchor: this.anchor1, shoot: ['x', 'y'], dir: -1 },
-      l: { anchor: this.anchor2, shoot: ['z', 'y'], dir: 1 },
-      d: { anchor: this.anchor2, shoot: ['z', 'x'], dir: 1 },
-      b: { anchor: this.anchor2, shoot: ['x', 'y'], dir: 1 }
+      r: { anchor: this.anchor1, shoot: 'z', fill: 'y', dir: -1 },
+      u: { anchor: this.anchor1, shoot: 'z', fill: 'x', dir: -1 },
+      f: { anchor: this.anchor1, shoot: 'x', fill: 'y', dir: -1 },
+      l: { anchor: this.anchor2, shoot: 'z', fill: 'y', dir: 1 },
+      d: { anchor: this.anchor2, shoot: 'z', fill: 'x', dir: 1 },
+      b: { anchor: this.anchor2, shoot: 'x', fill: 'y', dir: 1 }
     }
   }
 
-  grabFace(str) {
+  grabFace(str, doubleMove = false) {
     if (str[0] === 'x' || str[0] === 'y') {
-      return scene.children.filter(object => object.name === 'cubie')
+      return g.allCubes
     }
 
-    this._face = this._faceMap[str]
+    let face = this._faceMap[str]
 
-    let shootAxis = this._face.shoot[0].toUpperCase()
-    let shootDir = new THREE.Vector3()[`set${shootAxis}`](1 * this._face.dir)
+    let shootDir = this.vectorFromAxis(face.shoot, face.dir)
+    let fillDir = this.vectorFromAxis(face.fill)
 
-    let fillAxis = this._face.shoot[1].toUpperCase()
-    let fillDir = new THREE.Vector3()[`set${fillAxis}`](1)
-
-    let raycaster = new THREE.Raycaster(this._face.anchor, shootDir)
+    let raycaster = new THREE.Raycaster(face.anchor, shootDir)
     let intersects = this.raycast(raycaster)
 
     this.filterIntersects(intersects)
-
     this.fillOutFace(intersects, fillDir)
+
+    if (doubleMove) {
+      let subtractVector = this.vectorFromAxis('x', g.cubieSize * face.dir * -1)
+      let newAnchorPos = face.anchor.clone().sub(subtractVector)
+      raycaster = new THREE.Raycaster(newAnchorPos, shootDir)
+
+      let doubleIntersects = this.raycast(raycaster)
+      this.filterIntersects(doubleIntersects)
+      this.fillOutFace(doubleIntersects, fillDir)
+      intersects = intersects.concat(doubleIntersects)
+    }
 
     return intersects
   }

@@ -9,8 +9,10 @@ import renderer from './renderer'
 import timer from './timer'
 import inputHandler from './input-handler'
 import rubiksCube from './rubiks-cube'
+import g from './globals'
 
 window.$ = $
+window.g = g
 window.TweenMax = TweenMax
 window.THREE = THREE
 window.scene = scene

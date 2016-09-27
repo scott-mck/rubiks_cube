@@ -3,6 +3,8 @@ class KeyMap {
     this.keyMap = {
       i: 'r',
       k: 'rPrime',
+      u: 'rDouble',
+      m: 'rDoublePrime',
       j: 'u',
       f: 'uPrime',
       h: 'f',
@@ -11,6 +13,8 @@ class KeyMap {
       l: 'dPrime',
       e: 'l',
       d: 'lPrime',
+      r: 'lDouble',
+      c: 'lDoublePrime',
       q: 'b',
       p: 'bPrime',
       ';': 'y',
