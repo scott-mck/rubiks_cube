@@ -60318,15 +60318,15 @@ var Timer = function () {
 
     this.fps = 30;
     this._elapsedTime = 0;
-    this.content = '0:00';
   }
 
   createClass(Timer, [{
     key: 'init',
     value: function init() {
       this.$el = jquery$1('#timer');
-      this.$textEl = jquery$1('<p>').text(this.content);
+      this.$textEl = jquery$1('<p>');
       this.$el.append(this.$textEl);
+      this._updateContent();
     }
   }, {
     key: 'start',
@@ -60341,11 +60341,11 @@ var Timer = function () {
       this._startTime = new Date();
       this._interval = setInterval(function () {
         _this._elapsedTime = (new Date() - _this._startTime) / 1000;
-        var second = ~~_this._elapsedTime;
-        var milli = (_this._elapsedTime - second).toFixed(2).slice(2);
+        var minute = ~~(_this._elapsedTime / 60);
+        var second = ~~(_this._elapsedTime % 60);
+        var milli = (_this._elapsedTime - minute * 60 - second).toFixed(2).slice(2);
 
-        _this.content = second + ':' + milli;
-        _this.$textEl.text(_this.content);
+        _this._updateContent(minute, second, milli);
       }, 1000 / this.fps);
     }
   }, {
@@ -60359,7 +60359,21 @@ var Timer = function () {
   }, {
     key: 'reset',
     value: function reset() {
-      this.content = '0:00';
+      this._updateContent();
+      this.$textEl.text(this.content);
+    }
+  }, {
+    key: '_updateContent',
+    value: function _updateContent() {
+      var minute = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var second = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var milli = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+
+      if (minute < 10) {
+        minute = '0' + minute;
+      }
+
+      this.content = minute + ':' + second + '.' + milli;
       this.$textEl.text(this.content);
     }
   }]);
