@@ -60372,6 +60372,9 @@ var Timer = function () {
       if (minute < 10) {
         minute = '0' + minute;
       }
+      if (milli === 0) {
+        milli = '0' + milli;
+      }
 
       this.content = minute + ':' + second + '.' + milli;
       this.$textEl.text(this.content);
