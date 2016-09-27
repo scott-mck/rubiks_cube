@@ -39,7 +39,6 @@ class Timer {
 
   reset() {
     this._updateContent()
-    this.$textEl.text(this.content)
   }
 
   _updateContent(minute = 0, second = 0, milli = 0) {
