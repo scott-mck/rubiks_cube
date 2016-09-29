@@ -1,6 +1,7 @@
 import THREE from 'three'
 import scene from './scene'
 import g from './globals'
+import { vectorFromString, stringFromVector } from './utils/vector'
 
 class Grabber {
   constructor() {}
@@ -31,8 +32,8 @@ class Grabber {
 
     let face = this._faceMap[str]
 
-    let shootDir = this.vectorFromAxis(face.shoot, face.dir)
-    let fillDir = this.vectorFromAxis(face.fill)
+    let shootDir = vectorFromString(face.shoot, face.dir)
+    let fillDir = vectorFromString(face.fill)
 
     let raycaster = new THREE.Raycaster(face.anchor, shootDir)
     let intersects = this.raycast(raycaster)
@@ -41,7 +42,7 @@ class Grabber {
     this.fillOutFace(intersects, fillDir)
 
     if (doubleMove) {
-      let subtractVector = this.vectorFromAxis('x', g.cubieSize * face.dir * -1)
+      let subtractVector = vectorFromString('x', g.cubieSize * face.dir * -1)
       let newAnchorPos = face.anchor.clone().sub(subtractVector)
       raycaster = new THREE.Raycaster(newAnchorPos, shootDir)
 
@@ -76,24 +77,25 @@ class Grabber {
     normalVector = normalVector.extractRotation(object.matrixWorld)
     normalVector = normalVector.multiplyVector3(normal.clone())
 
-    return { object, normal: this.axisFromVector(normalVector) }
+    return { object, normal: stringFromVector(normalVector) }
   }
 
-  shoot(cube, direction) {
-    if (typeof direction === 'string') {
-      direction = this.vectorFromAxis(direction)
-    }
+  slice(startPos, shootDir, sliceDir) {
+    if (typeof shootDir === 'string') shootDir = vectorFromString(shootDir, -1)
+    if (typeof sliceDir === 'string') sliceDir = vectorFromString(sliceDir)
 
-    let point = cube.position.clone()
-    direction.negate()
-    let raycaster = new THREE.Raycaster(point, direction)
+    let raycaster = new THREE.Raycaster(startPos.clone(), shootDir)
 
-    return this.filterIntersects(this.raycast(raycaster))
+    let cubes = this.raycast(raycaster)
+    this.filterIntersects(cubes)
+    this.fillOutFace(cubes, sliceDir)
+
+    return cubes
   }
 
   fillOutFace(intersects, dir) {
     if (typeof dir === 'string') {
-      dir = this.vectorFromAxis(dir)
+      dir = vectorFromString(dir)
     }
 
     let cubes = intersects
@@ -103,7 +105,7 @@ class Grabber {
     let lastPoint = intersects[intersects.length - 1].position.clone()
     let point = firstPoint.clone()
 
-    let shootDir = this.axisFromVector(firstPoint.sub(lastPoint))
+    let shootDir = stringFromVector(firstPoint.sub(lastPoint))
 
     point = point[`set${shootDir.toUpperCase()}`](g.startPos)
     let inc = new THREE.Vector3()[`set${shootDir.toUpperCase()}`](g.cubieDistance)
@@ -151,17 +153,6 @@ class Grabber {
 
   raycast(raycaster) {
     return raycaster.intersectObjects(scene.children).map(data => data.object)
-  }
-
-  axisFromVector(vector) {
-    if (Math.abs(Math.round(vector.x)) >= 1) return 'x'
-    if (Math.abs(Math.round(vector.y)) >= 1) return 'y'
-    if (Math.abs(Math.round(vector.z)) >= 1) return 'z'
-  }
-
-  vectorFromAxis(str, mag = 1) {
-    str = str.toUpperCase()
-    return new THREE.Vector3()[`set${str}`](mag)
   }
 }
 
