@@ -13,4 +13,8 @@
 -- fill out rubiks cube innards
 -- double-moves
 -- separate sass files
--- Grabber#vectorFromAxis --> #vectorFromString
+-- axis, normal, direction, dir, vector --> just use one term.
+-- fix clicking on canvas then dragging off
+-- there are two sets of logic for moving: mouse and keyboard. make one.
+-- do src/js/vector-utils/index.js
+-- refactor starting and stopping timer in RubiksCube
