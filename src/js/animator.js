@@ -27,22 +27,22 @@ class Animator {
   }
 
   // jump-starts animation sequence: looking for rubiksCube#nextMove and
-  // repeating on completion
-  go() {
+  // repeats on completion
+  run() {
     if (!this.animating) {
       this._next()
     }
   }
 
-  animate({ objects, axis, dir }) {
+  rotate(objects, axis, numTurns) {
     if (this.animating) {
       return
     }
 
-    this._animate({ objects, axis, dir })
+    this._rotate(objects, axis, numTurns)
   }
 
-  _animate({ objects, axis, dir }) {
+  _rotate(objects, axis, numTurns) {
     this.animating = true
 
     this._currentRotater = this._emptyRotaters.shift()
@@ -53,12 +53,12 @@ class Animator {
     }
 
     let onComplete = () => {
-      this._currentRotater.rotation[axis] = Math.PI / 2 * dir
+      this._currentRotater.rotation[axis] = Math.PI / 2 * numTurns
       this._wait(this._complete.bind(this))
     }
 
     TweenMax.to(this._currentRotater.rotation, DURATION, {
-      [axis]: `+=${Math.PI / 2 * dir}`,
+      [axis]: `+=${Math.PI / 2 * numTurns}`,
       ease: EASE,
       onComplete: onComplete
     })
@@ -78,7 +78,8 @@ class Animator {
       return
     }
 
-    this._animate(nextMove)
+    let { objects, axis, numTurns } = nextMove
+    this._rotate(objects, axis, numTurns)
   }
 
   render() {
@@ -132,8 +133,9 @@ class Animator {
       TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, {
         [this._rotationAxis]: `+=${remainder}`,
         onComplete: () => {
+          let totalRotation = this._currentRotater.rotation[this._rotationAxis]
           this.reset()
-          resolve()
+          resolve(totalRotation)
         }
       })
     })

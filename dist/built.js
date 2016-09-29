@@ -59673,6 +59673,26 @@ var init$1 = function init$1(cubeDimensions) {
   g.lineHelperWidth = 5 - (g.dimensions - 2) * 0.3;
 };
 
+var stringFromVector = function stringFromVector(vector) {
+  if (Math.abs(Math.round(vector.x)) >= 1) return 'x';
+  if (Math.abs(Math.round(vector.y)) >= 1) return 'y';
+  if (Math.abs(Math.round(vector.z)) >= 1) return 'z';
+};
+
+var vectorFromString = function vectorFromString(str) {
+  var mag = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+
+  str = str.toUpperCase();
+  return new THREE.Vector3()['set' + str](mag);
+};
+
+var cross = function cross(vector1, vector2) {
+  if (typeof vector1 === 'string') vector1 = vectorFromString(vector1);
+  if (typeof vector2 === 'string') vector2 = vectorFromString(vector2);
+
+  return stringFromVector(vector1.clone().cross(vector2.clone()));
+};
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -59817,8 +59837,8 @@ var Grabber = function () {
 
       var face = this._faceMap[str];
 
-      var shootDir = this.vectorFromAxis(face.shoot, face.dir);
-      var fillDir = this.vectorFromAxis(face.fill);
+      var shootDir = vectorFromString(face.shoot, face.dir);
+      var fillDir = vectorFromString(face.fill);
 
       var raycaster = new three.Raycaster(face.anchor, shootDir);
       var intersects = this.raycast(raycaster);
@@ -59827,7 +59847,7 @@ var Grabber = function () {
       this.fillOutFace(intersects, fillDir);
 
       if (doubleMove) {
-        var subtractVector = this.vectorFromAxis('x', g.cubieSize * face.dir * -1);
+        var subtractVector = vectorFromString('x', g.cubieSize * face.dir * -1);
         var newAnchorPos = face.anchor.clone().sub(subtractVector);
         raycaster = new three.Raycaster(newAnchorPos, shootDir);
 
@@ -59863,26 +59883,27 @@ var Grabber = function () {
       normalVector = normalVector.extractRotation(object.matrixWorld);
       normalVector = normalVector.multiplyVector3(normal.clone());
 
-      return { object: object, normal: this.axisFromVector(normalVector) };
+      return { object: object, normal: stringFromVector(normalVector) };
     }
   }, {
-    key: 'shoot',
-    value: function shoot(cube, direction) {
-      if (typeof direction === 'string') {
-        direction = this.vectorFromAxis(direction);
-      }
+    key: 'slice',
+    value: function slice(startPos, shootDir, sliceDir) {
+      if (typeof shootDir === 'string') shootDir = vectorFromString(shootDir, -1);
+      if (typeof sliceDir === 'string') sliceDir = vectorFromString(sliceDir);
 
-      var point = cube.position.clone();
-      direction.negate();
-      var raycaster = new three.Raycaster(point, direction);
+      var raycaster = new three.Raycaster(startPos.clone(), shootDir);
 
-      return this.filterIntersects(this.raycast(raycaster));
+      var cubes = this.raycast(raycaster);
+      this.filterIntersects(cubes);
+      this.fillOutFace(cubes, sliceDir);
+
+      return cubes;
     }
   }, {
     key: 'fillOutFace',
     value: function fillOutFace(intersects, dir) {
       if (typeof dir === 'string') {
-        dir = this.vectorFromAxis(dir);
+        dir = vectorFromString(dir);
       }
 
       var cubes = intersects;
@@ -59892,7 +59913,7 @@ var Grabber = function () {
       var lastPoint = intersects[intersects.length - 1].position.clone();
       var point = firstPoint.clone();
 
-      var shootDir = this.axisFromVector(firstPoint.sub(lastPoint));
+      var shootDir = stringFromVector(firstPoint.sub(lastPoint));
 
       point = point['set' + shootDir.toUpperCase()](g.startPos);
       var inc = new three.Vector3()['set' + shootDir.toUpperCase()](g.cubieDistance);
@@ -59946,21 +59967,6 @@ var Grabber = function () {
         return data.object;
       });
     }
-  }, {
-    key: 'axisFromVector',
-    value: function axisFromVector(vector) {
-      if (Math.abs(Math.round(vector.x)) >= 1) return 'x';
-      if (Math.abs(Math.round(vector.y)) >= 1) return 'y';
-      if (Math.abs(Math.round(vector.z)) >= 1) return 'z';
-    }
-  }, {
-    key: 'vectorFromAxis',
-    value: function vectorFromAxis(str) {
-      var mag = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
-
-      str = str.toUpperCase();
-      return new three.Vector3()['set' + str](mag);
-    }
   }]);
   return Grabber;
 }();
@@ -59985,22 +59991,25 @@ var RubiksCube = function () {
     this._rotateMap.x = this._rotateMap.r;
     this._rotateMap.y = this._rotateMap.u;
 
-    this._queue = [];
+    this._moves = [];
+    this._solveMoves = [];
   }
 
   createClass(RubiksCube, [{
     key: 'move',
     value: function move(_move) {
-      if (_move === 'scramble') {
-        this.scramble();
-        return;
-      }
-
-      this._queue.push(_move);
-      animator.go();
+      this._queueMove(_move, true);
 
       if (this._willAlter(_move) && this._isScrambled) {
         timer.start();
+      }
+    }
+  }, {
+    key: '_queueMove',
+    value: function _queueMove(move, flag) {
+      this._moves.push(move);
+      if (flag) {
+        animator.run();
       }
     }
   }, {
@@ -60010,20 +60019,26 @@ var RubiksCube = function () {
         return;
       }
 
-      var move = this._queue.shift();
+      var move = this._moves.shift();
+      if (!move) {
+        return;
+      }
+
       if (typeof move === 'string') {
-        return this._getMoveDetails(move);
-      } else if (typeof move === 'function') {
-        return move();
+        return this._animationDataFromNotation(move);
+      } else {
+        return this._animationData(move);
       }
     }
   }, {
     key: 'scramble',
     value: function scramble() {
       for (var i = 0; i < 25; i++) {
-        this._queue.push(this.randomMove());
+        var randomMove = this.randomMove();
+        this._queueMove(randomMove);
+        this.recordMove(randomMove);
       }
-      animator.go();
+      animator.run();
 
       this._isScrambled = true;
       timer.reset();
@@ -60033,29 +60048,20 @@ var RubiksCube = function () {
     value: function randomMove() {
       var axes = ['x', 'y', 'z'];
       var normal = axes.splice(~~(Math.random() * axes.length), 1)[0];
-      var rayDirection = grabber$1.vectorFromAxis(normal, -1);
 
       var coord1 = g.startPos - g.cubieDistance * ~~(Math.random() * g.dimensions);
       var coord2 = g.startPos - g.cubieDistance * ~~(Math.random() * g.dimensions);
 
-      var startPos = new three.Vector3();
-      startPos['set' + axes[0].toUpperCase()](coord1);
-      startPos['set' + axes[1].toUpperCase()](coord2);
-      startPos['set' + normal.toUpperCase()](g.startPos);
+      var startCoord = new three.Vector3();
+      startCoord['set' + axes[0].toUpperCase()](coord1);
+      startCoord['set' + axes[1].toUpperCase()](coord2);
+      startCoord['set' + normal.toUpperCase()](g.startPos);
 
-      var raycaster = new three.Raycaster(startPos, rayDirection);
-      var randomFillDir = axes.splice(~~(Math.random() * axes.length), 1)[0];
+      var shoot = normal;
+      var fill = axes.splice(~~(Math.random() * axes.length), 1)[0];
+      var numTurns = Math.random() < 0.5 ? 1 : -1;
 
-      return function () {
-        var objects = grabber$1.raycast(raycaster);
-        grabber$1.filterIntersects(objects);
-
-        grabber$1.fillOutFace(objects, grabber$1.vectorFromAxis(randomFillDir));
-
-        var dir = Math.random() < 0.5 ? 1 : -1;
-
-        return { objects: objects, axis: axes[0], dir: dir };
-      };
+      return { startCoord: startCoord, shoot: shoot, fill: fill, numTurns: numTurns };
     }
   }, {
     key: 'checkIfSolved',
@@ -60066,7 +60072,7 @@ var RubiksCube = function () {
 
       if (this.isSolved()) {
         timer.stop();
-        this._queue = [];
+        this._moves = [];
         this._isScrambled = false;
         return true;
       }
@@ -60078,12 +60084,43 @@ var RubiksCube = function () {
     value: function isSolved() {
       return this._isFaceSolved('r') && this._isFaceSolved('u') && this._isFaceSolved('f');
     }
+
+    // { startCoord, shoot, fill, numTurns }
+
+  }, {
+    key: 'recordMove',
+    value: function recordMove(moveData) {
+      this._solveMoves.push(moveData);
+    }
+  }, {
+    key: 'reverseMove',
+    value: function reverseMove(_ref) {
+      var startPos = _ref.startPos;
+      var normal = _ref.normal;
+      var fillOutDir = _ref.fillOutDir;
+      var rotationAxis = _ref.rotationAxis;
+      var numTurns = _ref.numTurns;
+
+      var cubes = grabber$1.slice(startPos, normal, fillOutDir);
+      animator.rotate(cubes, rotationAxis, numTurns * -1);
+    }
+  }, {
+    key: 'solve',
+    value: function solve() {
+      this._moves = [];
+      while (this._solveMoves.length > 0) {
+        var reverseMove = this._solveMoves.pop();
+        reverseMove.numTurns *= -1;
+        this._queueMove(reverseMove);
+      }
+      animator.run();
+    }
   }, {
     key: '_isFaceSolved',
     value: function _isFaceSolved(face) {
       var cubes = grabber$1.grabFace(face);
       var axis = this._rotateMap[face].axis;
-      var normal = grabber$1.vectorFromAxis(axis);
+      var normal = vectorFromString(axis);
 
       var color = void 0;
       var isSolved = true;
@@ -60101,9 +60138,12 @@ var RubiksCube = function () {
 
       return isSolved;
     }
+
+    // FIXME!
+
   }, {
-    key: '_getMoveDetails',
-    value: function _getMoveDetails(move) {
+    key: '_animationDataFromNotation',
+    value: function _animationDataFromNotation(move) {
       var face = move[0];
       var faceDetails = this._rotateMap[face];
 
@@ -60111,23 +60151,35 @@ var RubiksCube = function () {
       var objects = grabber$1.grabFace(face, doubleMove);
 
       var axis = faceDetails.axis;
-      var dir = faceDetails.dir;
+      var numTurns = faceDetails.dir;
 
       if (move.indexOf('Prime') > -1) {
-        dir *= -1;
+        numTurns *= -1;
       }
 
-      return { objects: objects, axis: axis, dir: dir };
+      return { objects: objects, axis: axis, numTurns: numTurns };
+    }
+  }, {
+    key: '_animationData',
+    value: function _animationData(_ref2) {
+      var startCoord = _ref2.startCoord;
+      var shoot = _ref2.shoot;
+      var fill = _ref2.fill;
+      var numTurns = _ref2.numTurns;
+
+      shoot = vectorFromString(shoot, -1);
+      var raycaster = new three.Raycaster(startCoord, shoot);
+      var objects = grabber$1.raycast(raycaster);
+      grabber$1.fillOutFace(objects, fill);
+
+      var axis = cross(shoot, fill);
+
+      return { objects: objects, axis: axis, numTurns: numTurns };
     }
   }, {
     key: '_willAlter',
     value: function _willAlter(move) {
       return ['x', 'y'].indexOf(move[0]) === -1;
-    }
-  }, {
-    key: '_isValidMove',
-    value: function _isValidMove(move) {
-      // do things here
     }
   }]);
   return RubiksCube;
@@ -60161,37 +60213,29 @@ var Animator = function () {
     }
 
     // jump-starts animation sequence: looking for rubiksCube#nextMove and
-    // repeating on completion
+    // repeats on completion
 
   }, {
-    key: 'go',
-    value: function go() {
+    key: 'run',
+    value: function run() {
       if (!this.animating) {
         this._next();
       }
     }
   }, {
-    key: 'animate',
-    value: function animate(_ref) {
-      var objects = _ref.objects;
-      var axis = _ref.axis;
-      var dir = _ref.dir;
-
+    key: 'rotate',
+    value: function rotate(objects, axis, numTurns) {
       if (this.animating) {
         return;
       }
 
-      this._animate({ objects: objects, axis: axis, dir: dir });
+      this._rotate(objects, axis, numTurns);
     }
   }, {
-    key: '_animate',
-    value: function _animate(_ref2) {
+    key: '_rotate',
+    value: function _rotate(objects, axis, numTurns) {
       var _this = this,
           _TweenMax$to;
-
-      var objects = _ref2.objects;
-      var axis = _ref2.axis;
-      var dir = _ref2.dir;
 
       this.animating = true;
 
@@ -60203,11 +60247,11 @@ var Animator = function () {
       }
 
       var onComplete = function onComplete() {
-        _this._currentRotater.rotation[axis] = Math.PI / 2 * dir;
+        _this._currentRotater.rotation[axis] = Math.PI / 2 * numTurns;
         _this._wait(_this._complete.bind(_this));
       };
 
-      TweenMax.to(this._currentRotater.rotation, DURATION, (_TweenMax$to = {}, defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * dir), defineProperty(_TweenMax$to, 'ease', EASE), defineProperty(_TweenMax$to, 'onComplete', onComplete), _TweenMax$to));
+      TweenMax.to(this._currentRotater.rotation, DURATION, (_TweenMax$to = {}, defineProperty(_TweenMax$to, axis, '+=' + Math.PI / 2 * numTurns), defineProperty(_TweenMax$to, 'ease', EASE), defineProperty(_TweenMax$to, 'onComplete', onComplete), _TweenMax$to));
     }
   }, {
     key: 'setRotation',
@@ -60224,7 +60268,11 @@ var Animator = function () {
         return;
       }
 
-      this._animate(nextMove);
+      var objects = nextMove.objects;
+      var axis = nextMove.axis;
+      var numTurns = nextMove.numTurns;
+
+      this._rotate(objects, axis, numTurns);
     }
   }, {
     key: 'render',
@@ -60287,8 +60335,9 @@ var Animator = function () {
         var _TweenMax$to3;
 
         TweenMax.to(_this2._currentRotater.rotation, SNAP_DURATION, (_TweenMax$to3 = {}, defineProperty(_TweenMax$to3, _this2._rotationAxis, '+=' + remainder), defineProperty(_TweenMax$to3, 'onComplete', function onComplete() {
+          var totalRotation = _this2._currentRotater.rotation[_this2._rotationAxis];
           _this2.reset();
-          resolve();
+          resolve(totalRotation);
         }), _TweenMax$to3));
       });
 
@@ -60360,7 +60409,6 @@ var Timer = function () {
     key: 'reset',
     value: function reset() {
       this._updateContent();
-      this.$textEl.text(this.content);
     }
   }, {
     key: '_updateContent',
@@ -60371,6 +60419,9 @@ var Timer = function () {
 
       if (minute < 10) {
         minute = '0' + minute;
+      }
+      if (second < 10) {
+        second = '0' + second;
       }
       if (milli === 0) {
         milli = '0' + milli;
@@ -60445,6 +60496,8 @@ var inputHandler = function () {
       y: 1,
       z: -1
     };
+
+    this._moveRecord = {};
   }
 
   createClass(inputHandler, [{
@@ -60487,6 +60540,9 @@ var inputHandler = function () {
 
       var clickData = grabber.getClickData(canvasMouseX, canvasMouseY);
 
+      this._recordMoveProperty('startCoord', clickData.object.position.clone());
+      this._recordMoveProperty('shoot', clickData.normal);
+
       if (!clickData) {
         this._clickOffCube(clickData);
       } else {
@@ -60513,18 +60569,23 @@ var inputHandler = function () {
     value: function _clickOnCube(clickData) {
       var _this2 = this;
 
-      this._cubes = grabber.shoot(clickData.object, clickData.normal);
-
       this._detectClickDirection().then(function () {
-        var normalVector = grabber.vectorFromAxis(clickData.normal);
+        // grab correct cubes based on mouse click and movement
         var fillOutAxis = _this2._normalMap[clickData.normal][_this2._clickDirection];
-        var fillOutVector = grabber.vectorFromAxis(fillOutAxis);
+        _this2._cubes = grabber.slice(clickData.object.position, clickData.normal, fillOutAxis);
 
-        _this2._rotationAxis = grabber.axisFromVector(normalVector.cross(fillOutVector));
-        grabber.fillOutFace(_this2._cubes, fillOutVector);
+        // determine which axis cubes should rotate around
+        // let normalVector = vectorFromString(clickData.normal)
+        // let fillOutVector = vectorFromString(fillOutAxis)
+        // this._rotationAxis = stringFromVector(normalVector.cross(fillOutVector))
+        _this2._rotationAxis = cross(clickData.normal, fillOutAxis);
 
+        // prepare animator for rotating correct cubes
         animator.grip(_this2._cubes, _this2._rotationAxis);
         _this2.$canvas.on('mousemove.input', _this2._mousemove.bind(_this2));
+
+        _this2._recordMoveProperty('fill', fillOutAxis);
+        // this._recordMoveProperty('rotationAxis', this._rotationAxis)
       });
     }
   }, {
@@ -60555,7 +60616,6 @@ var inputHandler = function () {
 
       var mag = this._clickDirection === 'x' ? magX : magY;
       mag *= Math.PI / 2 * DRAG_COEFFICIENT;
-
       mag *= this._rotationMap[this._rotationAxis];
 
       animator.setRotation(this._rotationAxis, mag);
@@ -60567,15 +60627,37 @@ var inputHandler = function () {
   }, {
     key: '_mouseup',
     value: function _mouseup(e) {
-      animator.snap().then(function () {
-        rubiksCube.checkIfSolved();
-      });
-      this.$canvas.off('mousemove.input');
+      var _this4 = this;
 
-      this._currentX = null;
-      this._currentY = null;
-      this._cubes = null;
-      this._rotationAxis = null;
+      animator.snap().then(function (totalRotation) {
+        if (totalRotation === 0) {
+          return;
+        }
+
+        var dir = totalRotation > 0 ? 1 : -1;
+        var numTurns = Math.abs(totalRotation) / (Math.PI / 2);
+        numTurns *= dir;
+
+        _this4._recordMoveProperty('numTurns', numTurns);
+
+        var solved = rubiksCube.checkIfSolved();
+        if (!solved) {
+          rubiksCube.recordMove(_this4._moveRecord);
+        }
+
+        _this4._currentX = null;
+        _this4._currentY = null;
+        _this4._cubes = null;
+        _this4._rotationAxis = null;
+        _this4._moveRecord = {};
+      });
+
+      this.$canvas.off('mousemove.input');
+    }
+  }, {
+    key: '_recordMoveProperty',
+    value: function _recordMoveProperty(key, val) {
+      this._moveRecord[key] = val;
     }
   }, {
     key: 'type',
@@ -60588,9 +60670,11 @@ var inputHandler = function () {
       var move = keyMap.getNotation(letter);
       if (!move) {
         return;
+      } else if (move === 'scramble') {
+        rubiksCube.scramble();
+      } else {
+        rubiksCube.move(move);
       }
-
-      rubiksCube.move(move);
     }
   }]);
   return inputHandler;
