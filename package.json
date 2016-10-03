@@ -11,7 +11,7 @@
     "css:watch": "onchange -i 'src/scss/**/*.scss' -- npm run css",
     "js": "rollup -c",
     "js:ugly": "npm run js && uglifyjs dist/built.js -mc -o dist/built.js",
-    "js:watch": "onchange -i 'src/js/**/*.js' -- npm run js",
+    "js:watch": "rollup -c --watch",
     "prejs": "babel-node scripts/js-start.js",
     "postjs": "babel-node scripts/js-end.js",
     "watch": "npm-run-all -p css:watch js:watch"
@@ -47,6 +47,7 @@
     "rollup-plugin-commonjs": "^5.0.4",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^2.5.0",
     "uglify-js": "^2.7.3"
   }
 }
