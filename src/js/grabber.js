@@ -6,15 +6,10 @@ import { vectorFromString, stringFromVector } from './utils/vector'
 class Grabber {
   constructor() {}
 
-  setAnchor1(cube) {
-    this.anchor1 = cube.position.clone()
-  }
-
-  setAnchor2(cube) {
-    this.anchor2 = cube.position.clone()
-  }
-
   init() {
+    this.anchor1 = new THREE.Vector3(g.startPos, g.startPos, g.startPos)
+    this.anchor2 = new THREE.Vector3(-g.startPos, -g.startPos, -g.startPos)
+
     this._faceMap = {
       r: { anchor: this.anchor1, shoot: 'z', fill: 'y', dir: -1 },
       u: { anchor: this.anchor1, shoot: 'z', fill: 'x', dir: -1 },
@@ -25,34 +20,39 @@ class Grabber {
     }
   }
 
-  grabFace(str, doubleMove = false) {
+  grabFace(str) {
     if (str[0] === 'x' || str[0] === 'y') {
       return g.allCubes
     }
 
+    let { startCoord, shoot, fill } = this._getMoveInstructions(str)
+    let cubes = this.slice(startCoord, shoot, fill)
+
+    this.filterIntersects(cubes)
+    this.fillOutFace(cubes, fill)
+
+    // if (doubleMove) {
+    //   let subtractVector = vectorFromString('x', g.cubieSize * face.dir * -1)
+    //   let newAnchorPos = face.anchor.clone().sub(subtractVector)
+    //   raycaster = new THREE.Raycaster(newAnchorPos, shootDir)
+    //
+    //   let doubleIntersects = this.raycast(raycaster)
+    //   this.filterIntersects(doubleIntersects)
+    //   this.fillOutFace(doubleIntersects, fillDir)
+    //   cubes = cubes.concat(doubleIntersects)
+    // }
+
+    return cubes
+  }
+
+  _getMoveInstructions(str) {
     let face = this._faceMap[str]
 
-    let shootDir = vectorFromString(face.shoot, face.dir)
-    let fillDir = vectorFromString(face.fill)
+    let startCoord = face.anchor.clone()
+    let shoot = vectorFromString(face.shoot, face.dir)
+    let fill = vectorFromString(face.fill)
 
-    let raycaster = new THREE.Raycaster(face.anchor, shootDir)
-    let intersects = this.raycast(raycaster)
-
-    this.filterIntersects(intersects)
-    this.fillOutFace(intersects, fillDir)
-
-    if (doubleMove) {
-      let subtractVector = vectorFromString('x', g.cubieSize * face.dir * -1)
-      let newAnchorPos = face.anchor.clone().sub(subtractVector)
-      raycaster = new THREE.Raycaster(newAnchorPos, shootDir)
-
-      let doubleIntersects = this.raycast(raycaster)
-      this.filterIntersects(doubleIntersects)
-      this.fillOutFace(doubleIntersects, fillDir)
-      intersects = intersects.concat(doubleIntersects)
-    }
-
-    return intersects
+    return { startCoord, shoot, fill }
   }
 
   getClickData(x, y) {
@@ -80,15 +80,15 @@ class Grabber {
     return { object, normal: stringFromVector(normalVector) }
   }
 
-  slice(startPos, shootDir, sliceDir) {
-    if (typeof shootDir === 'string') shootDir = vectorFromString(shootDir, -1)
-    if (typeof sliceDir === 'string') sliceDir = vectorFromString(sliceDir)
+  slice(startCoord, shoot, slice) {
+    if (typeof shoot === 'string') shoot = vectorFromString(shoot, -1)
+    if (typeof slice === 'string') slice = vectorFromString(slice)
 
-    let raycaster = new THREE.Raycaster(startPos.clone(), shootDir)
+    let raycaster = new THREE.Raycaster(startCoord.clone(), shoot)
 
     let cubes = this.raycast(raycaster)
     this.filterIntersects(cubes)
-    this.fillOutFace(cubes, sliceDir)
+    this.fillOutFace(cubes, slice)
 
     return cubes
   }

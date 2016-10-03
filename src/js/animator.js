@@ -34,15 +34,15 @@ class Animator {
     }
   }
 
-  rotate(objects, axis, numTurns) {
+  rotate(objects, rotationAxis, numTurns) {
     if (this.animating) {
       return
     }
 
-    this._rotate(objects, axis, numTurns)
+    this._rotate(objects, rotationAxis, numTurns)
   }
 
-  _rotate(objects, axis, numTurns) {
+  _rotate(objects, rotationAxis, numTurns) {
     this.animating = true
 
     this._currentRotater = this._emptyRotaters.shift()
@@ -53,12 +53,12 @@ class Animator {
     }
 
     let onComplete = () => {
-      this._currentRotater.rotation[axis] = Math.PI / 2 * numTurns
+      this._currentRotater.rotation[rotationAxis] = Math.PI / 2 * numTurns
       this._wait(this._complete.bind(this))
     }
 
     TweenMax.to(this._currentRotater.rotation, DURATION, {
-      [axis]: `+=${Math.PI / 2 * numTurns}`,
+      [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
       ease: EASE,
       onComplete: onComplete
     })
@@ -78,8 +78,8 @@ class Animator {
       return
     }
 
-    let { objects, axis, numTurns } = nextMove
-    this._rotate(objects, axis, numTurns)
+    let { objects, rotationAxis, numTurns } = nextMove
+    this._rotate(objects, rotationAxis, numTurns)
   }
 
   render() {

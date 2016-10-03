@@ -46,11 +46,9 @@ class inputHandler {
 
   /* Steps */
   // ---- On MouseDown:
-  // 1) Get clicked cube and normal and save to this._clickData
-  // 2) Shoot through normal and save cubes to this._cubes
-  // 3) On mousemove, determine whether user moves vertically or horizontally,
-  //    save to this._clickData
-  // 4) "Fill out face"
+  // 1) Get clicked cube and normal
+  // 2) Determine shoot and fill direction based on mousemovement
+  // 4) "Fill out face", save to this._cubes
   // 5) Animate this._cubes based on mouse movement
   // ---- On Mouseup:
   // 1) Snap face to nearest position
@@ -65,12 +63,13 @@ class inputHandler {
 
     let clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
 
-    this._recordMoveProperty('startCoord', clickData.object.position.clone())
-    this._recordMoveProperty('shoot', clickData.normal)
 
     if (!clickData) {
+      this._recordMoveProperty('allCubes', g.allCubes)
       this._clickOffCube(clickData)
     } else {
+      this._recordMoveProperty('startCoord', clickData.object.position.clone())
+      this._recordMoveProperty('shoot', clickData.normal)
       this._clickOnCube(clickData)
     }
 
@@ -80,6 +79,8 @@ class inputHandler {
   _clickOffCube(clickData) {
     this._detectClickDirection().then(() => {
       this._rotationAxis = this._clickDirection === 'x' ? 'y' : 'x'
+      this._recordMoveProperty('rotationAxis', this._rotationAxis)
+
       animator.grip(g.allCubes, this._rotationAxis)
 
       this.$canvas.on('mousemove.input', this._mousemove.bind(this))
@@ -93,10 +94,6 @@ class inputHandler {
       let fillOutAxis = this._normalMap[clickData.normal][this._clickDirection]
       this._cubes = grabber.slice(clickData.object.position, clickData.normal, fillOutAxis)
 
-      // determine which axis cubes should rotate around
-      // let normalVector = vectorFromString(clickData.normal)
-      // let fillOutVector = vectorFromString(fillOutAxis)
-      // this._rotationAxis = stringFromVector(normalVector.cross(fillOutVector))
       this._rotationAxis = cross(clickData.normal, fillOutAxis)
 
       // prepare animator for rotating correct cubes
@@ -104,7 +101,7 @@ class inputHandler {
       this.$canvas.on('mousemove.input', this._mousemove.bind(this))
 
       this._recordMoveProperty('fill', fillOutAxis)
-      // this._recordMoveProperty('rotationAxis', this._rotationAxis)
+      this._recordMoveProperty('rotationAxis', this._rotationAxis)
     })
   }
 
@@ -157,14 +154,18 @@ class inputHandler {
         rubiksCube.recordMove(this._moveRecord)
       }
 
-      this._currentX = null
-      this._currentY = null
-      this._cubes = null
-      this._rotationAxis = null
-      this._moveRecord = {}
+      this._reset()
     })
 
     this.$canvas.off('mousemove.input')
+  }
+
+  _reset() {
+    this._currentX = null
+    this._currentY = null
+    this._cubes = null
+    this._rotationAxis = null
+    this._moveRecord = {}
   }
 
   _recordMoveProperty(key, val) {

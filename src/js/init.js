@@ -84,10 +84,6 @@ const createLeftAndRight = () => {
           g.startPos - (y * (g.cubieSize + g.cubieOffset)),
           g.startPos - (z * (g.cubieSize + g.cubieOffset))
         );
-
-        let d = g.dimensions - 1
-        if (x === 0 && y === 0 && z === 0) grabber.setAnchor1(cubie)
-        if (x === 1 && y === d && z === d) grabber.setAnchor2(cubie)
       }
     }
   }
