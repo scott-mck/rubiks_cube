@@ -172,9 +172,7 @@ class RubiksCube {
     let face = move[0]
     let faceDetails = this._rotateMap[face]
 
-    let doubleMove = move.indexOf('Double') > -1
-    let objects = grabber.grabFace(face, doubleMove)
-
+    let objects = grabber.grabFace(move)
     let rotationAxis = faceDetails.axis
     let numTurns = faceDetails.dir
 

@@ -1,7 +1,7 @@
 import THREE from 'three'
 import scene from './scene'
 import g from './globals'
-import { vectorFromString, stringFromVector } from './utils/vector'
+import { vectorFromString, stringFromVector, cross } from './utils/vector'
 
 class Grabber {
   constructor() {}
@@ -20,33 +20,28 @@ class Grabber {
     }
   }
 
-  grabFace(str) {
-    if (str[0] === 'x' || str[0] === 'y') {
+  grabFace(move) {
+    if (move[0] === 'x' || move[0] === 'y') {
       return g.allCubes
     }
 
-    let { startCoord, shoot, fill } = this._getMoveInstructions(str)
+    let { startCoord, shoot, fill } = this._getMoveInstructions(move)
     let cubes = this.slice(startCoord, shoot, fill)
 
-    this.filterIntersects(cubes)
-    this.fillOutFace(cubes, fill)
+    if (move.indexOf('Double') > -1) {
+      let dir = this._faceMap[move[0]].dir
+      let subtractionVector = vectorFromString(cross(shoot, fill), dir * -g.cubieDistance)
+      let newStartCoord = startCoord.sub(subtractionVector)
 
-    // if (doubleMove) {
-    //   let subtractVector = vectorFromString('x', g.cubieSize * face.dir * -1)
-    //   let newAnchorPos = face.anchor.clone().sub(subtractVector)
-    //   raycaster = new THREE.Raycaster(newAnchorPos, shootDir)
-    //
-    //   let doubleIntersects = this.raycast(raycaster)
-    //   this.filterIntersects(doubleIntersects)
-    //   this.fillOutFace(doubleIntersects, fillDir)
-    //   cubes = cubes.concat(doubleIntersects)
-    // }
+      let doubleCubes = this.slice(newStartCoord, shoot, fill)
+      cubes = cubes.concat(doubleCubes)
+    }
 
     return cubes
   }
 
-  _getMoveInstructions(str) {
-    let face = this._faceMap[str]
+  _getMoveInstructions(move) {
+    let face = this._faceMap[move[0]]
 
     let startCoord = face.anchor.clone()
     let shoot = vectorFromString(face.shoot, face.dir)

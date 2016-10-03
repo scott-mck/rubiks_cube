@@ -59821,12 +59821,12 @@ var Grabber = function () {
     }
   }, {
     key: 'grabFace',
-    value: function grabFace(str) {
-      if (str[0] === 'x' || str[0] === 'y') {
+    value: function grabFace(move) {
+      if (move[0] === 'x' || move[0] === 'y') {
         return g.allCubes;
       }
 
-      var _getMoveInstructions2 = this._getMoveInstructions(str);
+      var _getMoveInstructions2 = this._getMoveInstructions(move);
 
       var startCoord = _getMoveInstructions2.startCoord;
       var shoot = _getMoveInstructions2.shoot;
@@ -59834,26 +59834,21 @@ var Grabber = function () {
 
       var cubes = this.slice(startCoord, shoot, fill);
 
-      this.filterIntersects(cubes);
-      this.fillOutFace(cubes, fill);
+      if (move.indexOf('Double') > -1) {
+        var dir = this._faceMap[move[0]].dir;
+        var subtractionVector = vectorFromString(cross(shoot, fill), dir * -g.cubieDistance);
+        var newStartCoord = startCoord.sub(subtractionVector);
 
-      // if (doubleMove) {
-      //   let subtractVector = vectorFromString('x', g.cubieSize * face.dir * -1)
-      //   let newAnchorPos = face.anchor.clone().sub(subtractVector)
-      //   raycaster = new THREE.Raycaster(newAnchorPos, shootDir)
-      //
-      //   let doubleIntersects = this.raycast(raycaster)
-      //   this.filterIntersects(doubleIntersects)
-      //   this.fillOutFace(doubleIntersects, fillDir)
-      //   cubes = cubes.concat(doubleIntersects)
-      // }
+        var doubleCubes = this.slice(newStartCoord, shoot, fill);
+        cubes = cubes.concat(doubleCubes);
+      }
 
       return cubes;
     }
   }, {
     key: '_getMoveInstructions',
-    value: function _getMoveInstructions(str) {
-      var face = this._faceMap[str];
+    value: function _getMoveInstructions(move) {
+      var face = this._faceMap[move[0]];
 
       var startCoord = face.anchor.clone();
       var shoot = vectorFromString(face.shoot, face.dir);
@@ -60167,9 +60162,7 @@ var RubiksCube = function () {
       var face = move[0];
       var faceDetails = this._rotateMap[face];
 
-      var doubleMove = move.indexOf('Double') > -1;
-      var objects = grabber$1.grabFace(face, doubleMove);
-
+      var objects = grabber$1.grabFace(move);
       var rotationAxis = faceDetails.axis;
       var numTurns = faceDetails.dir;
 
