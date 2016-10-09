@@ -20,15 +20,32 @@ class Animator {
     scene.add(this._rotater2)
 
     this._emptyRotaters = [this._rotater1, this._rotater2]
+    this._onCompletes = []
   }
 
   init() {
     TweenMax.ticker.addEventListener('tick', this.render.bind(this))
   }
 
+  addCallback(callback) {
+    if (!callback) {
+      return
+    }
+
+    this._onCompletes.push(callback)
+  }
+
+  executeCallbacks() {
+    while (this._onCompletes.length) {
+      this._onCompletes.pop()()
+    }
+  }
+
   // jump-starts animation sequence: looking for rubiksCube#nextMove and
   // repeats on completion
-  run() {
+  run(onComplete) {
+    this.addCallback(onComplete)
+
     if (!this.animating) {
       this._next()
     }
@@ -75,6 +92,7 @@ class Animator {
   _next() {
     let nextMove = rubiksCube.nextMove()
     if (!nextMove) {
+      this.executeCallbacks()
       return
     }
 
