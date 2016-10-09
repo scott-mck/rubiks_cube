@@ -14,4 +14,4 @@
 -- separate sass files
 -- fix clicking on canvas then dragging off
 -- there are two sets of logic for moving: mouse and keyboard. make one.
--- refactor starting and stopping timer in RubiksCube
+-- de-complexify storing and returning move data in rubiks-cube.js
