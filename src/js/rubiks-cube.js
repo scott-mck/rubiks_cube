@@ -2,7 +2,7 @@ import THREE from 'three'
 import grabber from './grabber'
 import animator from './animator'
 import g from './globals'
-import { vectorFromString } from './utils/vector'
+import { vectorFromString, cross } from './utils/vector'
 
 class RubiksCube {
   constructor() {
@@ -25,10 +25,6 @@ class RubiksCube {
   move(move) {
     this._queueMove(move, true)
     this._recordMove(move)
-
-    if (this._willAlter(move) && this._isScrambled) {
-      timer.start()
-    }
   }
 
   // @param {string|object} move - A notation string or instructions to grab the correct face
@@ -44,7 +40,9 @@ class RubiksCube {
   }
 
   nextMove() {
-    if (this.checkIfSolved()) {
+    if (this.isSolved() && timer.timing) {
+      timer.stop()
+      this.reset()
       return
     }
 
@@ -53,18 +51,29 @@ class RubiksCube {
       return
     }
 
-    return this._prepareForAnimation(move)
+    let animationData = this._getAnimationData(move)
+
+    if (this._scrambled && this._willAlter(animationData)) {
+      this._scrambled = false
+      timer.start()
+    }
+
+    return animationData
   }
 
   scramble() {
+    this._scrambling = true
+
     for (let i = 0; i < 25; i++) {
       let randomMove = this.randomMove()
       this._queueMove(randomMove)
       this.recordMove(randomMove)
     }
-    animator.run()
 
-    this._isScrambled = true
+    animator.run(() => {
+      this._scrambling = false
+      this._scrambled = true
+    })
     timer.reset()
   }
 
@@ -82,24 +91,10 @@ class RubiksCube {
 
     let shoot = normal
     let fill = axes.splice(~~(Math.random() * axes.length), 1)[0]
+    let rotationAxis = cross(shoot, fill)
     let numTurns = Math.random() < 0.5 ? 1 : -1
 
     return { startCoord, shoot, fill, rotationAxis, numTurns }
-  }
-
-  checkIfSolved() {
-    if (!this._isScrambled) {
-      return false
-    }
-
-    if (this.isSolved()) {
-      timer.stop()
-      this._moves = []
-      this._isScrambled = false
-      return true
-    }
-
-    return false
   }
 
   isSolved() {
@@ -128,6 +123,11 @@ class RubiksCube {
       this._queueMove(reverseMove)
     }
     animator.run()
+  }
+
+  reset() {
+    this._moves = []
+    this._solveMoves = []
   }
 
   reverseNotation(move) {
@@ -160,11 +160,11 @@ class RubiksCube {
     return isSolved
   }
 
-  _prepareForAnimation(move) {
+  _getAnimationData(move) {
     if (typeof move === 'string') {
       return this._getAnimationDataFromNotation(move)
     } else {
-      return this._getAnimationData(move)
+      return this._getAnimationDataFromInstructions(move)
     }
   }
 
@@ -183,13 +183,17 @@ class RubiksCube {
     return { objects, rotationAxis, numTurns }
   }
 
-  _getAnimationData({ allCubes, startCoord, shoot, fill, rotationAxis, numTurns }) {
+  _getAnimationDataFromInstructions({ allCubes, startCoord, shoot, fill, rotationAxis, numTurns }) {
     let objects = allCubes ? allCubes: grabber.slice(startCoord, shoot, fill)
     return { objects, rotationAxis, numTurns }
   }
 
   _willAlter(move) {
-    return ['x', 'y'].indexOf(move[0]) === -1
+    if (typeof move === 'string') {
+      return ['x', 'y'].indexOf(move[0]) === -1
+    } else {
+      return move.objects.length <= g.dimensions ** 2
+    }
   }
 }
 
