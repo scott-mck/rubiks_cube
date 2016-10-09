@@ -12,8 +12,6 @@
     "js": "rollup -c -f iife -o dist/built.js",
     "js:ugly": "npm run js && uglifyjs dist/built.js -mc -o dist/built.js",
     "js:watch": "npm run js -- --watch",
-    "prejs": "babel-node scripts/js-start.js",
-    "postjs": "babel-node scripts/js-end.js",
     "watch": "npm-run-all -p css:watch js:watch"
   },
   "repository": {
