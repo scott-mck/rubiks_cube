@@ -192,7 +192,7 @@ class RubiksCube {
     if (typeof move === 'string') {
       return ['x', 'y'].indexOf(move[0]) === -1
     } else {
-      return move.objects.length <= g.dimensions ** 2
+      return move.objects.length <= Math.pow(g.dimensions, 2)
     }
   }
 }
