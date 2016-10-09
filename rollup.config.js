@@ -14,12 +14,5 @@ export default {
     commonjs({
       include: 'node_modules/**'
     })
-  ],
-  targets: [
-    {
-      dest: 'dist/built.js',
-      moduleName: 'built.js',
-      format: 'iife'
-    }
   ]
 }
