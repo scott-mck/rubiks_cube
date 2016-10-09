@@ -149,7 +149,7 @@ class inputHandler {
 
       this._recordMoveProperty('numTurns', numTurns)
 
-      let solved = rubiksCube.checkIfSolved()
+      let solved = rubiksCube.isSolved()
       if (!solved) {
         rubiksCube.recordMove(this._moveRecord)
       }
