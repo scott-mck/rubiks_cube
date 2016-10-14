@@ -74,7 +74,7 @@ class Animator {
       this._wait(this._complete.bind(this))
     }
 
-    TweenMax.to(this._currentRotater.rotation, DURATION, {
+    TweenMax.to(this._currentRotater.rotation, DURATION * Math.abs(numTurns), {
       [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
       ease: EASE,
       onComplete: onComplete
