@@ -37,9 +37,9 @@ class inputHandler {
   }
 
   addEvents() {
-    $('#scramble').click(() => {
-      rubiksCube.scramble()
-    })
+    $('#scramble').click(() => rubiksCube.scramble())
+    $('#solve').click(() => rubiksCube.solve())
+
     $(window).on('keyup', this.type.bind(this))
     this.$canvas.on('mousedown', this.mousedown.bind(this))
   }
