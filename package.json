@@ -9,9 +9,9 @@
     "css": "node-sass src/scss/main.scss dist/built.css",
     "css:ugly": "npm run css -- --output-style=compressed",
     "css:watch": "onchange -i 'src/scss/**/*.scss' -- npm run css",
-    "js": "rollup -c -f iife -o dist/built.js",
-    "js:ugly": "npm run js && uglifyjs dist/built.js -mc -o dist/built.js",
-    "js:watch": "npm run js -- --watch",
+    "js": "rollup -c",
+    "js:ugly": "npm run js | uglifyjs dist/built.js -mc -o dist/built.js",
+    "js:watch": "npm run js -- rollup-server.config.js --watch",
     "watch": "npm-run-all -p css:watch js:watch"
   },
   "repository": {
