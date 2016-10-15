@@ -1,3 +1,5 @@
+import THREE from 'three'
+
 export const stringFromVector = (vector) => {
   if (Math.abs(Math.round(vector.x)) >= 1) return 'x'
   if (Math.abs(Math.round(vector.y)) >= 1) return 'y'
