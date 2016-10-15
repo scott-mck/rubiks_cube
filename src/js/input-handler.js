@@ -88,7 +88,7 @@ class inputHandler {
     this.$canvas.one('mouseup', this._mouseup.bind(this))
   }
 
-  _clickOnCube(clickData) {
+  async _clickOnCube(clickData) {
     await this._detectClickDirection()
 
     // grab correct cubes based on mouse click and movement
