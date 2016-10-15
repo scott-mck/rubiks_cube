@@ -1,4 +1,4 @@
-import $ from 'jquery'
+import toArray from 'to-array'
 import TweenMax from 'gsap'
 import scene from './scene'
 import camera from './camera'
@@ -8,43 +8,30 @@ import init from './init'
 
 const SELECT_DURATION = 0.7
 
-let $window
-let $backdrop
-let $select
-let $choices
-let $canvas
-let $expand
-let $sidebar
-
-let canvasWidth
-let canvasHeight
-let windowWidth
-let windowHeight
-let scale
+let select
+let choices
+let canvas
 let dimensions
-
 let timeline = new TimelineMax({ paused: true })
 
 export default {
 
   init() {
-    $window = $(window)
-    $backdrop = $('.backdrop')
-    $select = $('.select')
-    $choices = $('.cube-size')
-    $canvas = $('#canvas')
-    $expand = $('#expand')
-    $sidebar = $('#sidebar')
+    select = document.querySelector('.select')
+    choices = toArray(document.querySelectorAll('.cube-size'))
+    canvas = document.querySelector('#canvas')
 
     renderer.setPixelRatio(devicePixelRatio)
-    $canvas.append(renderer.domElement)
+    canvas.appendChild(renderer.domElement)
 
     // $window.resize(resizeWindow)
-    $window.click(e => e.preventDefault())
+    window.addEventListener('click', e => e.preventDefault())
 
-    $choices.click((e) => {
-      dimensions = parseInt($(e.currentTarget).find('.choice').attr('id'))
-      timeline.reverse()
+    choices.forEach((choice) => {
+      choice.addEventListener('click', (e) => {
+        dimensions = parseInt(e.currentTarget.querySelector('.choice').getAttribute('id'))
+        timeline.reverse()
+      })
     })
 
     createTimeline()
@@ -56,21 +43,10 @@ export default {
 }
 
 let resizeWindow = () => {
-  canvasWidth = $canvas.width()
-  canvasHeight = $canvas.height()
-  windowWidth = $window.width()
-  windowHeight = $window.height()
-
-  // if (windowWidth > windowHeight) {
-  //   scale = windowWidth / canvasWidth
-  //   if (canvasHeight * scale > windowHeight) scale = windowHeight / canvasHeight
-  // } else {
-  //   scale = windowHeight / canvasHeight
-  //   if (canvasWidth * scale > windowWidth) scale = windowWidth / canvasWidth
-  // }
-
-  // $canvas.css('width', canvasWidth + 'px')
-  // $canvas.css('height', canvasHeight + 'px')
+  let canvasWidth = canvas.clientWidth
+  let canvasHeight = canvas.clientHeight
+  let windowWidth = window.clientWidth
+  let windowHeight = window.clientHeight
 
   camera.aspect = (canvasWidth) / (canvasHeight)
   camera.updateProjectionMatrix()
@@ -78,15 +54,14 @@ let resizeWindow = () => {
 }
 
 let createTimeline = () => {
-  timeline.to($select, SELECT_DURATION, {
+  timeline.to(select, SELECT_DURATION, {
     opacity: 1,
     y: 50,
     ease: Power3.easeOut
   })
 
   timeline.eventCallback('onReverseComplete', () => {
-    $select.hide()
-    $backdrop.hide()
+    select.style.display = 'none'
     initGlobals(dimensions)
     init()
   })
