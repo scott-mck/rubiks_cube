@@ -137,27 +137,26 @@ class inputHandler {
     }
   }
 
-  _mouseup(e) {
-    animator.snap().then((totalRotation) => {
-      if (totalRotation ===  0) {
-        return
-      }
-
-      let dir = totalRotation > 0 ? 1 : -1
-      let numTurns = Math.abs(totalRotation) / (Math.PI / 2)
-      numTurns *= dir
-
-      this._recordMoveProperty('numTurns', numTurns)
-
-      let solved = rubiksCube.isSolved()
-      if (!solved) {
-        rubiksCube.recordMove(this._moveRecord)
-      }
-
-      this._reset()
-    })
-
+  async _mouseup(e) {
     this.$canvas.off('mousemove.input')
+
+    let totalRotation = await animator.snap()
+    if (totalRotation ===  0) {
+      return
+    }
+
+    let dir = totalRotation > 0 ? 1 : -1
+    let numTurns = Math.abs(totalRotation) / (Math.PI / 2)
+    numTurns *= dir
+
+    this._recordMoveProperty('numTurns', numTurns)
+
+    let solved = rubiksCube.isSolved()
+    if (!solved) {
+      rubiksCube.recordMove(this._moveRecord)
+    }
+
+    this._reset()
   }
 
   _reset() {
