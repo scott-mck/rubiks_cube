@@ -6,7 +6,9 @@ export default {
   entry: './src/js/main.js',
   plugins: [
     babel({
-      exclude: 'node_modules/**'
+      exclude: 'node_modules/**',
+      externalHelpers: false,
+      runtimeHelpers: true
     }),
     resolve({
       main: true
