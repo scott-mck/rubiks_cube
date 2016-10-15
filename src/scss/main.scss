@@ -1,3 +1,5 @@
+@import './timer';
+
 html, body {
   height: 100%;
 }
@@ -6,18 +8,6 @@ body {
   position: relative;
   margin: 0px;
   font-family: 'AMC', sans-serif;
-}
-
-#timer {
-  z-index: -1;
-  position: absolute;
-  font-size: 50px;
-  width: 100%;
-
-  p {
-    width: 100px;
-    margin: auto;
-  }
 }
 
 .button {
