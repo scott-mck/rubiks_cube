@@ -76,33 +76,33 @@ class inputHandler {
     this.$canvas.one('mouseup', this._mouseup.bind(this))
   }
 
-  _clickOffCube(clickData) {
-    this._detectClickDirection().then(() => {
-      this._rotationAxis = this._clickDirection === 'x' ? 'y' : 'x'
-      this._recordMoveProperty('rotationAxis', this._rotationAxis)
+  async _clickOffCube(clickData) {
+    await this._detectClickDirection()
 
-      animator.grip(g.allCubes, this._rotationAxis)
+    this._rotationAxis = this._clickDirection === 'x' ? 'y' : 'x'
+    this._recordMoveProperty('rotationAxis', this._rotationAxis)
 
-      this.$canvas.on('mousemove.input', this._mousemove.bind(this))
-      this.$canvas.one('mouseup', this._mouseup.bind(this))
-    })
+    animator.grip(g.allCubes, this._rotationAxis)
+
+    this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+    this.$canvas.one('mouseup', this._mouseup.bind(this))
   }
 
   _clickOnCube(clickData) {
-    this._detectClickDirection().then(() => {
-      // grab correct cubes based on mouse click and movement
-      let fillOutAxis = this._normalMap[clickData.normal][this._clickDirection]
-      this._cubes = grabber.slice(clickData.object.position, clickData.normal, fillOutAxis)
+    await this._detectClickDirection()
 
-      this._rotationAxis = cross(clickData.normal, fillOutAxis)
+    // grab correct cubes based on mouse click and movement
+    let fillOutAxis = this._normalMap[clickData.normal][this._clickDirection]
+    this._cubes = grabber.slice(clickData.object.position, clickData.normal, fillOutAxis)
 
-      // prepare animator for rotating correct cubes
-      animator.grip(this._cubes, this._rotationAxis)
-      this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+    this._rotationAxis = cross(clickData.normal, fillOutAxis)
 
-      this._recordMoveProperty('fill', fillOutAxis)
-      this._recordMoveProperty('rotationAxis', this._rotationAxis)
-    })
+    // prepare animator for rotating correct cubes
+    animator.grip(this._cubes, this._rotationAxis)
+    this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+
+    this._recordMoveProperty('fill', fillOutAxis)
+    this._recordMoveProperty('rotationAxis', this._rotationAxis)
   }
 
   _detectClickDirection() {
