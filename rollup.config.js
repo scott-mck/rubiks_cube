@@ -7,7 +7,7 @@ export default {
   plugins: [
     babel({
       exclude: 'node_modules/**',
-      externalHelpers: false,
+      externalHelpers: true,
       runtimeHelpers: true
     }),
     resolve({
