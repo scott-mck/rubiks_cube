@@ -1,0 +1,21 @@
+#timer {
+  opacity: 0;
+  z-index: -1;
+  position: absolute;
+  font-size: 50px;
+  width: 100%;
+  text-align: center;
+
+  .timer-text {
+    display: inline-block;
+    margin-right: -15px;
+
+    &.time {
+      width: 55px;
+    }
+
+    &.dot {
+      width: 15px;
+    }
+  }
+}

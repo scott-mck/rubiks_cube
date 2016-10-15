@@ -1,4 +1,5 @@
-import $ from 'jquery'
+const DEFAULT_COLOR = 'rgb(0, 0, 0)'
+const SUCCESS_COLOR = 'rgb(0, 200, 0)'
 
 class Timer {
   constructor() {
@@ -7,10 +8,13 @@ class Timer {
   }
 
   init() {
-    this.$el = $('#timer')
-    this.$textEl = $('<p>')
-    this.$el.append(this.$textEl)
-    this._updateContent()
+    this.el = document.querySelector('#timer')
+    this.minute = this.el.querySelector('.minute')
+    this.second = this.el.querySelector('.second')
+    this.milli = this.el.querySelector('.milli')
+
+    TweenMax.set(this.el, { color: DEFAULT_COLOR })
+    TweenMax.to(this.el, 0.5, { opacity: 1 })
   }
 
   start() {
@@ -25,19 +29,28 @@ class Timer {
   }
 
   stop() {
+    if (!this.timing) {
+      return
+    }
+
     clearInterval(this._interval)
     this._timeline.stop()
-    this._timeline = new TimelineMax({ paused: true })
     this.timing = false
+
+    new TimelineMax()
+      .to(this.el, 0.1, { scale: 1.1, color: SUCCESS_COLOR })
+      .to(this.el, 0.1, { scale: 1 })
   }
 
   reset() {
-    this._timeline.to(this, 1, {
+    this._timeline = new TimelineMax({ paused: true })
+
+    TweenMax.to(this, 1, {
       _elapsedTime: `-=${this._elapsedTime}`,
       ease: Circ.easeInOut,
       onUpdate: () => this._updateContent()
     })
-    this._timeline.play()
+    TweenMax.to(this.el, 1, { color: DEFAULT_COLOR })
   }
 
   _animate() {
@@ -51,9 +64,9 @@ class Timer {
   }
 
   _updateContent() {
-    let minute = ~~(this._elapsedTime / 60)
-    let second = ~~(this._elapsedTime % 60)
-    let milli = (this._elapsedTime - (minute * 60) - second).toFixed(2).slice(2)
+    let minute = ~~(this._elapsedTime / 60 / 60)
+    let second = ~~(this._elapsedTime / 60)
+    let milli = ~~(this._elapsedTime * 100 / 60) % 100
 
     if (minute < 10) {
       minute = '0' + minute
@@ -61,12 +74,13 @@ class Timer {
     if (second < 10) {
       second = '0' + second
     }
-    if (milli === 0) {
+    if (milli < 10) {
       milli = '0' + milli
     }
 
-    this.content = `${minute}:${second}.${milli}`
-    this.$textEl.text(this.content)
+    this.minute.textContent = minute
+    this.second.textContent = second
+    this.milli.textContent = milli
   }
 }
 
