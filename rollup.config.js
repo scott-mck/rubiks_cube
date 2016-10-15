@@ -1,6 +1,7 @@
 import babel from 'rollup-plugin-babel'
 import commonjs from 'rollup-plugin-commonjs'
 import resolve from 'rollup-plugin-node-resolve'
+import server from 'rollup-plugin-serve'
 
 export default {
   entry: './src/js/main.js',
@@ -15,6 +16,9 @@ export default {
     }),
     commonjs({
       include: 'node_modules/**'
+    }),
+    server({
+      port: 8080
     })
   ]
 }
