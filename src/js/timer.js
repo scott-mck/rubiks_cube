@@ -2,8 +2,8 @@ import $ from 'jquery'
 
 class Timer {
   constructor() {
-    this.fps = 30
     this._elapsedTime = 0
+    this._timeline = new TimelineMax({ paused : true })
   }
 
   init() {
@@ -17,31 +17,44 @@ class Timer {
     if (this.timing) {
       return
     }
+
     this.timing = true
-
-    this._startTime = new Date()
-    this._interval = setInterval(() => {
-      this._elapsedTime = (new Date() - this._startTime) / 1000
-      let minute = ~~(this._elapsedTime / 60)
-      let second = ~~(this._elapsedTime % 60)
-      let milli = (this._elapsedTime - (minute * 60) - second).toFixed(2).slice(2)
-
-      this._updateContent(minute, second, milli)
-    }, 1000 / this.fps)
+    this._elapsedTime = 0
+    this._animate()
+    this._interval = setInterval(() => this._animate(), 1000)
   }
 
   stop() {
     clearInterval(this._interval)
+    this._timeline.stop()
+    this._timeline = new TimelineMax({ paused: true })
     this.timing = false
-    this._startTime = null
-    this._elapsedTime = 0
   }
 
   reset() {
-    this._updateContent()
+    this._timeline.to(this, 1, {
+      _elapsedTime: `-=${this._elapsedTime}`,
+      ease: Circ.easeInOut,
+      onUpdate: () => this._updateContent()
+    })
+    this._timeline.play()
   }
 
-  _updateContent(minute = 0, second = 0, milli = 0) {
+  _animate() {
+    this._timeline.to(this, 1, {
+      _elapsedTime: '+=60',
+      ease: 'linear',
+      onUpdate: () => this._updateContent()
+    });
+
+    this._timeline.play()
+  }
+
+  _updateContent() {
+    let minute = ~~(this._elapsedTime / 60)
+    let second = ~~(this._elapsedTime % 60)
+    let milli = (this._elapsedTime - (minute * 60) - second).toFixed(2).slice(2)
+
     if (minute < 10) {
       minute = '0' + minute
     }
