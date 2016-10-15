@@ -11,7 +11,7 @@
     "css:watch": "onchange -i 'src/scss/**/*.scss' -- npm run css",
     "js": "rollup -c",
     "js:ugly": "npm run js && uglifyjs dist/built.js -mc -o dist/built.js",
-    "js:watch": "npm run js -- rollup-server.config.js --watch",
+    "js:watch": "npm run js -- --watch --serve",
     "watch": "npm-run-all -p css:watch js:watch"
   },
   "repository": {
