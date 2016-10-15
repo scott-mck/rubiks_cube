@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import THREE from 'three'
 import rubiksCube from './rubiks-cube'
 import animator from './animator'
