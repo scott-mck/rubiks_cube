@@ -1,6 +1,7 @@
 import THREE from 'three'
 import scene from './scene'
 import grabber from './grabber'
+import camera from './camera'
 import inputHandler from './input-handler'
 import animator from './animator'
 import g from './globals'

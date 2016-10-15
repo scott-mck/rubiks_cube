@@ -1,4 +1,6 @@
 import THREE from 'three'
+import timer from './timer'
+import scene from './scene'
 import grabber from './grabber'
 import animator from './animator'
 import g from './globals'

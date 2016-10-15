@@ -1,5 +1,7 @@
 import THREE from 'three'
 import scene from './scene'
+import camera from './camera'
+import renderer from './renderer'
 import g from './globals'
 import { vectorFromString, stringFromVector, cross } from './utils/vector'
 
