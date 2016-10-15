@@ -29,19 +29,23 @@ class inputHandler {
     }
 
     this._moveRecord = {}
+
+    this._mousedown = this._mousedown.bind(this)
+    this._mousemove = this._mousemove.bind(this)
+    this._mouseup = this._mouseup.bind(this)
   }
 
   init() {
-    this.$canvas = $('#canvas')
+    this.canvas = document.querySelector('#canvas')
     this.addEvents()
   }
 
   addEvents() {
-    $('#scramble').click(() => rubiksCube.scramble())
-    $('#solve').click(() => rubiksCube.solve())
+    document.querySelector('#scramble').addEventListener('click', () => rubiksCube.scramble())
+    document.querySelector('#solve').addEventListener('click', () => rubiksCube.solve())
 
-    $(window).on('keyup', this.type.bind(this))
-    this.$canvas.on('mousedown', this.mousedown.bind(this))
+    window.addEventListener('keyup', (e) => this.type(e))
+    this.canvas.addEventListener('mousedown', this._mousedown)
   }
 
   /* Steps */
@@ -53,7 +57,7 @@ class inputHandler {
   // ---- On Mouseup:
   // 1) Snap face to nearest position
   // 2) Reset()
-  mousedown(e) {
+  _mousedown(e) {
     let canvasBox = renderer.domElement.getBoundingClientRect()
     let canvasMouseX = event.clientX - canvasBox.left
     let canvasMouseY = event.clientY - canvasBox.top
@@ -62,7 +66,6 @@ class inputHandler {
     this._currentY = e.clientY
 
     let clickData = grabber.getClickData(canvasMouseX, canvasMouseY)
-
 
     if (!clickData) {
       this._recordMoveProperty('allCubes', g.allCubes)
@@ -73,7 +76,7 @@ class inputHandler {
       this._clickOnCube(clickData)
     }
 
-    this.$canvas.one('mouseup', this._mouseup.bind(this))
+    this.canvas.addEventListener('mouseup', this._mouseup)
   }
 
   async _clickOffCube(clickData) {
@@ -84,8 +87,8 @@ class inputHandler {
 
     animator.grip(g.allCubes, this._rotationAxis)
 
-    this.$canvas.on('mousemove.input', this._mousemove.bind(this))
-    this.$canvas.one('mouseup', this._mouseup.bind(this))
+    this.canvas.addEventListener('mousemove', this._mousemove)
+    this.canvas.addEventListener('mouseup', this._mouseup)
   }
 
   async _clickOnCube(clickData) {
@@ -99,24 +102,25 @@ class inputHandler {
 
     // prepare animator for rotating correct cubes
     animator.grip(this._cubes, this._rotationAxis)
-    this.$canvas.on('mousemove.input', this._mousemove.bind(this))
+    this.canvas.addEventListener('mousemove', this._mousemove)
 
     this._recordMoveProperty('fill', fillOutAxis)
     this._recordMoveProperty('rotationAxis', this._rotationAxis)
   }
 
   _detectClickDirection() {
-    let promise = new Promise((resolve) => {
-      this.$canvas.one('mousemove', (e) => {
+    return new Promise((resolve) => {
+      let mouseMoveHandler = (e) => {
+        this.canvas.removeEventListener('mousemove', mouseMoveHandler)
         let magX = e.clientX - this._currentX
         let magY = e.clientY - this._currentY
 
         this._clickDirection = Math.abs(magX) >= Math.abs(magY) ? 'x' : 'y'
         resolve()
-      })
-    })
+      }
 
-    return promise
+      this.canvas.addEventListener('mousemove', mouseMoveHandler)
+    })
   }
 
   _mousemove(e) {
@@ -138,7 +142,8 @@ class inputHandler {
   }
 
   async _mouseup(e) {
-    this.$canvas.off('mousemove.input')
+    this.canvas.removeEventListener('mousemove', this._mousemove)
+    this.canvas.removeEventListener('mouseup', this._mouseup)
 
     let totalRotation = await animator.snap()
     if (totalRotation ===  0) {
