@@ -1,5 +1,3 @@
-import $ from 'jquery'
-
 const DEFAULT_COLOR = 'rgb(0, 0, 0)'
 const SUCCESS_COLOR = 'rgb(0, 200, 0)'
 
@@ -10,12 +8,13 @@ class Timer {
   }
 
   init() {
-    this.$el = $('#timer').css('color', DEFAULT_COLOR)
-    this.$minute = this.$el.find('.minute')
-    this.$second = this.$el.find('.second')
-    this.$milli = this.$el.find('.milli')
+    this.el = document.querySelector('#timer')
+    this.minute = this.el.querySelector('.minute')
+    this.second = this.el.querySelector('.second')
+    this.milli = this.el.querySelector('.milli')
 
-    TweenMax.to(this.$el, 0.5, { opacity: 1 })
+    TweenMax.set(this.el, { color: DEFAULT_COLOR })
+    TweenMax.to(this.el, 0.5, { opacity: 1 })
   }
 
   start() {
@@ -39,8 +38,8 @@ class Timer {
     this.timing = false
 
     new TimelineMax()
-      .to(this.$el, 0.1, { scale: 1.1, color: SUCCESS_COLOR })
-      .to(this.$el, 0.1, { scale: 1 })
+      .to(this.el, 0.1, { scale: 1.1, color: SUCCESS_COLOR })
+      .to(this.el, 0.1, { scale: 1 })
   }
 
   reset() {
@@ -51,7 +50,7 @@ class Timer {
       ease: Circ.easeInOut,
       onUpdate: () => this._updateContent()
     })
-    TweenMax.to(this.$el, 1, { color: DEFAULT_COLOR })
+    TweenMax.to(this.el, 1, { color: DEFAULT_COLOR })
   }
 
   _animate() {
@@ -79,9 +78,9 @@ class Timer {
       milli = '0' + milli
     }
 
-    this.$minute.text(minute)
-    this.$second.text(second)
-    this.$milli.text(milli)
+    this.minute.textContent = minute
+    this.second.textContent = second
+    this.milli.textContent = milli
   }
 }
 
