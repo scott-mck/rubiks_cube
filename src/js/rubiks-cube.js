@@ -42,6 +42,10 @@ class RubiksCube {
   }
 
   nextMove() {
+    if (this.isSolved() && this._moves.length === 0) {
+      this.reset()
+    }
+
     if (this.isSolved() && timer.timing) {
       timer.stop()
       this.reset()
