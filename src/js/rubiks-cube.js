@@ -24,24 +24,24 @@ class RubiksCube {
     this._solveMoves = []
   }
 
-  move(move) {
-    this._queueMove(move, true)
+  async move(move) {
+    this._queueMove(move)
     this._recordMove(move)
+
+    await animator.ready()
+    this._nextMove()
   }
 
   // @param {string|object} move - A notation string or instructions to grab the correct face
-  _queueMove(move, flag) {
+  _queueMove(move) {
     this._moves.push(move)
-    if (flag) {
-      animator.run()
-    }
   }
 
   _recordMove(move) {
     this._solveMoves.push(move)
   }
 
-  nextMove() {
+  async _nextMove() {
     if (this.isSolved() && this._moves.length === 0) {
       this.reset()
     }
@@ -64,7 +64,8 @@ class RubiksCube {
       timer.start()
     }
 
-    return animationData
+    await animator.rotate(animationData)
+    this._nextMove()
   }
 
   scramble() {
@@ -128,7 +129,6 @@ class RubiksCube {
       let reverseMove = this.reverseMove(this._solveMoves.pop())
       this._queueMove(reverseMove)
     }
-    animator.run()
   }
 
   reset() {

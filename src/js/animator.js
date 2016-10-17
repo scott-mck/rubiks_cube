@@ -20,64 +20,54 @@ class Animator {
     scene.add(this._rotater2)
 
     this._emptyRotaters = [this._rotater1, this._rotater2]
-    this._onCompletes = []
   }
 
   init() {
     TweenMax.ticker.addEventListener('tick', this.render.bind(this))
   }
 
-  addCallback(callback) {
-    if (!callback) {
-      return
-    }
-
-    this._onCompletes.push(callback)
+  ready() {
+    return new Promise((resolve) => {
+      if (this.animating) {
+        // this._ready is called in Animator#_complete
+        // Animator expects only one ready callback at a time from RubiksCube.
+        // The ready callback must not be overwritten by any subsequent
+        // RubiksCube#move calls
+        this._ready = this.ready || resolve
+      } else {
+        resolve()
+      }
+    })
   }
 
-  executeCallbacks() {
-    while (this._onCompletes.length) {
-      this._onCompletes.pop()()
-    }
-  }
-
-  // jump-starts animation sequence: looking for rubiksCube#nextMove and
-  // repeats on completion
-  run(onComplete) {
-    this.addCallback(onComplete)
-
-    if (!this.animating) {
-      this._next()
-    }
-  }
-
-  rotate(objects, rotationAxis, numTurns) {
+  rotate({ objects, rotationAxis, numTurns }) {
     if (this.animating) {
       return
     }
 
-    this._rotate(objects, rotationAxis, numTurns)
+    return this._rotate({ objects, rotationAxis, numTurns })
   }
 
-  _rotate(objects, rotationAxis, numTurns) {
-    this.animating = true
+  _rotate({ objects, rotationAxis, numTurns }) {
+    return new Promise((resolve) => {
+      this.animating = true
+      this._currentRotater = this._emptyRotaters.shift()
 
-    this._currentRotater = this._emptyRotaters.shift()
+      for (let i = 0; i < objects.length; i++) {
+        THREE.SceneUtils.attach(objects[i], scene, this._currentRotater)
+      }
 
-    let i
-    for (i = 0; i < objects.length; i++) {
-      THREE.SceneUtils.attach(objects[i], scene, this._currentRotater)
-    }
-
-    let onComplete = () => {
-      this._currentRotater.rotation[rotationAxis] = Math.PI / 2 * numTurns
-      this._wait(this._complete.bind(this))
-    }
-
-    TweenMax.to(this._currentRotater.rotation, DURATION * Math.abs(numTurns), {
-      [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
-      ease: EASE,
-      onComplete: onComplete
+      TweenMax.to(this._currentRotater.rotation, DURATION * Math.abs(numTurns), {
+        [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
+        ease: EASE,
+        onComplete: () => {
+          this._currentRotater.rotation[rotationAxis] = Math.PI / 2 * numTurns
+          this._wait(() => {
+            this._complete()
+            resolve()
+          })
+        }
+      })
     })
   }
 
@@ -89,26 +79,14 @@ class Animator {
     })
   }
 
-  _next() {
-    let nextMove = rubiksCube.nextMove()
-    if (!nextMove) {
-      this.executeCallbacks()
-      return
-    }
-
-    let { objects, rotationAxis, numTurns } = nextMove
-    this._rotate(objects, rotationAxis, numTurns)
-  }
-
   render() {
     renderer.render(scene, camera)
   }
 
   _complete() {
     this.reset()
-
     this.animating = false
-    this._next()
+    this._ready && this._ready()
   }
 
   _wait(callback, count = WAIT_COUNT) {
