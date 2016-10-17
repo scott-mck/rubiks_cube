@@ -82,17 +82,17 @@ class Grabber {
     if (typeof slice === 'string') slice = vectorFromString(slice)
 
     let raycaster = new THREE.Raycaster(startCoord.clone(), shoot)
-
     let cubes = this.raycast(raycaster)
+
     this.filterIntersects(cubes)
     this.fillOutFace(cubes, slice)
 
     return cubes
   }
 
-  fillOutFace(intersects, dir) {
-    if (typeof dir === 'string') {
-      dir = vectorFromString(dir)
+  fillOutFace(intersects, slice) {
+    if (typeof slice === 'string') {
+      slice = vectorFromString(slice)
     }
 
     let cubes = intersects
@@ -109,11 +109,11 @@ class Grabber {
 
     let i, raycaster
     for (i = 0; i < g.dimensions; i++) {
-      raycaster = new THREE.Raycaster(point, dir)
+      raycaster = new THREE.Raycaster(point, slice)
       captures = this.raycast(raycaster)
       cubes = cubes.concat(captures)
 
-      raycaster = new THREE.Raycaster(point, dir.negate())
+      raycaster = new THREE.Raycaster(point, slice.negate())
       captures = this.raycast(raycaster)
       cubes = cubes.concat(captures)
 
