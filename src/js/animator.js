@@ -26,14 +26,20 @@ class Animator {
     TweenMax.ticker.addEventListener('tick', this.render.bind(this))
   }
 
+  _ready(callback) {
+    // For now, only one callback will be saved
+    if (callback) {
+      this._onReady = this._onReady || callback
+    } else {
+      this._onReady && this._onReady()
+      this._onReady = null
+    }
+  }
+
   ready() {
     return new Promise((resolve) => {
       if (this.animating) {
-        // this._ready is called in Animator#_complete
-        // Animator expects only one ready callback at a time from RubiksCube.
-        // The ready callback must not be overwritten by any subsequent
-        // RubiksCube#move calls
-        this._ready = this.ready || resolve
+        this._ready(resolve)
       } else {
         resolve()
       }
@@ -86,7 +92,7 @@ class Animator {
   _complete() {
     this.reset()
     this.animating = false
-    this._ready && this._ready()
+    this._ready()
   }
 
   _wait(callback, count = WAIT_COUNT) {
