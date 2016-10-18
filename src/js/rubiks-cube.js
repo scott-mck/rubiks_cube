@@ -78,19 +78,19 @@ class RubiksCube {
     this._nextMove()
   }
 
-  async scramble() {
+  scramble() {
     for (let i = 0; i < 25; i++) {
       let randomMove = this.randomMove()
       this._queueMove(randomMove)
       this.recordMove(randomMove)
     }
 
-    await animator.ready()
-    this._nextMove()
-    timer.reset()
+    animator.ready().then(() => {
+      this._nextMove()
+      timer.reset()
+    })
 
-    await this.afterMovesCompletion()
-    this._scrambled = true
+    this.afterMovesCompletion().then(() => this._scrambled = true)
   }
 
   afterMovesCompletion() {
