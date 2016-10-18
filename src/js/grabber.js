@@ -149,7 +149,13 @@ class Grabber {
   }
 
   raycast(raycaster) {
-    return raycaster.intersectObjects(scene.children).map(data => data.object)
+    let intersects = raycaster.intersectObjects(scene.children).map((data) => {
+      if (data.object.name === 'cubie') {
+        return data.object
+      }
+    })
+
+    return this.filterIntersects(intersects)
   }
 }
 
