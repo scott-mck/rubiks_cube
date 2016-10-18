@@ -66,12 +66,12 @@ class Animator {
       TweenMax.to(this._currentRotater.rotation, DURATION * Math.abs(numTurns), {
         [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
         ease: EASE,
-        onComplete: () => {
+        onComplete: async () => {
           this._currentRotater.rotation[rotationAxis] = Math.PI / 2 * numTurns
-          this._wait(() => {
-            this._complete()
-            resolve()
-          })
+
+          await this._wait()
+          this._complete()
+          resolve()
         }
       })
     })
@@ -95,18 +95,20 @@ class Animator {
     this._ready()
   }
 
-  _wait(callback, count = WAIT_COUNT) {
-    let loop = () => {
-      if (count === 0) {
-        callback()
-        return
+  _wait(count = WAIT_COUNT) {
+    return new Promise((resolve) => {
+      let loop = () => {
+        if (count === 0) {
+          resolve()
+          return
+        }
+
+        count -= 1
+        requestAnimationFrame(loop)
       }
 
-      count -= 1
-      requestAnimationFrame(loop)
-    }
-
-    loop()
+      loop()
+    })
   }
 
   grip(cubes, axis) {
