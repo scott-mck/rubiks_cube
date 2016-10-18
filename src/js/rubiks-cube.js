@@ -22,13 +22,22 @@ class RubiksCube {
 
     this._moves = []
     this._solveMoves = []
+    this._callbacks = []
   }
 
   async move(move) {
     this._queueMove(move)
     this._recordMove(move)
 
+    // When animator is ready, start animating through the move chain
+    // Make sure to `await animator.ready()` only once, otherwise #_nextMove
+    // gets called multiple times
+    if (this._isWaiting) {
+      return
+    }
+    this._isWaiting = true
     await animator.ready()
+    this._isWaiting = false
     this._nextMove()
   }
 
@@ -42,11 +51,13 @@ class RubiksCube {
   }
 
   async _nextMove() {
-    if (this.isSolved() && this._moves.length === 0) {
+    let isSolved = this.isSolved()
+
+    if (isSolved && this._moves.length === 0) {
       this.reset()
     }
 
-    if (this.isSolved() && timer.timing) {
+    if (isSolved && timer.timing) {
       timer.stop()
       this.reset()
       return
@@ -54,6 +65,7 @@ class RubiksCube {
 
     let move = this._moves.shift()
     if (!move) {
+      this._afterMovesCompletion()
       return
     }
 
@@ -68,20 +80,40 @@ class RubiksCube {
     this._nextMove()
   }
 
-  scramble() {
-    this._scrambling = true
-
+  async scramble() {
     for (let i = 0; i < 25; i++) {
       let randomMove = this.randomMove()
       this._queueMove(randomMove)
       this.recordMove(randomMove)
     }
 
-    animator.run(() => {
-      this._scrambling = false
-      this._scrambled = true
-    })
+    await animator.ready()
+    this._nextMove()
     timer.reset()
+
+    await this.afterMovesCompletion()
+    this._scrambled = true
+  }
+
+  afterMovesCompletion() {
+    return new Promise((resolve) => {
+      if (this._moves.length > 0) {
+        this._afterMovesCompletion(resolve)
+      } else {
+        resolve()
+      }
+    })
+  }
+
+  _afterMovesCompletion(callback) {
+    if (callback) {
+      this._callbacks.push(callback)
+    } else {
+      while (this._callbacks.length) {
+        let callback = this._callbacks.shift()
+        callback && callback()
+      }
+    }
   }
 
   randomMove() {
