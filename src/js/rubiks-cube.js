@@ -36,8 +36,8 @@ class RubiksCube {
       return
     }
     this._isWaiting = true
+    this.afterMovesCompletion().then(() => this._isWaiting = false)
     await animator.ready()
-    this._isWaiting = false
     this._nextMove()
   }
 
