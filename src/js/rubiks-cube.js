@@ -25,7 +25,7 @@ class RubiksCube {
     this._callbacks = []
   }
 
-  async move(move) {
+  move(move) {
     this._queueMove(move)
     this._recordMove(move)
 
@@ -37,8 +37,7 @@ class RubiksCube {
     }
     this._isWaiting = true
     this.afterMovesCompletion().then(() => this._isWaiting = false)
-    await animator.ready()
-    this._nextMove()
+    animator.ready().then(() => this._nextMove())
   }
 
   // @param {string|object} move - A notation string or instructions to grab the correct face
@@ -60,7 +59,6 @@ class RubiksCube {
     if (isSolved && timer.timing) {
       timer.stop()
       this.reset()
-      return
     }
 
     let move = this._moves.shift()
