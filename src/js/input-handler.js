@@ -148,14 +148,10 @@ class inputHandler {
     this.canvas.removeEventListener('mousemove', this._mousemove)
     this.canvas.removeEventListener('mouseup', this._mouseup)
 
-    let totalRotation = await animator.snap()
-    if (totalRotation ===  0) {
+    let numTurns = await animator.snap()
+    if (numTurns === 0) {
       return
     }
-
-    let dir = totalRotation > 0 ? 1 : -1
-    let numTurns = Math.abs(totalRotation) / (Math.PI / 2)
-    numTurns *= dir
 
     this._recordMoveProperty('numTurns', numTurns)
 
