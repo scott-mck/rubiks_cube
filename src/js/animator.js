@@ -19,6 +19,7 @@ class Animator {
     scene.add(this._rotater2)
 
     this._emptyRotaters = [this._rotater1, this._rotater2]
+    this._callbacks = []
   }
 
   init() {
@@ -26,12 +27,13 @@ class Animator {
   }
 
   _ready(callback) {
-    // For now, only one callback will be saved
-    if (callback) {
-      this._onReady = this._onReady || callback
+    if (callback != undefined) {
+      this._callbacks.push(callback)
     } else {
-      this._onReady && this._onReady()
-      this._onReady = null
+      while (this._callbacks.length > 0) {
+        let callback = this._callbacks.shift()
+        callback && callback()
+      }
     }
   }
 
