@@ -120,9 +120,13 @@ class Animator {
       TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, {
         [this._rotationAxis]: `+=${remainder}`,
         onComplete: () => {
-          this._complete()
           let totalRotation = this._currentRotater.rotation[this._rotationAxis]
-          resolve(totalRotation)
+          let dir = totalRotation > 0 ? 1 : -1
+          let numTurns = Math.abs(totalRotation) / (Math.PI / 2) * dir
+
+          this._complete()
+
+          resolve(numTurns)
         }
       })
     })
