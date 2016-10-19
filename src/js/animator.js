@@ -7,7 +7,6 @@ import rubiksCube from './rubiks-cube'
 
 const DURATION = 0.1
 const EASE = 'linear'
-const WAIT_COUNT = 1
 const SNAP_DURATION = 0.3
 
 class Animator {
@@ -47,11 +46,17 @@ class Animator {
   }
 
   rotate({ objects, rotationAxis, numTurns }) {
-    if (this.animating) {
-      return
-    }
+    return new Promise(async (resolve) => {
+      if (this.animating) {
+        return
+      }
 
-    return this._rotate({ objects, rotationAxis, numTurns })
+      await this._rotate({ objects, rotationAxis, numTurns })
+
+      this._currentRotater.rotation[rotationAxis] = Math.PI / 2 * numTurns
+      this._complete()
+      resolve()
+    })
   }
 
   _rotate({ objects, rotationAxis, numTurns }) {
@@ -66,11 +71,7 @@ class Animator {
       TweenMax.to(this._currentRotater.rotation, DURATION * Math.abs(numTurns), {
         [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
         ease: EASE,
-        onComplete: async () => {
-          this._currentRotater.rotation[rotationAxis] = Math.PI / 2 * numTurns
-
-          await this._wait()
-          this._complete()
+        onComplete: () => {
           resolve()
         }
       })
@@ -93,22 +94,6 @@ class Animator {
     this.reset()
     this.animating = false
     this._ready()
-  }
-
-  _wait(count = WAIT_COUNT) {
-    return new Promise((resolve) => {
-      let loop = () => {
-        if (count === 0) {
-          resolve()
-          return
-        }
-
-        count -= 1
-        requestAnimationFrame(loop)
-      }
-
-      loop()
-    })
   }
 
   grip(cubes, axis) {
