@@ -50,6 +50,7 @@ class RubiksCube {
   }
 
   async _nextMove() {
+
     let isSolved = this.isSolved()
 
     if (isSolved && this._moves.length === 0) {
@@ -104,7 +105,7 @@ class RubiksCube {
   }
 
   _afterMovesCompletion(callback) {
-    if (callback) {
+    if (callback != undefined) {
       this._callbacks.push(callback)
     } else {
       while (this._callbacks.length) {
