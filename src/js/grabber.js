@@ -30,7 +30,7 @@ class Grabber {
     let { startCoord, shoot, fill } = this._getMoveInstructions(move)
     let cubes = this.slice(startCoord, shoot, fill)
 
-    if (move.indexOf('Double') > -1) {
+    if (move.includes('Double')) {
       let dir = this._faceMap[move[0]].dir
       let subtractionVector = vectorFromString(cross(shoot, fill), dir * -g.cubieDistance)
       let newStartCoord = startCoord.sub(subtractionVector)
@@ -130,18 +130,17 @@ class Grabber {
 
   filterIntersects(intersects) {
     let cubes = []
-    let i
     let object
 
-    for (i = 0; i < intersects.length; i++) {
+    for (let i = 0; i < intersects.length; i++) {
       object = intersects[i]
-      if (object.name === 'cubie' && cubes.indexOf(object) === -1) {
+      if (object.name === 'cubie' && !cubes.includes(object)) {
         cubes.push(object)
       }
     }
 
     intersects.splice(0)
-    for (i = 0; i < cubes.length; i++) {
+    for (let i = 0; i < cubes.length; i++) {
       intersects.push(cubes[i])
     }
 
