@@ -70,8 +70,8 @@ class RubiksCube {
 
     let animationData = this._getAnimationData(move)
 
-    if (this._scrambled && this._willAlter(animationData)) {
-      this._scrambled = false
+    if (this.isReadyToTime && this._willAlter(animationData)) {
+      this.isReadyToTime = false
       timer.start()
     }
 
@@ -91,7 +91,7 @@ class RubiksCube {
       timer.reset()
     })
 
-    this.afterMovesCompletion().then(() => this._scrambled = true)
+    this.afterMovesCompletion().then(() => this.isReadyToTime = true)
   }
 
   afterMovesCompletion() {
