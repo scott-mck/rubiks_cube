@@ -1,5 +1,3 @@
 import EventHandler from './event-handler'
 
-window.addEventListener('load', () => {
-  EventHandler.init()
-})
+window.addEventListener('load', () => EventHandler.init())
