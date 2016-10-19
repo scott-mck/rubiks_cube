@@ -9,9 +9,9 @@ class Timer {
 
   init() {
     this.el = document.querySelector('#timer')
-    this.minute = this.el.querySelector('.minute')
-    this.second = this.el.querySelector('.second')
-    this.milli = this.el.querySelector('.milli')
+    this.minuteEl = this.el.querySelector('.minute')
+    this.secondEl = this.el.querySelector('.second')
+    this.milliEl = this.el.querySelector('.milli')
 
     TweenMax.set(this.el, { color: DEFAULT_COLOR })
     TweenMax.to(this.el, 0.5, { opacity: 1 })
@@ -78,9 +78,9 @@ class Timer {
       milli = '0' + milli
     }
 
-    this.minute.textContent = minute
-    this.second.textContent = second
-    this.milli.textContent = milli
+    this.minuteEl.textContent = minute
+    this.secondEl.textContent = second
+    this.milliEl.textContent = milli
   }
 }
 
