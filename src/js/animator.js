@@ -23,7 +23,7 @@ class Animator {
   }
 
   init() {
-    TweenMax.ticker.addEventListener('tick', this.render.bind(this))
+    TweenMax.ticker.addEventListener('tick', () => this.render())
   }
 
   _ready(callback) {
@@ -92,44 +92,40 @@ class Animator {
 
   _complete() {
     this.reset()
-    this.animating = false
     this._ready()
   }
 
   grip(cubes, axis) {
     this._currentRotater = this._emptyRotaters.shift()
 
-    let i
-    for (i = 0; i < cubes.length; i++) {
+    for (let i = 0; i < cubes.length; i++) {
       THREE.SceneUtils.attach(cubes[i], scene, this._currentRotater)
     }
   }
 
   snap() {
-    let currentRotation = this._currentRotater.rotation[this._rotationAxis]
-    let negativeRotation = currentRotation < 0
-    let angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2
+    return new Promise((resolve) => {
+      let currentRotation = this._currentRotater.rotation[this._rotationAxis]
+      let negativeRotation = currentRotation < 0
+      let angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2
 
-    let remainder = currentRotation % angle
+      let remainder = currentRotation % angle
 
-    if (Math.abs(remainder) > Math.PI / 4) {
-      remainder = angle - remainder
-    } else {
-      remainder *= -1
-    }
+      if (Math.abs(remainder) > Math.PI / 4) {
+        remainder = angle - remainder
+      } else {
+        remainder *= -1
+      }
 
-    let promise = new Promise((resolve) => {
       TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, {
         [this._rotationAxis]: `+=${remainder}`,
         onComplete: () => {
+          this._complete()
           let totalRotation = this._currentRotater.rotation[this._rotationAxis]
-          this.reset()
           resolve(totalRotation)
         }
       })
     })
-
-    return promise
   }
 
   reset() {
@@ -137,9 +133,10 @@ class Animator {
       THREE.SceneUtils.detach(this._currentRotater.children[0], this._currentRotater, scene)
     }
 
-    this._currentRotater.rotation.set(0, 0, 0)
     this._rotationAxis = null
+    this.animating = false
 
+    this._currentRotater.rotation.set(0, 0, 0)
     this._emptyRotaters.push(this._currentRotater)
   }
 }
