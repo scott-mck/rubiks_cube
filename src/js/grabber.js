@@ -30,7 +30,7 @@ class Grabber {
     let { startCoord, shoot, fill } = this._getMoveInstructions(move)
     let cubes = this.slice(startCoord, shoot, fill)
 
-    if (move.indexOf('Double') > -1) {
+    if (move.includes('Double')) {
       let dir = this._faceMap[move[0]].dir
       let subtractionVector = vectorFromString(cross(shoot, fill), dir * -g.cubieDistance)
       let newStartCoord = startCoord.sub(subtractionVector)
@@ -82,17 +82,17 @@ class Grabber {
     if (typeof slice === 'string') slice = vectorFromString(slice)
 
     let raycaster = new THREE.Raycaster(startCoord.clone(), shoot)
-
     let cubes = this.raycast(raycaster)
+
     this.filterIntersects(cubes)
     this.fillOutFace(cubes, slice)
 
     return cubes
   }
 
-  fillOutFace(intersects, dir) {
-    if (typeof dir === 'string') {
-      dir = vectorFromString(dir)
+  fillOutFace(intersects, slice) {
+    if (typeof slice === 'string') {
+      slice = vectorFromString(slice)
     }
 
     let cubes = intersects
@@ -109,11 +109,11 @@ class Grabber {
 
     let i, raycaster
     for (i = 0; i < g.dimensions; i++) {
-      raycaster = new THREE.Raycaster(point, dir)
+      raycaster = new THREE.Raycaster(point, slice)
       captures = this.raycast(raycaster)
       cubes = cubes.concat(captures)
 
-      raycaster = new THREE.Raycaster(point, dir.negate())
+      raycaster = new THREE.Raycaster(point, slice.negate())
       captures = this.raycast(raycaster)
       cubes = cubes.concat(captures)
 
@@ -130,18 +130,17 @@ class Grabber {
 
   filterIntersects(intersects) {
     let cubes = []
-    let i
     let object
 
-    for (i = 0; i < intersects.length; i++) {
+    for (let i = 0; i < intersects.length; i++) {
       object = intersects[i]
-      if (object.name === 'cubie' && cubes.indexOf(object) === -1) {
+      if (object.name === 'cubie' && !cubes.includes(object)) {
         cubes.push(object)
       }
     }
 
     intersects.splice(0)
-    for (i = 0; i < cubes.length; i++) {
+    for (let i = 0; i < cubes.length; i++) {
       intersects.push(cubes[i])
     }
 
@@ -149,7 +148,13 @@ class Grabber {
   }
 
   raycast(raycaster) {
-    return raycaster.intersectObjects(scene.children).map(data => data.object)
+    let intersects = raycaster.intersectObjects(scene.children).map((data) => {
+      if (data.object.name === 'cubie') {
+        return data.object
+      }
+    })
+
+    return this.filterIntersects(intersects)
   }
 }
 

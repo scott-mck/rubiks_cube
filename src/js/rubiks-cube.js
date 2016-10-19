@@ -22,65 +22,97 @@ class RubiksCube {
 
     this._moves = []
     this._solveMoves = []
+    this._callbacks = []
   }
 
   move(move) {
-    this._queueMove(move, true)
+    this._queueMove(move)
     this._recordMove(move)
+
+    // When animator is ready, start animating through the move chain
+    // Make sure to `await animator.ready()` only once, otherwise #_nextMove
+    // gets called multiple times
+    if (this._isWaiting) {
+      return
+    }
+    this._isWaiting = true
+    this.afterMovesCompletion().then(() => this._isWaiting = false)
+    animator.ready().then(() => this._nextMove())
   }
 
   // @param {string|object} move - A notation string or instructions to grab the correct face
-  _queueMove(move, flag) {
+  _queueMove(move) {
     this._moves.push(move)
-    if (flag) {
-      animator.run()
-    }
   }
 
   _recordMove(move) {
     this._solveMoves.push(move)
   }
 
-  nextMove() {
-    if (this.isSolved() && this._moves.length === 0) {
+  async _nextMove() {
+
+    let isSolved = this.isSolved()
+
+    if (isSolved && this._moves.length === 0) {
       this.reset()
     }
 
-    if (this.isSolved() && timer.timing) {
+    if (isSolved && timer.timing) {
       timer.stop()
       this.reset()
-      return
     }
 
     let move = this._moves.shift()
     if (!move) {
+      this._afterMovesCompletion()
       return
     }
 
     let animationData = this._getAnimationData(move)
 
-    if (this._scrambled && this._willAlter(animationData)) {
-      this._scrambled = false
+    if (this.isReadyToTime && this._willAlter(animationData)) {
+      this.isReadyToTime = false
       timer.start()
     }
 
-    return animationData
+    await animator.rotate(animationData)
+    this._nextMove()
   }
 
   scramble() {
-    this._scrambling = true
-
     for (let i = 0; i < 25; i++) {
       let randomMove = this.randomMove()
       this._queueMove(randomMove)
       this.recordMove(randomMove)
     }
 
-    animator.run(() => {
-      this._scrambling = false
-      this._scrambled = true
+    animator.ready().then(() => {
+      this._nextMove()
+      timer.reset()
     })
-    timer.reset()
+
+    this.afterMovesCompletion().then(() => this.isReadyToTime = true)
+  }
+
+  afterMovesCompletion() {
+    return new Promise((resolve) => {
+      if (this._moves.length > 0) {
+        this._afterMovesCompletion(resolve)
+      } else {
+        resolve()
+      }
+    })
+  }
+
+  _afterMovesCompletion(callback) {
+    if (callback != undefined) {
+      this._callbacks.push(callback)
+    } else {
+      while (this._callbacks.length) {
+        let callback = this._callbacks.shift()
+        callback && callback()
+      }
+    }
   }
 
   randomMove() {
@@ -128,7 +160,7 @@ class RubiksCube {
       let reverseMove = this.reverseMove(this._solveMoves.pop())
       this._queueMove(reverseMove)
     }
-    animator.run()
+    this._nextMove()
   }
 
   reset() {

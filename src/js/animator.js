@@ -7,7 +7,6 @@ import rubiksCube from './rubiks-cube'
 
 const DURATION = 0.1
 const EASE = 'linear'
-const WAIT_COUNT = 1
 const SNAP_DURATION = 0.3
 
 class Animator {
@@ -20,64 +19,62 @@ class Animator {
     scene.add(this._rotater2)
 
     this._emptyRotaters = [this._rotater1, this._rotater2]
-    this._onCompletes = []
+    this._callbacks = []
   }
 
   init() {
-    TweenMax.ticker.addEventListener('tick', this.render.bind(this))
+    TweenMax.ticker.addEventListener('tick', () => this.render())
   }
 
-  addCallback(callback) {
-    if (!callback) {
-      return
-    }
-
-    this._onCompletes.push(callback)
-  }
-
-  executeCallbacks() {
-    while (this._onCompletes.length) {
-      this._onCompletes.pop()()
+  _ready(callback) {
+    if (callback != undefined) {
+      this._callbacks.push(callback)
+    } else {
+      while (this._callbacks.length > 0) {
+        let callback = this._callbacks.shift()
+        callback && callback()
+      }
     }
   }
 
-  // jump-starts animation sequence: looking for rubiksCube#nextMove and
-  // repeats on completion
-  run(onComplete) {
-    this.addCallback(onComplete)
-
-    if (!this.animating) {
-      this._next()
-    }
+  ready() {
+    return new Promise((resolve) => {
+      if (this.animating) {
+        this._ready(resolve)
+      } else {
+        resolve()
+      }
+    })
   }
 
-  rotate(objects, rotationAxis, numTurns) {
-    if (this.animating) {
-      return
-    }
+  rotate({ objects, rotationAxis, numTurns }) {
+    return new Promise(async (resolve) => {
+      if (this.animating) {
+        return
+      }
 
-    this._rotate(objects, rotationAxis, numTurns)
-  }
+      await this._rotate({ objects, rotationAxis, numTurns })
 
-  _rotate(objects, rotationAxis, numTurns) {
-    this.animating = true
-
-    this._currentRotater = this._emptyRotaters.shift()
-
-    let i
-    for (i = 0; i < objects.length; i++) {
-      THREE.SceneUtils.attach(objects[i], scene, this._currentRotater)
-    }
-
-    let onComplete = () => {
       this._currentRotater.rotation[rotationAxis] = Math.PI / 2 * numTurns
-      this._wait(this._complete.bind(this))
-    }
+      this._complete()
+      resolve()
+    })
+  }
 
-    TweenMax.to(this._currentRotater.rotation, DURATION * Math.abs(numTurns), {
-      [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
-      ease: EASE,
-      onComplete: onComplete
+  _rotate({ objects, rotationAxis, numTurns }) {
+    return new Promise((resolve) => {
+      this.animating = true
+      this._currentRotater = this._emptyRotaters.shift()
+
+      for (let i = 0; i < objects.length; i++) {
+        THREE.SceneUtils.attach(objects[i], scene, this._currentRotater)
+      }
+
+      TweenMax.to(this._currentRotater.rotation, DURATION * Math.abs(numTurns), {
+        [rotationAxis]: `+=${Math.PI / 2 * numTurns}`,
+        ease: EASE,
+        onComplete: resolve
+      })
     })
   }
 
@@ -89,76 +86,50 @@ class Animator {
     })
   }
 
-  _next() {
-    let nextMove = rubiksCube.nextMove()
-    if (!nextMove) {
-      this.executeCallbacks()
-      return
-    }
-
-    let { objects, rotationAxis, numTurns } = nextMove
-    this._rotate(objects, rotationAxis, numTurns)
-  }
-
   render() {
     renderer.render(scene, camera)
   }
 
   _complete() {
     this.reset()
-
-    this.animating = false
-    this._next()
-  }
-
-  _wait(callback, count = WAIT_COUNT) {
-    let loop = () => {
-      if (count === 0) {
-        callback()
-        return
-      }
-
-      count -= 1
-      requestAnimationFrame(loop)
-    }
-
-    loop()
+    this._ready()
   }
 
   grip(cubes, axis) {
     this._currentRotater = this._emptyRotaters.shift()
 
-    let i
-    for (i = 0; i < cubes.length; i++) {
+    for (let i = 0; i < cubes.length; i++) {
       THREE.SceneUtils.attach(cubes[i], scene, this._currentRotater)
     }
   }
 
   snap() {
-    let currentRotation = this._currentRotater.rotation[this._rotationAxis]
-    let negativeRotation = currentRotation < 0
-    let angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2
+    return new Promise((resolve) => {
+      let currentRotation = this._currentRotater.rotation[this._rotationAxis]
+      let negativeRotation = currentRotation < 0
+      let angle = negativeRotation ? -Math.PI / 2 : Math.PI / 2
 
-    let remainder = currentRotation % angle
+      let remainder = currentRotation % angle
 
-    if (Math.abs(remainder) > Math.PI / 4) {
-      remainder = angle - remainder
-    } else {
-      remainder *= -1
-    }
+      if (Math.abs(remainder) > Math.PI / 4) {
+        remainder = angle - remainder
+      } else {
+        remainder *= -1
+      }
 
-    let promise = new Promise((resolve) => {
       TweenMax.to(this._currentRotater.rotation, SNAP_DURATION, {
         [this._rotationAxis]: `+=${remainder}`,
         onComplete: () => {
           let totalRotation = this._currentRotater.rotation[this._rotationAxis]
-          this.reset()
-          resolve(totalRotation)
+          let dir = totalRotation > 0 ? 1 : -1
+          let numTurns = Math.abs(totalRotation) / (Math.PI / 2) * dir
+
+          this._complete()
+
+          resolve(numTurns)
         }
       })
     })
-
-    return promise
   }
 
   reset() {
@@ -166,9 +137,10 @@ class Animator {
       THREE.SceneUtils.detach(this._currentRotater.children[0], this._currentRotater, scene)
     }
 
-    this._currentRotater.rotation.set(0, 0, 0)
     this._rotationAxis = null
+    this.animating = false
 
+    this._currentRotater.rotation.set(0, 0, 0)
     this._emptyRotaters.push(this._currentRotater)
   }
 }

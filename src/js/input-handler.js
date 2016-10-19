@@ -3,6 +3,7 @@ import rubiksCube from './rubiks-cube'
 import animator from './animator'
 import renderer from './renderer'
 import grabber from './grabber'
+import timer from './timer'
 import camera from './camera'
 import scene from './scene'
 import keyMap from './key-map'
@@ -136,7 +137,9 @@ class inputHandler {
 
     animator.setRotation(this._rotationAxis, mag)
 
-    if (this._cubes && rubiksCube._isScrambled) {
+    // this._cubes is falsey when rotating the entire cube, and truthy when
+    // rotating a specific face, which changes the cube state
+    if (this._cubes && rubiksCube.isReadyToTime) {
       timer.start()
     }
   }
@@ -145,19 +148,17 @@ class inputHandler {
     this.canvas.removeEventListener('mousemove', this._mousemove)
     this.canvas.removeEventListener('mouseup', this._mouseup)
 
-    let totalRotation = await animator.snap()
-    if (totalRotation ===  0) {
+    let numTurns = await animator.snap()
+    if (numTurns === 0) {
       return
     }
-
-    let dir = totalRotation > 0 ? 1 : -1
-    let numTurns = Math.abs(totalRotation) / (Math.PI / 2)
-    numTurns *= dir
 
     this._recordMoveProperty('numTurns', numTurns)
 
     let solved = rubiksCube.isSolved()
-    if (!solved) {
+    if (solved) {
+      timer.stop()
+    } else {
       rubiksCube.recordMove(this._moveRecord)
     }
 
