@@ -9,7 +9,7 @@
     "css": "node-sass src/scss/main.scss dist/built.css",
     "css:ugly": "npm run css -- --output-style=compressed",
     "css:watch": "onchange -i 'src/scss/**/*.scss' -- npm run css",
-    "deploy": "git checkout gh-pages && git merge master && npm run build && git add -A && git commit -m \"Deploy\" && git push",
+    "deploy": "git checkout gh-pages && git merge master && npm run build && git add -A && git commit -m \"Deploy\" && git push && git checkout master",
     "js": "rollup -c",
     "js:ugly": "npm run js && uglifyjs dist/built.js -mc -o dist/built.js",
     "js:watch": "npm run js -- --watch --serve",
