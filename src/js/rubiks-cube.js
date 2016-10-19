@@ -160,6 +160,7 @@ class RubiksCube {
       let reverseMove = this.reverseMove(this._solveMoves.pop())
       this._queueMove(reverseMove)
     }
+    this._nextMove()
   }
 
   reset() {
