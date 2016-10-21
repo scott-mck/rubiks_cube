@@ -1,3 +1,5 @@
+import './windows'
+
 import EventHandler from './event-handler'
 import Solver from './solver'
 
