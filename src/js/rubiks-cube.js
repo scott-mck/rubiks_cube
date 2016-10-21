@@ -43,8 +43,7 @@ class RubiksCube {
       this._isWaiting = true
       this.afterMovesCompletion().then(() => {
         this._isWaiting = false
-        console.log('here')
-        resolve()
+        animator.ready().then(resolve)
       })
       animator.ready().then(() => this._nextMove())
     })
@@ -60,7 +59,6 @@ class RubiksCube {
   }
 
   async _nextMove() {
-
     let isSolved = this.isSolved()
 
     if (isSolved && this._moves.length === 0) {
