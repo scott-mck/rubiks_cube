@@ -22,6 +22,23 @@ class Grabber {
     }
   }
 
+  getObjectByPosition(position) {
+    let pos = position.clone()
+    let axes = ['x', 'y', 'z']
+    let rayStartCoord, dir, rayShootDir
+    for (let axis of axes) {
+      if (~~Math.abs(pos[axis]) > 0) {
+        dir = pos[axis] > 0 ? 1 : -1
+        rayStartCoord = position.clone()[`set${axis.toUpperCase()}`]((g.startPos + g.cubieSize) * dir)
+        rayShootDir = vectorFromString(axis, -dir)
+        break
+      }
+    }
+
+    let raycaster = new THREE.Raycaster(rayStartCoord, rayShootDir)
+    return this.raycast(raycaster)[0]
+  }
+
   grabFace(move) {
     if (move[0] === 'x' || move[0] === 'y') {
       return g.allCubes
