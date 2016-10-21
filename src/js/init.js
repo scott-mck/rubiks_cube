@@ -8,7 +8,7 @@ import g from './globals'
 import timer from './timer'
 
 export default () => {
-  createMesh()
+  createMeshes()
   createLeftAndRight()
   createUpAndDown()
   createFrontAndBack()
@@ -22,44 +22,60 @@ export default () => {
   grabber.init()
   animator.init()
   timer.init()
+
+  setTimeout(() => {
+    let opacity = g.dimensions > 5 ? 0 : 1
+
+    colorTopFace(opacity)
+    colorRightFace(opacity)
+    colorFrontFace(opacity)
+    colorDownFace(opacity)
+    colorLeftFace(opacity)
+    colorBackFace(opacity)
+  }, 100)
 }
 
 let material
 let geometry
 
-const createMesh = () => {
+let colorDepth
+let colorSize
+
+let createMeshes = () => {
   material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     vertexColors: THREE.FaceColors,
     side: THREE.DoubleSide
   })
 
-  geometry = new THREE.BoxGeometry(
-    g.cubieSize,
-    g.cubieSize,
-    g.cubieSize
-  )
-  // Color right face RED
-  geometry.faces[0].color.setRGB(1, 0, 0)
-  geometry.faces[1].color.setRGB(1, 0, 0)
-  // Color left face ORANGE
-  geometry.faces[2].color.setRGB(1, .5, 0)
-  geometry.faces[3].color.setRGB(1, .5, 0)
-  // Color top face YELLOW
-  geometry.faces[4].color.setRGB(1, 1, 0)
-  geometry.faces[5].color.setRGB(1, 1, 0)
-  // Color down face WHITE
-  geometry.faces[6].color.setRGB(1, 1, 1)
-  geometry.faces[7].color.setRGB(1, 1, 1)
-  // Color front face BLUE
-  geometry.faces[8].color.setRGB(0, 0, 1)
-  geometry.faces[9].color.setRGB(0, 0, 1)
-  // Color back face GREEN
-  geometry.faces[10].color.setRGB(0, 1, 0)
-  geometry.faces[11].color.setRGB(0, 1, 0)
+  geometry = new THREE.BoxGeometry(g.cubieSize, g.cubieSize, g.cubieSize)
+
+  colorDepth = 1
+  colorSize = g.cubieSize * 0.93
+
+  if (g.dimensions > 5) {
+    // Color right face RED
+    geometry.faces[0].color.setRGB(1, 0, 0)
+    geometry.faces[1].color.setRGB(1, 0, 0)
+    // Color left face ORANGE
+    geometry.faces[2].color.setRGB(1, .5, 0)
+    geometry.faces[3].color.setRGB(1, .5, 0)
+    // Color top face YELLOW
+    geometry.faces[4].color.setRGB(1, 1, 0)
+    geometry.faces[5].color.setRGB(1, 1, 0)
+    // Color down face WHITE
+    geometry.faces[6].color.setRGB(1, 1, 1)
+    geometry.faces[7].color.setRGB(1, 1, 1)
+    // Color front face BLUE
+    geometry.faces[8].color.setRGB(0, 0, 1)
+    geometry.faces[9].color.setRGB(0, 0, 1)
+    // Color back face GREEN
+    geometry.faces[10].color.setRGB(0, 1, 0)
+    geometry.faces[11].color.setRGB(0, 1, 0)
+  }
 }
 
-const addCubie = () => {
+let addCubie = () => {
   let cubie = new THREE.Mesh(geometry.clone(), material.clone());
   let helper = new THREE.EdgesHelper(cubie, 0x000000);
   helper.material.linewidth = g.lineHelperWidth;
@@ -70,7 +86,7 @@ const addCubie = () => {
   return cubie;
 }
 
-const createLeftAndRight = () => {
+let createLeftAndRight = () => {
   let x
   let y
   let z
@@ -89,7 +105,7 @@ const createLeftAndRight = () => {
     }
   }
 }
-const createUpAndDown = () => {
+let createUpAndDown = () => {
   let x
   let y
   let z
@@ -108,7 +124,7 @@ const createUpAndDown = () => {
     }
   }
 }
-const createFrontAndBack = () => {
+let createFrontAndBack = () => {
   let x
   let y
   let z
@@ -126,4 +142,85 @@ const createFrontAndBack = () => {
       }
     }
   }
+}
+
+/* Color the faces */
+
+let colorTopFace = (opacity) => {
+  let color = new THREE.Color().setRGB(1, 1, 0) // yellow
+  let colorGeometry = new THREE.BoxGeometry(colorSize, colorDepth, colorSize)
+  let colorMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity })
+
+  let topCubes = grabber.grabFace('u')
+  topCubes.forEach((cubie) => {
+    let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubie.add(cubieFace)
+    cubieFace.position.y += g.cubieSize / 2
+  })
+}
+
+let colorRightFace = (opacity) => {
+  let color = new THREE.Color().setRGB(1, 0, 0) // red
+  let colorGeometry = new THREE.BoxGeometry(colorDepth, colorSize, colorSize)
+  let colorMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity })
+
+  let topCubes = grabber.grabFace('r')
+  topCubes.forEach((cubie) => {
+    let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubie.add(cubieFace)
+    cubieFace.position.x += g.cubieSize / 2
+  })
+}
+
+let colorFrontFace = (opacity) => {
+  let color = new THREE.Color().setRGB(0, 0, 1) // blue
+  let colorGeometry = new THREE.BoxGeometry(colorSize, colorSize, colorDepth)
+  let colorMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity })
+
+  let topCubes = grabber.grabFace('f')
+  topCubes.forEach((cubie) => {
+    let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubie.add(cubieFace)
+    cubieFace.position.z += g.cubieSize / 2
+  })
+}
+
+let colorDownFace = (opacity) => {
+  let color = new THREE.Color().setRGB(1, 1, 1) // white
+  let colorGeometry = new THREE.BoxGeometry(colorSize, colorDepth, colorSize)
+  let colorMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity })
+
+  let topCubes = grabber.grabFace('d')
+  topCubes.forEach((cubie) => {
+    let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubie.add(cubieFace)
+    cubieFace.position.y -= g.cubieSize / 2
+  })
+}
+
+let colorLeftFace = (opacity) => {
+  let color = new THREE.Color().setRGB(1, 0.5, 0) // orange
+  let colorGeometry = new THREE.BoxGeometry(colorDepth, colorSize, colorSize)
+  let colorMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity })
+
+  let topCubes = grabber.grabFace('l')
+  topCubes.forEach((cubie) => {
+    let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubie.add(cubieFace)
+    cubieFace.position.x -= g.cubieSize / 2
+  })
+}
+
+
+let colorBackFace = (opacity) => {
+  let color = new THREE.Color().setRGB(0, 1, 0) // green
+  let colorGeometry = new THREE.BoxGeometry(colorSize, colorSize, colorDepth)
+  let colorMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity })
+
+  let topCubes = grabber.grabFace('b')
+  topCubes.forEach((cubie) => {
+    let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubie.add(cubieFace)
+    cubieFace.position.z -= g.cubieSize / 2
+  })
 }
