@@ -6,6 +6,7 @@ import animator from './animator'
 import g from './globals'
 import { vectorFromString, cross } from './utils/vector'
 
+
 class RubiksCube {
   constructor() {
     this._rotateMap = {
@@ -144,6 +145,7 @@ class RubiksCube {
   }
 
   isSolved() {
+    return false
     return this._isFaceSolved('r') && this._isFaceSolved('u') && this._isFaceSolved('f')
   }
 
