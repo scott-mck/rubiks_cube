@@ -154,6 +154,7 @@ let colorTopFace = (opacity) => {
   let topCubes = grabber.grabFace('u')
   topCubes.forEach((cubie) => {
     let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubieFace.name = 'color'
     cubie.add(cubieFace)
     cubieFace.position.y += g.cubieSize / 2
   })
@@ -167,6 +168,7 @@ let colorRightFace = (opacity) => {
   let topCubes = grabber.grabFace('r')
   topCubes.forEach((cubie) => {
     let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubieFace.name = 'color'
     cubie.add(cubieFace)
     cubieFace.position.x += g.cubieSize / 2
   })
@@ -180,6 +182,7 @@ let colorFrontFace = (opacity) => {
   let topCubes = grabber.grabFace('f')
   topCubes.forEach((cubie) => {
     let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubieFace.name = 'color'
     cubie.add(cubieFace)
     cubieFace.position.z += g.cubieSize / 2
   })
@@ -193,6 +196,7 @@ let colorDownFace = (opacity) => {
   let topCubes = grabber.grabFace('d')
   topCubes.forEach((cubie) => {
     let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubieFace.name = 'color'
     cubie.add(cubieFace)
     cubieFace.position.y -= g.cubieSize / 2
   })
@@ -206,6 +210,7 @@ let colorLeftFace = (opacity) => {
   let topCubes = grabber.grabFace('l')
   topCubes.forEach((cubie) => {
     let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubieFace.name = 'color'
     cubie.add(cubieFace)
     cubieFace.position.x -= g.cubieSize / 2
   })
@@ -220,6 +225,7 @@ let colorBackFace = (opacity) => {
   let topCubes = grabber.grabFace('b')
   topCubes.forEach((cubie) => {
     let cubieFace = new THREE.Mesh(colorGeometry.clone(), colorMaterial.clone())
+    cubieFace.name = 'color'
     cubie.add(cubieFace)
     cubieFace.position.z -= g.cubieSize / 2
   })
