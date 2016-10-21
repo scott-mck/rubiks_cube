@@ -1,3 +1,5 @@
+import 'gsap'
+
 const DEFAULT_COLOR = 'rgb(0, 0, 0)'
 const SUCCESS_COLOR = 'rgb(0, 200, 0)'
 
