@@ -1,5 +1,6 @@
 import THREE from 'three'
 import rubiksCube from './rubiks-cube'
+import animator from './animator'
 import grabber from './grabber'
 import scene from './scene'
 import g from './globals'
@@ -27,31 +28,39 @@ class Solver {
 	}
 
 	completeWhiteEdgesOnTopFace() {
-		let yCoord = g.startPos + g.cubieSize
-		// on the top face, do in this order: top, right, bottom, left
-		let edgePoints = [
-			{ x: 0, z: -g.startPos },
-			{ x: g.startPos, z: 0 },
-			{ x: 0, z: g.startPos },
-			{ x: -g.startPos, z: 0 }
-		]
+    // on the top face, do in this order: top, right, bottom, left
+    let positions = [
+      new THREE.Vector3(0, g.startPos, -g.startPos),
+      new THREE.Vector3(g.startPos, g.startPos, 0),
+      new THREE.Vector3(0, g.startPos, g.startPos),
+      new THREE.Vector3(-g.startPos, g.startPos, 0)
+    ]
 
-		for (let coord of edgePoints) {
-			let startCoord = new THREE.Vector3(coord.x, yCoord, coord.z)
-			let raycaster = new THREE.Raycaster(startCoord, vectorFromString('y', -1))
+		for (let position of positions) {
+      let object = grabber.getObjectByPosition(position)
+      let colors = object.children.map((child) => {
+        return color(child.material.color)
+      })
 
-			let data = raycaster.intersectObjects(scene.children)[0]
-			let edgeColor = color(data.face.color)
-
-			if (edgeColor === 'white') {
-				this.solveWhiteEdgeOnTop(data.object)
+			if (colors.includes('white')) {
+				this.solveWhiteEdgeOnTop(object)
+        return
 			}
 		}
 	}
 
 	solveWhiteEdgeOnTop(cubie) {
-		// not coloring the innards of cubies would make this a lot easier
-		let allCubieColors = this.getCubieColors(cubie)
+    let colors = cubie.children.map(cubie => cubie.material.color)
+    // we only care about the not-white color
+    colors.splice(colors.indexOf('white'), 1)
+
+    // find the color of the middle that this cubie aligns with
+    let middlePosition = cubie.position.clone().sub(vectorFromString('y', g.cubieDistance))
+    let middleCube = grabber.getObjectByPosition(middlePosition)
+    let middleColor = color(middleCube.children[0].material.color)
+    console.log(middleColor)
+
+    // do more stuff...
 	}
 
   moveWhiteFaceToTop() {
@@ -68,23 +77,25 @@ class Solver {
   }
 
   findWhiteMiddle() {
-    let axes = {
-      x: { first: 'r', last: 'l' },
-      y: { first: 'u', last: 'd' },
-      z: { first: 'f', last: 'b' }
+    let faces = {
+      r: new THREE.Vector3(g.startPos, 0, 0),
+      l: new THREE.Vector3(-g.startPos, 0, 0),
+      u: new THREE.Vector3(0, g.startPos, 0),
+      d: new THREE.Vector3(0, -g.startPos, 0),
+      f: new THREE.Vector3(0, 0, g.startPos),
+      b: new THREE.Vector3(0, 0, -g.startPos)
     }
-    let startCoord
-    let raycaster
 
-    for (let axis of Object.keys(axes)) {
-      startCoord = vectorFromString(axis, g.startPos + g.cubieSize)
-      let dir = startCoord.clone().normalize().negate()
-      raycaster = new THREE.Raycaster(startCoord, dir)
-      let middles = raycaster.intersectObjects(scene.children).map(data => data.face.color)
+    for (let face of Object.keys(faces)) {
+      let object = grabber.getObjectByPosition(faces[face])
+      let colors = object.children
+      if (colors.length > 1) {
+        throw 'Found multiple colors on an assumed middle cubie'
+      }
 
-
-      if (color(middles[0]) === 'white') return axes[axis].first
-      if (color(middles[middles.length - 1]) === 'white') return axes[axis].last
+      if (color(colors[0].material.color) === 'white') {
+        return face
+      }
     }
   }
 }
