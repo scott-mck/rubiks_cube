@@ -26,18 +26,28 @@ class RubiksCube {
   }
 
   move(move) {
-    this._queueMove(move)
-    this._recordMove(move)
+    return new Promise((resolve) => {
+      let moves = move.split(' ')
+      while (moves.length > 0) {
+        let currentMove = moves.shift()
+        this._queueMove(currentMove)
+        this._recordMove(currentMove)
+      }
 
-    // When animator is ready, start animating through the move chain
-    // Make sure to `await animator.ready()` only once, otherwise #_nextMove
-    // gets called multiple times
-    if (this._isWaiting) {
-      return
-    }
-    this._isWaiting = true
-    this.afterMovesCompletion().then(() => this._isWaiting = false)
-    animator.ready().then(() => this._nextMove())
+      // When animator is ready, start animating through the move chain
+      // Make sure to `await animator.ready()` only once, otherwise #_nextMove
+      // gets called multiple times
+      if (this._isWaiting) {
+        return
+      }
+      this._isWaiting = true
+      this.afterMovesCompletion().then(() => {
+        this._isWaiting = false
+        console.log('here')
+        resolve()
+      })
+      animator.ready().then(() => this._nextMove())
+    })
   }
 
   // @param {string|object} move - A notation string or instructions to grab the correct face
