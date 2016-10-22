@@ -6,16 +6,24 @@ import scene from './scene'
 import g from './globals'
 import keyMap from './key-map'
 import { vectorFromString } from './utils/vector'
-import { color, getCubieColors } from './utils/color'
+import { getColorString, getCubieColors } from './utils/color'
 
 class Solver {
   constructor() {
-    this._relativeFaces = {
-      r: { b: 1, f: -1 },
-      f: { r: 1, l: -1 },
-      l: { f: 1, b: -1 },
-      b: { l: 1, r: -1 }
+    this._relativeDirections = {
+      r: { b: 1, f: -1, l: 2 },
+      f: { r: 1, l: -1, b: 2 },
+      l: { f: 1, b: -1, r: 2 },
+      b: { l: 1, r: -1, f: 2 }
     }
+    this._relativeFaces = {
+      r: { r: 'b', l: 'f', b: 'l' },
+      f: { r: 'r', l: 'l', b: 'b' },
+      l: { r: 'f', l: 'b', b: 'r' },
+      b: { r: 'l', l: 'r', b: 'f' }
+    }
+		this._callbacks = []
+		this._promises = []
   }
 
 	async solve() {
@@ -23,17 +31,123 @@ class Solver {
 		this.completeCross()
 	}
 
+  getRelativeDirection(fromFace, toFace) {
+    return this._relativeDirections[fromFace][toFace]
+  }
+
+  getRelativeFace(fromFace, dir) {
+    return this._relativeFaces[fromFace][dir]
+  }
+
+	chainPromise(callback) {
+    this._callbacks.push(callback)
+    let lastPromise = this._promises.shift()
+
+    if (!lastPromise) {
+      this._promises.push(this._callbacks.shift()())
+    } else {
+      let newPromise = lastPromise.then(this._callbacks.shift())
+      this._promises.push(newPromise)
+    }
+	}
+
 	completeCross() {
 		let whiteEdges = this.findAllWhiteEdges()
-		whiteEdges.forEach(cubie => console.log(cubie.position))
-		// console.log(whiteEdges)
-		// this.completeWhiteEdgesOnTopFace()
-		// this.completeWhiteEdgesOnBottomFace()
-		// this.completeWhiteEdgesOnRightFace()
-		// this.completeWhiteEdgesOnLeftFace()
-		// this.completeWhiteEdgesOnFrontFace()
-		// this.completeWhiteEdgesOnBackFace()
+
+		whiteEdges.forEach((edge) => {
+			this.chainPromise(() => {
+        return this.solveWhiteEdge(edge)
+      })
+		})
 	}
+
+	solveWhiteEdge(cubie) {
+    if (cubie.position.y === g.startPos) {
+      return this.solveWhiteEdgeOnTopLayer(cubie)
+    } else if (~~cubie.position.y === 0) {
+      return
+      return this.solveWhiteEdgeOnMiddleLayer(cubie)
+    } else if (cubie.position.y === -g.startPos) {
+      return
+      return this.solveWhiteEdgeOnBottomLayer(cubie)
+    }
+	}
+
+  solveWhiteEdgeOnTopLayer(cubie) {
+    let raycaster = new THREE.Raycaster(cubie.position.clone(), new THREE.Vector3(0, 1, 0))
+    let intersects = raycaster.intersectObjects(scene.children, true).filter((data) => {
+      return data.object.name === 'color'
+    })
+    if (getColorString(intersects[0].object) === 'white') {
+      return this.solveWhiteEdgeOnTopLayerFacingUp(cubie)
+    } else {
+      console.log('here')
+      return this.solveWhiteEdgeOnTopLayerFacingOut(cubie)
+    }
+  }
+
+  /**
+   * Gets the adjacent color of the white edge, finds the target face, and returns
+   * relative move direction to get the edge to the target face
+   */
+  getRelativeDataForWhiteEdge(cubie) {
+    let colors = getCubieColors(cubie)
+    colors.splice(colors.indexOf('white'), 1)
+
+    // find the color of the middle that this cubie aligns with
+    let middlePosition = cubie.position.clone().sub(vectorFromString('y', g.cubieDistance))
+    let middleCube = grabber.getObjectByPosition(middlePosition)
+    let middleColor = getColorString(middleCube.children[0].material.color)
+
+    let currentFace = this.findMiddleOfColor(middleColor)
+    let targetFace = this.findMiddleOfColor(colors[0])
+
+    let relativeDir = this.getRelativeDirection(currentFace, targetFace)
+    if (!relativeDir) relativeDir = 0
+
+    let relativeMove
+    if (relativeDir === 1) relativeMove = 'uPrime'
+    else if (relativeDir === -1) relativeMove = 'u'
+    else if (relativeDir === 2) relativeMove = 'u u'
+
+    return { currentFace, targetFace, relativeDir, relativeMove }
+  }
+
+  solveWhiteEdgeOnTopLayerFacingUp(cubie) {
+    let { currentFace, targetFace, relativeDir, relativeMove } = this.getRelativeDataForWhiteEdge(cubie)
+    if (!relativeMove) {
+      return
+    }
+
+    let reverseRelativeMove = rubiksCube.reverseNotation(relativeMove)
+    let reverseCurrentFace = rubiksCube.reverseNotation(currentFace)
+
+    let moves = `${currentFace} ${reverseRelativeMove} ${reverseCurrentFace} ${relativeMove} ${currentFace}`
+    return rubiksCube.move(moves)
+  }
+
+  solveWhiteEdgeOnTopLayerFacingOut(cubie) {
+    let { currentFace, targetFace, relativeDir, relativeMove } = this.getRelativeDataForWhiteEdge(cubie)
+
+    let firstMove = currentFace
+    let whiteEdgeToTopMove = this.getRelativeFace(currentFace, 'r')
+    relativeMove = ''
+
+    if (relativeDir === -1) {
+      firstMove = rubiksCube.reverseNotation(currentFace)
+      whiteEdgeToTopMove = rubiksCube.reverseNotation(this.getRelativeFace(currentFace, 'l'))
+    } else if (relativeDir === 0) {
+      relativeMove = 'uPrime'
+    } else if (relativeDir === 2) {
+      relativeMove = 'u'
+    }
+
+    let reverseRelativeMove = rubiksCube.reverseNotation(relativeMove)
+
+    let moves = `${firstMove} ${relativeMove} ${whiteEdgeToTopMove} ${reverseRelativeMove}`
+    console.log(moves)
+    return rubiksCube.move(moves)
+  }
 
 	findAllWhiteEdges() {
 		let edges = []
@@ -77,62 +191,6 @@ class Solver {
 		return edges
 	}
 
-	completeWhiteEdgesOnTopFace() {
-    // on the top face, do in this order: top, right, bottom, left
-    let positions = [
-      new THREE.Vector3(0, g.startPos, -g.startPos),
-      new THREE.Vector3(g.startPos, g.startPos, 0),
-      new THREE.Vector3(0, g.startPos, g.startPos),
-      new THREE.Vector3(-g.startPos, g.startPos, 0)
-    ]
-
-		for (let position of positions) {
-      let object = grabber.getObjectByPosition(position)
-
-      // shoot a ray up from this cube to check if top color is white
-      let raycaster = new THREE.Raycaster(object.position.clone(), vectorFromString('y'))
-      let intersects = raycaster.intersectObjects(scene.children, true).filter((data) => {
-        return data.object.name === 'color'
-      })
-
-      let cubieColor = intersects[0].object
-      if (color(cubieColor.material.color) === 'white') {
-        this.solveWhiteEdgeOnTop(cubieColor.parent)
-        return
-      }
-		}
-	}
-
-	solveWhiteEdgeOnTop(cubie) {
-    let colors = cubie.children.map(cubie => color(cubie.material.color))
-    // we only care about the not-white color
-    colors.splice(colors.indexOf('white'), 1)
-
-    // find the color of the middle that this cubie aligns with
-    let middlePosition = cubie.position.clone().sub(vectorFromString('y', g.cubieDistance))
-    let middleCube = grabber.getObjectByPosition(middlePosition)
-    let middleColor = color(middleCube.children[0].material.color)
-
-    let currentFace = this.findMiddleOfColor(middleColor)
-    let targetFace = this.findMiddleOfColor(colors[0])
-
-    if (currentFace === targetFace) {
-      return
-    }
-
-    let moveDir = this._relativeFaces[currentFace][targetFace]
-
-    let relativeMove
-    if (!moveDir) {
-      relativeMove = 'd d'
-    } else {
-      relativeMove = moveDir > 0 ? 'd' : 'dPrime'
-    }
-
-    let moves = `${currentFace} ${currentFace} ${relativeMove} ${targetFace} ${targetFace}`
-    rubiksCube.move(moves)
-	}
-
   moveWhiteFaceToTop() {
     let whiteSide = this.findMiddleOfColor('white')
     let moves
@@ -163,7 +221,7 @@ class Solver {
         throw 'Found multiple colors on an assumed middle cubie'
       }
 
-      if (color(colors[0].material.color) === middleColor) {
+      if (getColorString(colors[0].material.color) === middleColor) {
         return face
       }
     }
