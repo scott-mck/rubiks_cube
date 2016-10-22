@@ -1,4 +1,10 @@
-export const color = ({ r, g, b }) => {
+export const getColorString = (object) => {
+	if (object.name === 'color') {
+		object = object.material.color
+	}
+
+	let { r, g, b } = object
+
   if (r === 1 && g === 1 && b === 1) return 'white'
   if (r === 1 && g === 1) return 'yellow'
   if (r === 1 && g === 0.5) return 'orange'
@@ -8,5 +14,5 @@ export const color = ({ r, g, b }) => {
 }
 
 export const getCubieColors = (cubie) => {
-	return cubie.children.map(cubieColor => color(cubieColor.material.color))
+	return cubie.children.map(cubieColor => getColorString(cubieColor))
 }
