@@ -6,3 +6,7 @@ export const color = ({ r, g, b }) => {
   if (g === 1) return 'green'
   if (b === 1) return 'blue'
 }
+
+export const getCubieColors = (cubie) => {
+	return cubie.children.map(cubieColor => color(cubieColor.material.color))
+}
