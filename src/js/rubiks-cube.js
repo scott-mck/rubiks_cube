@@ -28,7 +28,7 @@ class RubiksCube {
 
   move(move) {
     return new Promise((resolve) => {
-      let moves = move.split(' ')
+      let moves = move.split(' ').filter(move => !!move)
       while (moves.length > 0) {
         let currentMove = moves.shift()
         this._queueMove(currentMove)
@@ -179,11 +179,22 @@ class RubiksCube {
   }
 
   reverseNotation(move) {
-    if (move.indexOf('Prime') > -1) {
-      return move[0]
-    } else {
-      return `${move[0]}Prime`
+    let reverseMoves = []
+    let moves = move.split(' ')
+
+    while (moves.length > 0) {
+      let move = moves.shift()
+
+      if (move === '') {
+        reverseMoves.push('')
+      } else if (move.includes('Prime')) {
+        reverseMoves.push(`${move[0]}`)
+      } else {
+        reverseMoves.push(`${move[0]}Prime`)
+      }
     }
+
+    return reverseMoves.join(' ')
   }
 
   _isFaceSolved(face) {
