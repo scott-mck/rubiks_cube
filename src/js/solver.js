@@ -39,6 +39,11 @@ class Solver {
     return this._relativeFaces[fromFace][dir]
   }
 
+  getGlobalPosition(mesh) {
+    let matrixWorld = mesh.matrixWorld.clone()
+    return new THREE.Vector3().setFromMatrixPosition(matrixWorld)
+  }
+
 	chainPromise(callback) {
     this._callbacks.push(callback)
     let lastPromise = this._promises.shift()
@@ -65,13 +70,50 @@ class Solver {
     if (cubie.position.y === g.startPos) {
       return this.solveWhiteEdgeOnTopLayer(cubie)
     } else if (~~cubie.position.y === 0) {
-      return
       return this.solveWhiteEdgeOnMiddleLayer(cubie)
     } else if (cubie.position.y === -g.startPos) {
       return
       return this.solveWhiteEdgeOnBottomLayer(cubie)
     }
 	}
+
+  // use this for determining how to solve white edges
+  findMiddleWhiteEdgeSitsOn(cubie, adjacent = false) {
+    // if adjacent, do not shoot through white color
+    let test = (color, white) => adjacent ? color !== white : color === white
+
+    let whiteColor = cubie.children.find(color => {
+      return test(getColorString(color), 'white')
+    })
+    let globalColorPos = this.getGlobalPosition(whiteColor)
+    let shootDir = globalColorPos.clone().sub(cubie.position.clone()).normalize().negate()
+
+    let raycaster = new THREE.Raycaster(globalColorPos, shootDir)
+    let intersects = grabber.raycast(raycaster).filter(intersect => intersect !== cubie)
+
+    return intersects[0]
+  }
+
+  solveWhiteEdgeOnMiddleLayer(cubie) {
+    // find the move that will rotate cubie to the top or bottom face (relativeMiddleFace).
+    // if the adjacent middle (the middle next to the white color of the cubie)
+    // is left of the relativeMiddleFace, a CLOCKWISE rotation of relativeMiddleFace
+    // will put the cubie on the top face.
+
+    let middle = this.findMiddleWhiteEdgeSitsOn(cubie)
+    let adjacentMiddle = this.findMiddleWhiteEdgeSitsOn(cubie, true)
+    let relativeMiddleFace = this.findMiddleOfColor(getColorString(middle.children[0]), true)
+    let relativeAdjacentFace = this.findMiddleOfColor(getColorString(adjacentMiddle.children[0]), true)
+
+    let theDecider = this.getRelativeDirection(relativeMiddleFace, relativeAdjacentFace)
+    let theMove = theDecider === -1 ? relativeMiddleFace : rubiksCube.reverseNotation(relativeMiddleFace)
+
+    let { relativeMove } = this.getRelativeDataForWhiteEdge(cubie)
+    let reverseRelativeMove = rubiksCube.reverseNotation(relativeMove)
+
+    let moves = `${reverseRelativeMove} ${theMove} ${relativeMove}`
+    return rubiksCube.move(moves)
+  }
 
   solveWhiteEdgeOnTopLayer(cubie) {
     let raycaster = new THREE.Raycaster(cubie.position.clone(), new THREE.Vector3(0, 1, 0))
@@ -89,22 +131,20 @@ class Solver {
    * Gets the adjacent color of the white edge, finds the target face, and returns
    * relative move direction to get the edge to the target face
    */
-  getRelativeDataForWhiteEdge(cubie) {
+  getRelativeDataForWhiteEdge(cubie, adjacent = false) {
     let colors = getCubieColors(cubie)
     colors.splice(colors.indexOf('white'), 1)
 
-    // find the color of the middle that this cubie aligns with
-    let middlePosition = cubie.position.clone().sub(vectorFromString('y', g.cubieDistance))
-    let middleCube = grabber.getObjectByPosition(middlePosition)
-    let middleColor = getColorString(middleCube.children[0].material.color)
+    let middleCube = this.findMiddleWhiteEdgeSitsOn(cubie, adjacent)
+    let middleColor = getColorString(middleCube.children[0])
 
-    let currentFace = this.findMiddleOfColor(middleColor)
-    let targetFace = this.findMiddleOfColor(colors[0])
+    let currentFace = this.findMiddleOfColor(middleColor, true)
+    let targetFace = this.findMiddleOfColor(colors[0], true)
 
     let relativeDir = this.getRelativeDirection(currentFace, targetFace)
     if (!relativeDir) relativeDir = 0
 
-    let relativeMove
+    let relativeMove = ''
     if (relativeDir === 1) relativeMove = 'uPrime'
     else if (relativeDir === -1) relativeMove = 'u'
     else if (relativeDir === 2) relativeMove = 'u u'
@@ -126,11 +166,11 @@ class Solver {
   }
 
   solveWhiteEdgeOnTopLayerFacingOut(cubie) {
-    let { currentFace, targetFace, relativeDir, relativeMove } = this.getRelativeDataForWhiteEdge(cubie)
+    let { currentFace, relativeDir } = this.getRelativeDataForWhiteEdge(cubie, true)
 
     let firstMove = currentFace
     let whiteEdgeToTopMove = this.getRelativeFace(currentFace, 'r')
-    relativeMove = ''
+    let relativeMove = ''
 
     if (relativeDir === -1) {
       firstMove = rubiksCube.reverseNotation(currentFace)
@@ -190,7 +230,7 @@ class Solver {
 	}
 
   moveWhiteFaceToTop() {
-    let whiteSide = this.findMiddleOfColor('white')
+    let whiteSide = this.findMiddleOfColor('white', true)
     let moves
     if (whiteSide === 'r') moves = `${keyMap.getNotation(';')} ${keyMap.getNotation('y')}`
     else if (whiteSide === 'l') moves = `${keyMap.getNotation(';')} ${keyMap.getNotation('n')}`
@@ -202,7 +242,18 @@ class Solver {
     return rubiksCube.move(moves)
   }
 
-  findMiddleOfColor(middleColor) {
+  findMiddleOfColor(middleColor, returnRelative) {
+    let middles = this.getAllMiddles()
+    let found = Object.values(middles).find(middle => getColorString(middle.children[0]) === middleColor)
+    if (!returnRelative) {
+      return found
+    }
+
+    return Object.keys(middles).find(key => middles[key] === found)
+  }
+
+  getAllMiddles() {
+    let middles = {}
     let faces = {
       r: new THREE.Vector3(g.startPos, 0, 0),
       l: new THREE.Vector3(-g.startPos, 0, 0),
@@ -213,16 +264,10 @@ class Solver {
     }
 
     for (let face of Object.keys(faces)) {
-      let object = grabber.getObjectByPosition(faces[face])
-      let colors = object.children
-      if (colors.length > 1) {
-        throw 'Found multiple colors on an assumed middle cubie'
-      }
-
-      if (getColorString(colors[0].material.color) === middleColor) {
-        return face
-      }
+      middles[face] = grabber.getObjectByPosition(faces[face])
     }
+
+    return middles
   }
 }
 
