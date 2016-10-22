@@ -6,6 +6,7 @@ import g from './globals'
 import scene from './scene'
 import timer from './timer'
 import renderer from './renderer'
+import solver from './solver'
 
 window.THREE = THREE
 window.rubiksCube = rubiksCube
@@ -16,3 +17,4 @@ window.scene = scene
 window.timer = timer
 window.renderer = renderer
 window.animator = animator
+window.solver = solver
