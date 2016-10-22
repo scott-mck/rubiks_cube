@@ -81,7 +81,6 @@ class Solver {
     if (getColorString(intersects[0].object) === 'white') {
       return this.solveWhiteEdgeOnTopLayerFacingUp(cubie)
     } else {
-      console.log('here')
       return this.solveWhiteEdgeOnTopLayerFacingOut(cubie)
     }
   }
@@ -145,7 +144,6 @@ class Solver {
     let reverseRelativeMove = rubiksCube.reverseNotation(relativeMove)
 
     let moves = `${firstMove} ${relativeMove} ${whiteEdgeToTopMove} ${reverseRelativeMove}`
-    console.log(moves)
     return rubiksCube.move(moves)
   }
 
