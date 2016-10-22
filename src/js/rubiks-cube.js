@@ -11,7 +11,7 @@ class RubiksCube {
   constructor() {
     this._rotateMap = {
       r: { axis: 'x', dir: -1 },
-      l: { axis: 'x', dir: -1 },
+      l: { axis: 'x', dir: 1 },
       u: { axis: 'y', dir: -1 },
       d: { axis: 'y', dir: 1 },
       f: { axis: 'z', dir: -1 },
