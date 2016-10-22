@@ -6,7 +6,7 @@ import scene from './scene'
 import g from './globals'
 import keyMap from './key-map'
 import { vectorFromString } from './utils/vector'
-import { color } from './utils/color'
+import { color, getCubieColors } from './utils/color'
 
 class Solver {
   constructor() {
@@ -24,12 +24,57 @@ class Solver {
 	}
 
 	completeCross() {
-		this.completeWhiteEdgesOnTopFace()
+		let whiteEdges = this.findAllWhiteEdges()
+		whiteEdges.forEach(cubie => console.log(cubie.position))
+		// console.log(whiteEdges)
+		// this.completeWhiteEdgesOnTopFace()
 		// this.completeWhiteEdgesOnBottomFace()
 		// this.completeWhiteEdgesOnRightFace()
 		// this.completeWhiteEdgesOnLeftFace()
 		// this.completeWhiteEdgesOnFrontFace()
 		// this.completeWhiteEdgesOnBackFace()
+	}
+
+	findAllWhiteEdges() {
+		let edges = []
+		// ordered by top, right, bottom, left
+		let startCoords = [
+			// first half are vertical
+      new THREE.Vector3(0, g.startPos + g.cubieSize, -g.startPos),
+      new THREE.Vector3(g.startPos, g.startPos + g.cubieSize, 0),
+      new THREE.Vector3(0, g.startPos + g.cubieSize, g.startPos),
+      new THREE.Vector3(-g.startPos, g.startPos + g.cubieSize, 0),
+			// first half are horizontal
+			new THREE.Vector3(0, g.startPos, g.startPos + g.cubieSize),
+			new THREE.Vector3(g.startPos, 0, g.startPos + g.cubieSize),
+			new THREE.Vector3(0, -g.startPos, g.startPos + g.cubieSize),
+			new THREE.Vector3(-g.startPos, 0, g.startPos + g.cubieSize)
+		]
+
+		let shootDirs = [
+			new THREE.Vector3(0, -1, 0),
+			new THREE.Vector3(0, 0, -1)
+		]
+
+		let shootDir = shootDirs.shift()
+		for (let startCoord of startCoords) {
+			if (startCoords.indexOf(startCoord) === startCoords.length / 2) {
+				shootDir = shootDirs.shift()
+			}
+
+			let raycaster = new THREE.Raycaster(startCoord, shootDir)
+			let intersects = grabber.raycast(raycaster)
+
+			// only the first and last cubes will be edges
+			let possibleEdges = [intersects[0], intersects[intersects.length - 1]]
+			possibleEdges.forEach((cubie) => {
+				if (getCubieColors(cubie).includes('white') && !edges.includes(cubie)) {
+					edges.push(cubie)
+				}
+			})
+		}
+
+		return edges
 	}
 
 	completeWhiteEdgesOnTopFace() {
