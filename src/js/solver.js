@@ -69,15 +69,15 @@ class Solver {
 	solveWhiteEdge(cubie) {
     let cubieData = this.getDataForWhiteEdge(cubie)
     if (cubieData.containingMiddleColor === 'white') {
-      return this.solveWhiteEdgeOnWhiteFace(cubie, cubieData)
+      // return this.solveWhiteEdgeOnWhiteFace(cubie, cubieData)
     } else if (cubieData.containingMiddleColor === 'yellow') {
-      // return this.solveWhiteEdgeOnBottomLayer(cubie, cubieData)
+      return this.solveWhiteEdgeOnYellowFace(cubie, cubieData)
     } else if (cubieData.alignedMiddleColor === 'white' ||
                cubieData.alignedMiddleColor === 'yellow') {
      return this.solveWhiteEdgeFacingOut(cubie, cubieData)
    } else {
      // do some error catching sometime
-     return this.solveWhiteEdgeOnMiddleLayer(cubie, cubieData)
+    //  return this.solveWhiteEdgeOnMiddleLayer(cubie, cubieData)
    }
 	}
 
@@ -100,6 +100,22 @@ class Solver {
     let containingRelativeFace = this.findMiddleOfColor(containingMiddleColor, true)
 
     return { edgeColor, alignedMiddleColor, containingMiddleColor, alignedRelativeFace, containingRelativeFace }
+  }
+
+  solveWhiteEdgeOnYellowFace(cubie, cubieData) {
+    let targetMiddle = this.findMiddleOfColor(cubieData.edgeColor, true)
+    let targetDir = this.getRelativeDirection(cubieData.alignedRelativeFace, targetMiddle)
+
+    let targetMove
+    if (targetDir === 1) targetMove = 'd'
+    else if (targetDir === -1) targetMove = 'dPrime'
+    else if (targetDir === 2) targetMove = 'd d'
+    else if (targetDir === 0) targetMove = ''
+
+    let whiteEdgeToTopMove = `${targetMiddle} ${targetMiddle}`
+
+    let moves = `${targetMove} ${whiteEdgeToTopMove}`
+    return rubiksCube.move(moves)
   }
 
   solveWhiteEdgeOnWhiteFace(cubie, cubieData) {
