@@ -69,15 +69,15 @@ class Solver {
 	solveWhiteEdge(cubie) {
     let cubieData = this.getDataForWhiteEdge(cubie)
     if (cubieData.containingMiddleColor === 'white') {
-      // return this.solveWhiteEdgeOnWhiteFace(cubie, cubieData)
+      return this.solveWhiteEdgeOnWhiteFace(cubie, cubieData)
     } else if (cubieData.containingMiddleColor === 'yellow') {
       return this.solveWhiteEdgeOnYellowFace(cubie, cubieData)
-    } else if (cubieData.alignedMiddleColor === 'white' ||
-               cubieData.alignedMiddleColor === 'yellow') {
+    } else if (cubieData.aligningMiddleColor === 'white' ||
+               cubieData.aligningMiddleColor === 'yellow') {
      return this.solveWhiteEdgeFacingOut(cubie, cubieData)
    } else {
      // do some error catching sometime
-    //  return this.solveWhiteEdgeOnMiddleLayer(cubie, cubieData)
+     return this.solveWhiteEdgeOnMiddleLayer(cubie, cubieData)
    }
 	}
 
@@ -85,26 +85,26 @@ class Solver {
    * @param {object} cubie - An edge cubie with white as one color
    * @return {object}
    * @prop {string} object.edgeColor - The other color on this white edge
-   * @prop {string} object.alignedMiddleColor - The color of the middle this edge alignes with
+   * @prop {string} object.aligningMiddleColor - The color of the middle this edge alignes with
    * @prop {string} object.containingMiddleColor - The color of the middle that contians the white edge
-   * @prop {number} object.alignedRelativeFace - The relative face of alignedMiddleColor
+   * @prop {number} object.aligningRelativeFace - The relative face of aligningMiddleColor
    * @prop {number} object.containingRelativeFace - The relative face of containingMiddleColor
    */
   getDataForWhiteEdge(cubie) {
     let edgeColor = getCubieColors(cubie).find(color => color !== 'white')
 
-    let alignedMiddleColor = getColorString(this.findMiddleWhiteEdgeSitsOn(cubie))
+    let aligningMiddleColor = getColorString(this.findMiddleWhiteEdgeSitsOn(cubie))
     let containingMiddleColor = getColorString(this.findMiddleWhiteEdgeSitsOn(cubie, true))
 
-    let alignedRelativeFace = this.findMiddleOfColor(alignedMiddleColor, true)
+    let aligningRelativeFace = this.findMiddleOfColor(aligningMiddleColor, true)
     let containingRelativeFace = this.findMiddleOfColor(containingMiddleColor, true)
 
-    return { edgeColor, alignedMiddleColor, containingMiddleColor, alignedRelativeFace, containingRelativeFace }
+    return { edgeColor, aligningMiddleColor, containingMiddleColor, aligningRelativeFace, containingRelativeFace }
   }
 
   solveWhiteEdgeOnYellowFace(cubie, cubieData) {
     let targetMiddle = this.findMiddleOfColor(cubieData.edgeColor, true)
-    let targetDir = this.getRelativeDirection(cubieData.alignedRelativeFace, targetMiddle)
+    let targetDir = this.getRelativeDirection(cubieData.aligningRelativeFace, targetMiddle)
 
     let targetMove
     if (targetDir === 1) targetMove = 'd'
@@ -119,7 +119,7 @@ class Solver {
   }
 
   solveWhiteEdgeOnWhiteFace(cubie, cubieData) {
-    let currentFace = cubieData.alignedRelativeFace
+    let currentFace = cubieData.aligningRelativeFace
     let targetFace = this.findMiddleOfColor(cubieData.edgeColor, true)
 
     let targetDir = this.getRelativeDirection(currentFace, targetFace)
@@ -144,7 +144,7 @@ class Solver {
 
   solveWhiteEdgeOnMiddleLayer(cubie, cubieData) {
     let targetFace = this.findMiddleOfColor(cubieData.edgeColor, true)
-    let targetDir = this.getRelativeDirection(cubieData.alignedRelativeFace, targetFace)
+    let targetDir = this.getRelativeDirection(cubieData.aligningRelativeFace, targetFace)
 
     let targetMove
     if (targetDir === 1) targetMove = 'uPrime'
@@ -159,11 +159,11 @@ class Solver {
     // white face is a clockwise rotation of `alignedFace`. otherwise it's a
     // counter-clockwise rotation of `alignedFace`
     let moveToWhiteFace
-    let relativeDir = this.getRelativeDirection(cubieData.containingRelativeFace, cubieData.alignedRelativeFace)
+    let relativeDir = this.getRelativeDirection(cubieData.containingRelativeFace, cubieData.aligningRelativeFace)
     if (relativeDir === 1) {
-      moveToWhiteFace = cubieData.alignedRelativeFace
+      moveToWhiteFace = cubieData.aligningRelativeFace
     } else if (relativeDir === -1) {
-      moveToWhiteFace = rubiksCube.reverseMove(cubieData.alignedRelativeFace)
+      moveToWhiteFace = rubiksCube.reverseMove(cubieData.aligningRelativeFace)
     }
 
     let moves = `${reverseTargetMove} ${moveToWhiteFace} ${targetMove}`
@@ -195,9 +195,9 @@ class Solver {
     // by default, the first move (the move that aligns it with a not-white and
     // no-yellow color) aligns the cubie with the middle on the right
     let firstMove
-    if (cubieData.alignedMiddleColor === 'white') {
+    if (cubieData.aligningMiddleColor === 'white') {
       firstMove = currentFace // clockwise if cubie is on top layer
-    } else if (cubieData.alignedMiddleColor === 'yellow') {
+    } else if (cubieData.aligningMiddleColor === 'yellow') {
       firstMove = rubiksCube.reverseMove(currentFace) // counter-clockwise if cubie is on bottom layer
     }
 
@@ -216,6 +216,12 @@ class Solver {
     let reverseTargetMove = rubiksCube.reverseMove(targetMove)
 
     let moves = `${firstMove} ${targetMove} ${whiteEdgeToTopMove} ${reverseTargetMove}`
+
+    // if cubie is on the bottom layer, it may mess up a correct one on top
+    // to fix, just tack on the reverse of `firstMove` at the end
+    if (cubieData.aligningMiddleColor === 'yellow' && targetDir !== 0) {
+      moves += ` ${rubiksCube.reverseMove(firstMove)}`
+    }
     return rubiksCube.move(moves)
   }
 
