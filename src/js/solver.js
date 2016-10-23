@@ -11,10 +11,10 @@ import { getColorString, getCubieColors } from './utils/color'
 class Solver {
   constructor() {
     this._relativeDirections = {
-      r: { b: 1, f: -1, l: 2 },
-      f: { r: 1, l: -1, b: 2 },
-      l: { f: 1, b: -1, r: 2 },
-      b: { l: 1, r: -1, f: 2 }
+      r: { b: 1, f: -1, l: 2, r: 0 },
+      f: { r: 1, l: -1, b: 2, f: 0 },
+      l: { f: 1, b: -1, r: 2, l: 0 },
+      b: { l: 1, r: -1, f: 2, b: 0 }
     }
     this._relativeFaces = {
       r: { r: 'b', l: 'f', b: 'l' },
@@ -67,17 +67,93 @@ class Solver {
 	}
 
 	solveWhiteEdge(cubie) {
-    if (cubie.position.y === g.startPos) {
-      return this.solveWhiteEdgeOnTopLayer(cubie)
-    } else if (~~cubie.position.y === 0) {
-      return this.solveWhiteEdgeOnMiddleLayer(cubie)
-    } else if (cubie.position.y === -g.startPos) {
-      return
-      return this.solveWhiteEdgeOnBottomLayer(cubie)
-    }
+    let cubieData = this.getDataForWhiteEdge(cubie)
+    if (cubieData.containingMiddleColor === 'white') {
+      return this.solveWhiteEdgeOnWhiteFace(cubie, cubieData)
+    } else if (cubieData.containingMiddleColor === 'yellow') {
+      // return this.solveWhiteEdgeOnBottomLayer(cubie, cubieData)
+    } else if (cubieData.alignedMiddleColor === 'white' ||
+               cubieData.alignedMiddleColor === 'yellow') {
+     return this.solveWhiteEdgeFacingOut(cubie, cubieData)
+   } else {
+     // do some error catching sometime
+     return this.solveWhiteEdgeOnMiddleLayer(cubie, cubieData)
+   }
 	}
 
-  // use this for determining how to solve white edges
+  /**
+   * @param {object} cubie - An edge cubie with white as one color
+   * @return {object}
+   * @prop {string} object.edgeColor - The other color on this white edge
+   * @prop {string} object.alignedMiddleColor - The color of the middle this edge alignes with
+   * @prop {string} object.containingMiddleColor - The color of the middle that contians the white edge
+   * @prop {number} object.alignedRelativeFace - The relative face of alignedMiddleColor
+   * @prop {number} object.containingRelativeFace - The relative face of containingMiddleColor
+   */
+  getDataForWhiteEdge(cubie) {
+    let edgeColor = getCubieColors(cubie).find(color => color !== 'white')
+
+    let alignedMiddleColor = getColorString(this.findMiddleWhiteEdgeSitsOn(cubie))
+    let containingMiddleColor = getColorString(this.findMiddleWhiteEdgeSitsOn(cubie, true))
+
+    let alignedRelativeFace = this.findMiddleOfColor(alignedMiddleColor, true)
+    let containingRelativeFace = this.findMiddleOfColor(containingMiddleColor, true)
+
+    return { edgeColor, alignedMiddleColor, containingMiddleColor, alignedRelativeFace, containingRelativeFace }
+  }
+
+  solveWhiteEdgeOnWhiteFace(cubie, cubieData) {
+    let currentFace = cubieData.alignedRelativeFace
+    let targetFace = this.findMiddleOfColor(cubieData.edgeColor, true)
+
+    let targetDir = this.getRelativeDirection(currentFace, targetFace)
+    if (targetDir === 0) {
+      return
+    }
+
+    // find the direction cubie needs to go to end up on the correct face
+    let targetMove = 'u'
+    if (targetDir === 1) targetMove += 'Prime'
+    else if (targetDir === 2) targetMove += ' u'
+    let reverseTargetMove = rubiksCube.reverseMove(targetMove)
+
+    // "hide" this edge, then rotate the white face so other solved edges are
+    // correct relative to this edge, "unhide" this edge, then re-align all edges
+    let hidingMove = currentFace
+    let reverseHidingMove = rubiksCube.reverseMove(currentFace)
+
+    let moves = `${hidingMove} ${reverseTargetMove} ${reverseHidingMove} ${targetMove} ${hidingMove}`
+    return rubiksCube.move(moves)
+  }
+
+  solveWhiteEdgeOnMiddleLayer(cubie, cubieData) {
+    let targetFace = this.findMiddleOfColor(cubieData.edgeColor, true)
+    let targetDir = this.getRelativeDirection(cubieData.alignedRelativeFace, targetFace)
+
+    let targetMove
+    if (targetDir === 1) targetMove = 'uPrime'
+    else if (targetDir === -1) targetMove = 'u'
+    else if (targetDir === 0) targetMove = ''
+    else if (targetDir === 2) targetMove = 'u u'
+
+    let reverseTargetMove = rubiksCube.reverseMove(targetMove)
+
+    // if the aligned face is to the right of the containing face, i.e. the edge
+    // is to the right of the containing middle, the move to get the edge to the
+    // white face is a clockwise rotation of `alignedFace`. otherwise it's a
+    // counter-clockwise rotation of `alignedFace`
+    let moveToWhiteFace
+    let relativeDir = this.getRelativeDirection(cubieData.containingRelativeFace, cubieData.alignedRelativeFace)
+    if (relativeDir === 1) {
+      moveToWhiteFace = cubieData.alignedRelativeFace
+    } else if (relativeDir === -1) {
+      moveToWhiteFace = rubiksCube.reverseMove(cubieData.alignedRelativeFace)
+    }
+
+    let moves = `${reverseTargetMove} ${moveToWhiteFace} ${targetMove}`
+    return rubiksCube.move(moves)
+  }
+
   findMiddleWhiteEdgeSitsOn(cubie, adjacent = false) {
     // if adjacent, do not shoot through white color
     let test = (color, white) => adjacent ? color !== white : color === white
@@ -94,96 +170,36 @@ class Solver {
     return intersects[0]
   }
 
-  solveWhiteEdgeOnMiddleLayer(cubie) {
-    // find the move that will rotate cubie to the top or bottom face (relativeMiddleFace).
-    // if the adjacent middle (the middle next to the white color of the cubie)
-    // is left of the relativeMiddleFace, a CLOCKWISE rotation of relativeMiddleFace
-    // will put the cubie on the top face.
+  solveWhiteEdgeFacingOut(cubie, cubieData) {
+    // let currentFace = this.findMiddleOfColor(cubieData.containingMiddleColor, true)
+    let currentFace = cubieData.containingRelativeFace
+    let targetFace = this.findMiddleOfColor(cubieData.edgeColor, true)
+    let targetDir = this.getRelativeDirection(currentFace, targetFace)
 
-    let middle = this.findMiddleWhiteEdgeSitsOn(cubie)
-    let adjacentMiddle = this.findMiddleWhiteEdgeSitsOn(cubie, true)
-    let relativeMiddleFace = this.findMiddleOfColor(getColorString(middle.children[0]), true)
-    let relativeAdjacentFace = this.findMiddleOfColor(getColorString(adjacentMiddle.children[0]), true)
-
-    let theDecider = this.getRelativeDirection(relativeMiddleFace, relativeAdjacentFace)
-    let theMove = theDecider === -1 ? relativeMiddleFace : rubiksCube.reverseNotation(relativeMiddleFace)
-
-    let { relativeMove } = this.getRelativeDataForWhiteEdge(cubie)
-    let reverseRelativeMove = rubiksCube.reverseNotation(relativeMove)
-
-    let moves = `${reverseRelativeMove} ${theMove} ${relativeMove}`
-    return rubiksCube.move(moves)
-  }
-
-  solveWhiteEdgeOnTopLayer(cubie) {
-    let raycaster = new THREE.Raycaster(cubie.position.clone(), new THREE.Vector3(0, 1, 0))
-    let intersects = raycaster.intersectObjects(scene.children, true).filter((data) => {
-      return data.object.name === 'color'
-    })
-    if (getColorString(intersects[0].object) === 'white') {
-      return this.solveWhiteEdgeOnTopLayerFacingUp(cubie)
-    } else {
-      return this.solveWhiteEdgeOnTopLayerFacingOut(cubie)
-    }
-  }
-
-  /**
-   * Gets the adjacent color of the white edge, finds the target face, and returns
-   * relative move direction to get the edge to the target face
-   */
-  getRelativeDataForWhiteEdge(cubie, adjacent = false) {
-    let colors = getCubieColors(cubie)
-    colors.splice(colors.indexOf('white'), 1)
-
-    let middleCube = this.findMiddleWhiteEdgeSitsOn(cubie, adjacent)
-    let middleColor = getColorString(middleCube.children[0])
-
-    let currentFace = this.findMiddleOfColor(middleColor, true)
-    let targetFace = this.findMiddleOfColor(colors[0], true)
-
-    let relativeDir = this.getRelativeDirection(currentFace, targetFace)
-    if (!relativeDir) relativeDir = 0
-
-    let relativeMove = ''
-    if (relativeDir === 1) relativeMove = 'uPrime'
-    else if (relativeDir === -1) relativeMove = 'u'
-    else if (relativeDir === 2) relativeMove = 'u u'
-
-    return { currentFace, targetFace, relativeDir, relativeMove }
-  }
-
-  solveWhiteEdgeOnTopLayerFacingUp(cubie) {
-    let { currentFace, targetFace, relativeDir, relativeMove } = this.getRelativeDataForWhiteEdge(cubie)
-    if (!relativeMove) {
-      return
+    // by default, the first move (the move that aligns it with a not-white and
+    // no-yellow color) aligns the cubie with the middle on the right
+    let firstMove
+    if (cubieData.alignedMiddleColor === 'white') {
+      firstMove = currentFace // clockwise if cubie is on top layer
+    } else if (cubieData.alignedMiddleColor === 'yellow') {
+      firstMove = rubiksCube.reverseMove(currentFace) // counter-clockwise if cubie is on bottom layer
     }
 
-    let reverseRelativeMove = rubiksCube.reverseNotation(relativeMove)
-    let reverseCurrentFace = rubiksCube.reverseNotation(currentFace)
-
-    let moves = `${currentFace} ${reverseRelativeMove} ${reverseCurrentFace} ${relativeMove} ${currentFace}`
-    return rubiksCube.move(moves)
-  }
-
-  solveWhiteEdgeOnTopLayerFacingOut(cubie) {
-    let { currentFace, relativeDir } = this.getRelativeDataForWhiteEdge(cubie, true)
-
-    let firstMove = currentFace
+    // because of the default first move, the move that puts the white edge on
+    // the top layer is 'r'
     let whiteEdgeToTopMove = this.getRelativeFace(currentFace, 'r')
-    let relativeMove = ''
-
-    if (relativeDir === -1) {
-      firstMove = rubiksCube.reverseNotation(currentFace)
-      whiteEdgeToTopMove = rubiksCube.reverseNotation(this.getRelativeFace(currentFace, 'l'))
-    } else if (relativeDir === 0) {
-      relativeMove = 'uPrime'
-    } else if (relativeDir === 2) {
-      relativeMove = 'u'
+    if (targetDir === -1) {
+      firstMove = rubiksCube.reverseMove(firstMove)
+      whiteEdgeToTopMove = this.getRelativeFace(currentFace, 'l')
+      whiteEdgeToTopMove = rubiksCube.reverseMove(whiteEdgeToTopMove)
     }
 
-    let reverseRelativeMove = rubiksCube.reverseNotation(relativeMove)
+    let targetMove = ''
+    if (targetDir === 0) targetMove = 'uPrime'
+    if (targetDir === 2) targetMove = 'u'
+    let reverseTargetMove = rubiksCube.reverseMove(targetMove)
 
-    let moves = `${firstMove} ${relativeMove} ${whiteEdgeToTopMove} ${reverseRelativeMove}`
+    let moves = `${firstMove} ${targetMove} ${whiteEdgeToTopMove} ${reverseTargetMove}`
     return rubiksCube.move(moves)
   }
 
