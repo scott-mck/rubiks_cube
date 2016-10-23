@@ -1,14 +1,14 @@
 import THREE from 'three'
-import rubiksCube from './rubiks-cube'
-import animator from './animator'
-import grabber from './grabber'
-import scene from './scene'
-import g from './globals'
-import keyMap from './key-map'
-import { vectorFromString } from './utils/vector'
-import { getColorString, getCubieColors } from './utils/color'
+import rubiksCube from '../rubiks-cube'
+import animator from '../animator'
+import grabber from '../grabber'
+import scene from '../scene'
+import g from '../globals'
+import keyMap from '../key-map'
+import { vectorFromString } from '../utils/vector'
+import { getColorString, getCubieColors } from '../utils/color'
 
-class Solver {
+class CrossSolver {
   constructor() {
     this._relativeDirections = {
       r: { b: 1, f: -1, l: 2, r: 0 },
@@ -309,4 +309,4 @@ class Solver {
   }
 }
 
-export default Solver
+export default new CrossSolver()
