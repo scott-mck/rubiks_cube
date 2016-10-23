@@ -173,6 +173,18 @@ class Grabber {
 
     return this.filterIntersects(intersects)
   }
+
+  getAllMiddles() {
+		return g.allCubes.filter(cube => cube.children.length === 1)
+  }
+
+  getAllEdges() {
+		return g.allCubes.filter(cube => cube.children.length === 2)
+  }
+
+  getAllCorners() {
+    return g.allCubes.filter(cube => cube.children.length === 3)
+  }
 }
 
 export default new Grabber()
