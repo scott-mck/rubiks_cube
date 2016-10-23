@@ -170,9 +170,9 @@ class CrossSolver {
     return rubiksCube.move(moves)
   }
 
-  findMiddleWhiteEdgeSitsOn(cubie, adjacent = false) {
-    // if adjacent, do not shoot through white color
-    let test = (color, white) => adjacent ? color !== white : color === white
+  findMiddleWhiteEdgeSitsOn(cubie, containing = false) {
+    // by default, grab the middle that the cubie aligns with
+    let test = (color, white) => containing ? color !== white : color === white
 
     let whiteColor = cubie.children.find(color => {
       return test(getColorString(color), 'white')
