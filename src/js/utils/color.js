@@ -1,5 +1,10 @@
 export const getColorString = (object) => {
-	if (object.name === 'color') {
+	if (object.name === 'cubie') {
+		if (object.children.length > 1) {
+			throw 'Cubie has multiple colors'
+		}
+		object = object.children[0].material.color
+	} else if (object.name === 'color') {
 		object = object.material.color
 	}
 
