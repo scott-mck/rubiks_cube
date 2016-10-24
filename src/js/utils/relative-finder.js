@@ -43,7 +43,7 @@ export const getCubeState = () => {
 }
 
 /**
- * @return {object} - A color on the cubie pointing to a relative face
+ * @return {object} - A map in the form of colorString: relativeFace
  */
 export const getRelativeFacesOfCubie = (cubie) => {
 	let map = {}
