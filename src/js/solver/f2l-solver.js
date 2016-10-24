@@ -1,8 +1,10 @@
+import rubiksCube from '../rubiks-cube'
+
 class F2LSolver {
-  constructor(){}
+  constructor() {}
 
   solve() {
-
+		rubiksCube.moveFaceToTop('yellow')
   }
 }
 
