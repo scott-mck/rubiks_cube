@@ -23,6 +23,8 @@ class CrossSolver {
 	async solve() {
     this._cubeState = getCubeState()
 		await this.moveWhiteFaceToTop()
+
+    // cube state changes whenever the orientation of the middles change
     this._cubeState = getCubeState()
 		this.completeCross()
 	}
