@@ -20,13 +20,17 @@ class CrossSolver {
 		this._promises = []
   }
 
-	async solve() {
-    this._cubeState = getCubeState()
-		await this.moveWhiteFaceToTop()
+	solve() {
+    return new Promise(async (resolve) => {
+      this._cubeState = getCubeState()
+      await rubiksCube.moveFaceToTop('white')
 
-    // cube state changes whenever the orientation of the middles change
-    this._cubeState = getCubeState()
-		this.completeCross()
+      // cube state changes whenever the orientation of the middles change
+      this._cubeState = getCubeState()
+      this.completeCross()
+
+      this.chainPromise(resolve)
+    })
 	}
 
   getGlobalPosition(mesh) {
@@ -198,19 +202,6 @@ class CrossSolver {
     }
 
     let moves = `${reverseTargetMove} ${moveToWhiteFace} ${targetMove}`
-    return rubiksCube.move(moves)
-  }
-
-  moveWhiteFaceToTop() {
-    let whiteSide = this._cubeState.white
-    let moves
-    if (whiteSide === 'r') moves = `${keyMap.getNotation(';')} ${keyMap.getNotation('y')}`
-    else if (whiteSide === 'l') moves = `${keyMap.getNotation(';')} ${keyMap.getNotation('n')}`
-    else if (whiteSide === 'f') moves = `${keyMap.getNotation('y')}`
-    else if (whiteSide === 'b') moves = `${keyMap.getNotation('n')}`
-    else if (whiteSide === 'd') moves = `${keyMap.getNotation('y')} ${keyMap.getNotation('y')}`
-    else return
-
     return rubiksCube.move(moves)
   }
 }
