@@ -47,6 +47,21 @@ class F2LSolver {
 		return true
 	}
 
+	isAttached(corner, edge) {
+		let whiteMesh = corner.children.find((color) => {
+			return getColorString(color) === 'white'
+		})
+		let matrixWolrd = whiteMesh.matrixWorld.clone()
+		let globalPos new THREE.Vector3().setFromMatrixPosition(matrixWorld)
+		let raycaster = new THREE.Raycaster(globalPos, globalPos.clone().sub(corner.position.clone()))
+
+		let intersects = raycaster.intersectObjects(scene.children).filter((data) => {
+			return data.object !== corner
+		})
+
+		return intersects[0].object === edge
+	}
+
 	/**
 	 * @param {object} corner - The corner to be solved.
 	 * @param {object} edge - The associated edge that matches the corner.
@@ -54,6 +69,10 @@ class F2LSolver {
 	solveCorner(corner, edge) {
 		let cornerData = getRelativeFacesOfCubie(corner)
 		let edgeData = getRelativeFacesOfCubie(edge)
+
+		let isAttached = this.isAttached(corner, edge)
+
+		return isAttached
 
 		if (this.cornerIsSolved(corner, cornerData)) {
 			return this.solveEdge(edge, edgeData)
