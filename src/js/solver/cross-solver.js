@@ -5,6 +5,7 @@ import grabber from '../grabber'
 import scene from '../scene'
 import g from '../globals'
 import keyMap from '../key-map'
+import promiseChainer from '../utils/promise-chainer'
 import { vectorFromString } from '../utils/vector'
 import { getColorString, getCubieColors } from '../utils/color'
 import {
@@ -15,10 +16,7 @@ import {
 } from '../utils/relative-finder'
 
 class CrossSolver {
-  constructor() {
-		this._callbacks = []
-		this._promises = []
-  }
+  constructor() {}
 
 	solve() {
     return new Promise(async (resolve) => {
@@ -29,7 +27,7 @@ class CrossSolver {
       this._cubeState = getCubeState()
       this.completeCross()
 
-      this.chainPromise(resolve)
+      promiseChainer.chain(resolve)
     })
 	}
 
@@ -38,25 +36,13 @@ class CrossSolver {
     return new THREE.Vector3().setFromMatrixPosition(matrixWorld)
   }
 
-	chainPromise(callback) {
-    this._callbacks.push(callback)
-    let lastPromise = this._promises.shift()
-
-    if (!lastPromise) {
-      this._promises.push(this._callbacks.shift()())
-    } else {
-      let newPromise = lastPromise.then(this._callbacks.shift())
-      this._promises.push(newPromise)
-    }
-	}
-
 	completeCross() {
     let whiteEdges = grabber.getAllEdges().filter((edge) => {
       return getCubieColors(edge).includes('white')
     })
 
 		whiteEdges.forEach((edge) => {
-			this.chainPromise(() => {
+			promiseChainer.chain(() => {
         return this.solveWhiteEdge(edge)
       })
 		})
