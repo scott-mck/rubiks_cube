@@ -7,6 +7,8 @@ import scene from './scene'
 import timer from './timer'
 import renderer from './renderer'
 import solver from './solver'
+import crossSolver from './solver/cross-solver'
+import f2lSolver from './solver/f2l-solver'
 
 window.THREE = THREE
 window.rubiksCube = rubiksCube
@@ -18,3 +20,5 @@ window.timer = timer
 window.renderer = renderer
 window.animator = animator
 window.solver = solver
+window.crossSolver = crossSolver
+window.f2lSolver = f2lSolver
