@@ -4,17 +4,17 @@ import F2LSolver from './f2l-solver'
 class Solver {
 	constructor() {}
 
-	solve() {
-		this.solveCross()
-		this.solveF2L()
+	async solve() {
+		await this.solveCross()
+		await this.solveF2L()
 	}
 
 	solveCross() {
-		crossSolver.solve()
+		return crossSolver.solve()
 	}
 
 	solveF2L() {
-		F2LSolver.solve()
+		return F2LSolver.solve()
 	}
 }
 
