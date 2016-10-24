@@ -5,7 +5,7 @@ import grabber from './grabber'
 import animator from './animator'
 import g from './globals'
 import { vectorFromString, cross } from './utils/vector'
-
+import { getCubeState } from './utils/relative-finder'
 
 class RubiksCube {
   constructor() {
@@ -86,6 +86,21 @@ class RubiksCube {
 
     await animator.rotate(animationData)
     this._nextMove()
+  }
+
+  moveFaceToTop(faceColor) {
+    let cubeState = getCubeState()
+
+    let targetSide = cubeState[faceColor]
+    let moves
+    if (targetSide === 'r') moves = 'y x'
+    else if (targetSide === 'l') moves = 'y xPrime'
+    else if (targetSide === 'f') moves = 'x'
+    else if (targetSide === 'b') moves = 'xPrime'
+    else if (targetSide === 'd') moves = 'x x'
+    else return
+
+    return this.move(moves)
   }
 
   scramble() {
