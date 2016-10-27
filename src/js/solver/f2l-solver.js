@@ -165,6 +165,44 @@ class F2LSolver {
 		return this.solveMatchedPair(corner, edge, updatedData)
 	}
 
+	async matchCornerOnWhiteLayerWithEdge(corner, edge, data) {
+		if (data.cornerData.white === 'd') {
+			return this.matchCornerOnWhiteFaceWithEdge(corner, edge, data)
+		}
+
+		let relativePrepFace, prepMove, cornerToTopMove, topLayerMove
+
+		// relative prep face
+		let colorOnWhite = Object.keys(data.cornerData).find(color => data.cornerData[color] === 'd')
+		let willMatch = colorOnWhite === data.primaryColor
+		relativePrepFace = willMatch ? data.cornerData[data.secondaryColor] : data.cornerData.white
+
+		// corner to top move, top layer move
+		cornerToTopMove = data.cornerData.white
+		if (cornerToTopMove === data.relativeLeft) {
+			cornerToTopMove = rubiksCube.reverseMove(cornerToTopMove)
+			topLayerMove = 'uPrime'
+		} else {
+			topLayerMove = 'u'
+		}
+
+		// prep move
+		let targetDir = getRelativeDirection(data.edgeData[data.primaryColor], relativePrepFace)
+		prepMove
+		if (targetDir === 1) prepMove = 'uPrime'
+		if (targetDir === -1) prepMove = 'u'
+		if (targetDir === 2) prepMove = 'u u'
+		if (targetDir === 0) prepMove = ''
+
+		let r = (arg) => rubiksCube.reverseMove(arg)
+		let moves = `${prepMove} ${cornerToTopMove} ${topLayerMove} ${r(cornerToTopMove)}`
+		await rubiksCube.move(moves)
+
+		this._cubeState = getCubeState()
+		let updatedData = this.getData(corner, edge)
+		this.solveSeparatedPair(corner, edge, updatedData)
+	}
+
 	/**
 	 * Assumes the edge is adjacent to the corner, with both colors matching up.
 	 */
@@ -197,37 +235,32 @@ class F2LSolver {
 		return rubiksCube.move(moves)
 	}
 
-	matchCornerOnWhiteLayerWithEdge(corner, edge, data) {
-		if (data.cornerData.white === 'd') {
-			return this.matchCornerOnWhiteFaceWithEdge(corner, edge, data)
-		}
+	solveSeparatedPair(corner, edge, data) {
+		let prepFace
+		let prepMove, openingMove, topLayerMove
 
-		let relativePrepFace, prepMove, cornerToTopMove, topLayerMove
+		let targetFace = this._cubeState[data.primaryColor]
+		let secondaryFace = this._cubeState[data.secondaryColor]
 
-		// relative prep face
-		let colorOnWhite = Object.keys(data.cornerData).find(color => data.cornerData[color] === 'd')
-		let willMatch = colorOnWhite === data.primaryColor
-		relativePrepFace = willMatch ? data.cornerData[data.secondaryColor] : data.cornerData.white
+		prepFace = secondaryFace
+		openingMove = this._cubeState[data.primaryColor]
 
-		// corner to top move, top layer move
-		cornerToTopMove = data.cornerData.white
-		if (cornerToTopMove === data.relativeLeft) {
-			cornerToTopMove = rubiksCube.reverseMove(cornerToTopMove)
-			topLayerMove = 'uPrime'
-		} else {
+		if (getRelativeFace(secondaryFace, targetFace) === 'r') {
 			topLayerMove = 'u'
+		} else {
+			openingMove = rubiksCube.reverseMove(openingMove)
+			topLayerMove = 'uPrime'
 		}
 
-		// prep move
-		let targetDir = getRelativeDirection(data.edgeData[data.primaryColor], relativePrepFace)
-		prepMove
-		if (targetDir === 1) prepMove = 'uPrime'
-		if (targetDir === -1) prepMove = 'u'
-		if (targetDir === 2) prepMove = 'u u'
-		if (targetDir === 0) prepMove = ''
+		let dirToPrepFace = getRelativeDirection(data.cornerData[data.secondaryColor], prepFace)
+		if (dirToPrepFace === 1) prepMove = 'uPrime'
+		if (dirToPrepFace === -1) prepMove = 'u'
+		if (dirToPrepFace === 0) prepMove = ''
+		if (dirToPrepFace === 2) prepMove = 'u u'
 
 		let r = (arg) => rubiksCube.reverseMove(arg)
-		let moves = `${prepMove} ${cornerToTopMove} ${topLayerMove} ${r(cornerToTopMove)}`
+
+		let moves = `${prepMove} ${openingMove} ${topLayerMove} ${r(openingMove)}`
 		return rubiksCube.move(moves)
 	}
 
