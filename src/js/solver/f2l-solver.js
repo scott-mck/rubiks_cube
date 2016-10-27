@@ -1,6 +1,6 @@
 import rubiksCube from '../rubiks-cube'
 import promiseChainer from '../utils/promise-chainer'
-import { getCubieColors } from '../utils/color'
+import { getColorString, getCubieColors } from '../utils/color'
 import {
 	getCubeState,
 	getRelativeFace,
@@ -37,29 +37,63 @@ class F2LSolver {
 		})
   }
 
-	cornerIsSolved(corner, cornerData) {
-		let otherColors = getCubieColors(corner).filter(color => color !== 'white')
+	cubieIsSolved(cubie, cubieData) {
+		let otherColors = getCubieColors(cubie).filter(color => color !== 'white')
 		for (let color of otherColors) {
-			if (cornerData[color] !== this._cubeState[color]) {
+			if (cubieData[color] !== this._cubeState[color]) {
 				return false
 			}
 		}
 		return true
 	}
 
+	isMatched(corner, edge) {
+		let isAttached = this.isAttached(corner, edge)
+		let colors = getCubieColors(corner).filter(color => color !== 'white')
+		let relativeCornerFaces = getRelativeFacesOfCubie(corner)
+		let relativeEdgeFaces = getRelativeFacesOfCubie(edge)
+
+		return isAttached &&
+					 relativeCornerFaces[colors[0]] === relativeEdgeFaces[colors[0]] &&
+					 relativeCornerFaces[colors[1]] === relativeEdgeFaces[colors[1]]
+	}
+
 	isAttached(corner, edge) {
 		let whiteMesh = corner.children.find((color) => {
 			return getColorString(color) === 'white'
 		})
-		let matrixWolrd = whiteMesh.matrixWorld.clone()
-		let globalPos new THREE.Vector3().setFromMatrixPosition(matrixWorld)
-		let raycaster = new THREE.Raycaster(globalPos, globalPos.clone().sub(corner.position.clone()))
+		let matrixWorld = whiteMesh.matrixWorld.clone()
+		let globalPos = new THREE.Vector3().setFromMatrixPosition(matrixWorld)
+		let shoot = globalPos.clone().sub(corner.position.clone()).negate().normalize()
+		let raycaster = new THREE.Raycaster(globalPos, shoot)
 
-		let intersects = raycaster.intersectObjects(scene.children).filter((data) => {
+		let intersects = raycaster.intersectObjects(scene.children)
+		intersects = intersects.filter((data) => {
 			return data.object !== corner
 		})
 
 		return intersects[0].object === edge
+	}
+
+	getData(corner, edge) {
+		let cornerData = getRelativeFacesOfCubie(corner)
+		let edgeData = getRelativeFacesOfCubie(edge)
+
+		// relativeLeftFace, relativeRightFace, primaryColor, secondaryColor
+		let primaryColor, secondaryColor
+		for (let color of Object.keys(edgeData)) {
+			if (edgeData[color] !== 'u') {
+				primaryColor = color
+			} else {
+				secondaryColor = color
+			}
+		}
+
+		let relativeFaces = Object.values(cornerData).filter(face => face !== 'd')
+		let inOrder = getRelativeFace(relativeFaces[0], relativeFaces[1]) === 'r'
+		let [relativeLeft, relativeRight] = inOrder ? relativeFaces : relativeFaces.reverse()
+
+		return { cornerData, edgeData, primaryColor, secondaryColor, relativeLeft, relativeRight }
 	}
 
 	/**
@@ -67,74 +101,134 @@ class F2LSolver {
 	 * @param {object} edge - The associated edge that matches the corner.
 	 */
 	solveCorner(corner, edge) {
-		let cornerData = getRelativeFacesOfCubie(corner)
-		let edgeData = getRelativeFacesOfCubie(edge)
+		let data = this.getData(corner, edge)
 
-		let isAttached = this.isAttached(corner, edge)
-
-		return isAttached
-
-		if (this.cornerIsSolved(corner, cornerData)) {
-			return this.solveEdge(edge, edgeData)
-		}
-
-		if (cornerData.white === 'd') {
-			return this.solveCornerOnWhiteFace(corner, cornerData, edge, edgeData)
+		for (let color of Object.keys(data.cornerData)) {
+			if (data.cornerData[color] === 'd') {
+				return this.solveCornerOnWhiteLayer(corner, edge, data)
+			}
 		}
 	}
 
-	async solveEdge(edge, edgeData) {
-		// if the edge is stuck on the middle layer, release it
-		// need to recalculate edgeData because its position changed
-		if (!Object.values(edgeData).includes('u')) {
-			await this.releaseEdge(edge, edgeData)
-			edgeData = getRelativeFacesOfCubie(edge)
+	async solveCornerOnWhiteLayer(corner, edge, data) {
+		let isSolved = this.cubieIsSolved(corner, data.cornerData)
+		let isMatched = this.isMatched(corner, edge)
+		let isAttached = this.isAttached(corner, edge)
+
+		if (isSolved && isMatched) {
+			return Promise.resolve()
+		} else if (isSolved && isAttached) {
+			return Promise.resolve()
+			// await this.releaseEdge(edge, edgeData)
+			// return this.solveCorner(corner, edge)
 		}
 
-		let targetColor, secondaryColor
-		for (let color of Object.keys(edgeData)) {
-			if (edgeData[color] !== 'u') {
-				targetColor = color
-			} else {
-				secondaryColor = color
-			}
+		await this.matchCornerOnWhiteLayerWithEdge(corner, edge, data)
+	}
+
+	/**
+	 * @param {object} data
+	 * @prop {string} primaryColor - The edge color that isn't on the yellow face.
+	 * @prop {string} secondaryColor - The edge color that is on the yellow face.
+	 * @prop {string} relativeLeft - The face that is on the left (e.g. 'b')
+	 * @prop {string} relativeRight - The face that is on the right (e.g. 'r')
+	 * @prop {object} cornerData - The relative faces map of the corner
+	 * @prop {object} edgeData - The relative faces map of the edge
+	 */
+	async matchCornerOnWhiteFaceWithEdge(corner, edge, data) {
+		let relativePrepFace, topLayerMove, cornerToTopMove
+		if (data.cornerData[data.primaryColor] === data.relativeLeft) {
+			relativePrepFace = getRelativeFace(data.cornerData[data.primaryColor], 'l')
+			topLayerMove = 'uPrime'
+			cornerToTopMove = data.cornerData[data.secondaryColor]
+		} else {
+			relativePrepFace = getRelativeFace(data.cornerData[data.primaryColor], 'r')
+			topLayerMove = 'u'
+			cornerToTopMove = rubiksCube.reverseMove(data.cornerData[data.secondaryColor])
 		}
 
-		let prepFace = getRelativeFace(this._cubeState[secondaryColor], 'b')
-		let targetDir = getRelativeDirection(edgeData[targetColor], prepFace)
-
+		let dirToPrepFace = getRelativeDirection(data.edgeData[data.primaryColor], relativePrepFace)
 		let prepMove
+		if (dirToPrepFace === 1) prepMove = 'uPrime'
+		if (dirToPrepFace === -1) prepMove = 'u'
+		if (dirToPrepFace === 0) prepMove = ''
+		if (dirToPrepFace === 2) prepMove = 'u u'
+
+		let r = (arg) => rubiksCube.reverseMove(arg)
+
+		let moves = `${prepMove} ${cornerToTopMove} ${topLayerMove} ${r(cornerToTopMove)}`
+		await rubiksCube.move(moves)
+
+		// need to update once moves are made
+		this._cubeState = getCubeState()
+		let updatedData = this.getData(corner, edge)
+		return this.solveMatchedPair(corner, edge, updatedData)
+	}
+
+	/**
+	 * Assumes the edge is adjacent to the corner, with both colors matching up.
+	 */
+	solveMatchedPair(corner, edge, data) {
+		let prepFace
+		let prepMove, openingMove, topLayerMove
+
+		let targetFace = this._cubeState[data.primaryColor]
+		let secondaryFace = this._cubeState[data.secondaryColor]
+
+		prepFace = secondaryFace
+		openingMove = this._cubeState[data.primaryColor]
+
+		if (getRelativeFace(secondaryFace, targetFace) === 'r') {
+			topLayerMove = 'uPrime'
+		} else {
+			openingMove = rubiksCube.reverseMove(openingMove)
+			topLayerMove = 'u'
+		}
+
+		let dirToPrepFace = getRelativeDirection(data.edgeData[data.primaryColor], prepFace)
+		if (dirToPrepFace === 1) prepMove = 'uPrime'
+		if (dirToPrepFace === -1) prepMove = 'u'
+		if (dirToPrepFace === 0) prepMove = ''
+		if (dirToPrepFace === 2) prepMove = 'u u'
+
+		let r = (arg) => rubiksCube.reverseMove(arg)
+
+		let moves = `${prepMove} ${openingMove} ${topLayerMove} ${r(openingMove)}`
+		return rubiksCube.move(moves)
+	}
+
+	matchCornerOnWhiteLayerWithEdge(corner, edge, data) {
+		if (data.cornerData.white === 'd') {
+			return this.matchCornerOnWhiteFaceWithEdge(corner, edge, data)
+		}
+
+		let relativePrepFace, prepMove, cornerToTopMove, topLayerMove
+
+		// relative prep face
+		let colorOnWhite = Object.keys(data.cornerData).find(color => data.cornerData[color] === 'd')
+		let willMatch = colorOnWhite === data.primaryColor
+		relativePrepFace = willMatch ? data.cornerData[data.secondaryColor] : data.cornerData.white
+
+		// corner to top move, top layer move
+		cornerToTopMove = data.cornerData.white
+		if (cornerToTopMove === data.relativeLeft) {
+			cornerToTopMove = rubiksCube.reverseMove(cornerToTopMove)
+			topLayerMove = 'uPrime'
+		} else {
+			topLayerMove = 'u'
+		}
+
+		// prep move
+		let targetDir = getRelativeDirection(data.edgeData[data.primaryColor], relativePrepFace)
+		prepMove
 		if (targetDir === 1) prepMove = 'uPrime'
 		if (targetDir === -1) prepMove = 'u'
 		if (targetDir === 2) prepMove = 'u u'
 		if (targetDir === 0) prepMove = ''
 
-		// matching the corner with the edge
-		let moveSet1 = this._cubeState[secondaryColor]
-		let moveSet2 = this._cubeState[targetColor]
-
-		let adjustingMove
-		let secondaryToTargetDir = getRelativeDirection(moveSet1, moveSet2)
-		if (secondaryToTargetDir === 1) {
-			moveSet1 = rubiksCube.reverseMove(moveSet1)
-			adjustingMove = 'u'
-		} else {
-			moveSet2 = rubiksCube.reverseMove(moveSet2)
-			adjustingMove = 'uPrime'
-		}
-
 		let r = (arg) => rubiksCube.reverseMove(arg)
-
-		let moves = `${prepMove} ${moveSet1} ${adjustingMove} ${r(moveSet1)} `
-		moves += `${adjustingMove} ${moveSet2} ${r(adjustingMove)} ${r(moveSet2)}`
+		let moves = `${prepMove} ${cornerToTopMove} ${topLayerMove} ${r(cornerToTopMove)}`
 		return rubiksCube.move(moves)
-	}
-
-	async solveCornerOnWhiteFace(corner, cornerData, edge, edgeData) {
-		// if the edge is stuck on the middle layer, release it
-		if (!Object.values(edgeData).includes('u')) {
-			await this.releaseEdge(edge, edgeData)
-		}
 	}
 
 	releaseEdge(edge, edgeData) {
