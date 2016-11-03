@@ -37,16 +37,25 @@ export const getRelativeFace = (fromFace, dir) => {
  */
 export const getCubeState = () => {
 	let middles = grabber.getAllMiddles()
-	let map = {}
-	middles.forEach(middle => Object.assign(map, getRelativeFacesOfCubie(middle)))
+	let map = { color: {}, face: {} }
+	middles.forEach(middle => {
+		let cubieData = getRelativeFacesOfCubie(middle)
+		Object.assign(map.color, cubieData.color)
+		Object.assign(map.face, cubieData.face)
+	})
 	return map
 }
 
 /**
- * @return {object} - A map in the form of colorString: relativeFace
+ * @return {object}
+ * @prop {string} color - A map in the form of [color]: [relativeFace]
+ * @prop {string} relativeFace - A map in the form of [relativeFace]: [color]
  */
 export const getRelativeFacesOfCubie = (cubie) => {
-	let map = {}
+	let map = {
+		color: {},
+		face: {}
+	}
 	let cubiePos = cubie.position.clone()
 
 	// cycle through 'x', 'y' and 'z' of cubie position
@@ -62,7 +71,9 @@ export const getRelativeFacesOfCubie = (cubie) => {
 				return data.object.name === 'color'
 			})
 
-			map[getColorString(colorIntersect.object)] = relativeFace
+			let color = getColorString(colorIntersect.object)
+			map.color[color] = relativeFace
+			map.face[relativeFace] = color
 		}
 	}
 
