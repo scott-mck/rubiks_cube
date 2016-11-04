@@ -1,5 +1,4 @@
 import rubiksCube from '../../rubiks-cube'
-// import promiseChainer from '../utils/promise-chainer'
 import { getColorString, getCubieColors } from '../../utils/color'
 import {
 	getCubeState,
@@ -10,6 +9,8 @@ import {
 // import logic for each top-level f2l case
 import cornerAndEdgeInSlotSolver from './corner-and-edge-in-slot'
 import cornerAndEdgeOnTopSolver from './corner-and-edge-on-top-solver'
+import cornerOnBottomEdgeOnTopSolver from './corner-on-bottom-edge-on-top'
+import cornerOnTopEdgeInMiddleSolver from './corner-on-top-edge-in-middle'
 
 const R = (move) => rubiksCube.reverseMove(move)
 
@@ -124,36 +125,37 @@ class F2LSolver {
 	}
 
 	/**
+	 * There are 5 top-level cases:
+	 * 1) Both corner and edge are in a "slot"
+	 * 2) Corner is on bottom and edge is in middle
+	 * 3) Corner is on bottom and edge is on top
+	 * 4) Corner is on top and edge is in middle
+	 * 5) Both corner and edge are in the top face
+	 *
 	 * @param {object} corner - The corner to be solved.
 	 * @param {object} edge - The associated edge that matches the corner.
 	 */
 	solvePair(corner, edge) {
-		// There are 5 top-level "cases":
-
 		if (corner.position.x === edge.position.x && corner.position.z === edge.position.z) {
-			// 1) Both corner and edge are in a "slot"
 			return cornerAndEdgeInSlotSolver.solve(corner, edge)
 		}
 		if (corner.position.y === -g.startPos && edge.position.y === 0) {
-			// 2) Corner is on bottom and edge is in middle
-			// return this._caseCornerOnBottomEdgeInMiddle(corner, edge)
+			this.releaseEdge(edge)
+			return cornerOnBottomEdgeOnTop.solve(corner, edge)
 		}
 		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
-			// 3) Corner is on bottom and edge is on top
-			// return this._caseCornerOnBottomEdgeOnTop(corner, edge)
+			return cornerOnBottomEdgeOnTop.solve(corner, edge)
 		}
 		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
-			// 4) Corner is on top and edge is in middle
-			// return this._caseCornerOnTopEdgeInMiddle(corner, edge)
+			return cornerOnTopEdgeInMiddle.solve(corner, edge)
 		}
 		if (corner.position.y === g.startPos && edge.position.y === g.startPos) {
-			// 5) Both corner and edge are in the top face
 			return cornerAndEdgeOnTopSolver.solve(corner, edge)
 		}
 	}
 
 	/**
-	 * Assumes both the corner and edge are matched up on the top layer
+	 * Assumes both the corner and edge are "matched" on the top layer
 	 */
 	async solveMatchedPair(corner, edge) {
 		let data = this.getData(corner, edge)
@@ -175,7 +177,7 @@ class F2LSolver {
 	}
 
 	/**
-	 * Assumes both the corner and edge are separated on the top layer
+	 * Assumes both the corner and edge are "separated" on the top layer
 	 */
 	async solveSeparatedPair(corner, edge) {
 		let data = this.getData(corner, edge)
