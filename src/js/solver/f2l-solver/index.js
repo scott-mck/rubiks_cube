@@ -9,8 +9,8 @@ import {
 // import logic for each top-level f2l case
 import cornerAndEdgeInSlotSolver from './corner-and-edge-in-slot'
 import cornerAndEdgeOnTopSolver from './corner-and-edge-on-top-solver'
-import cornerOnBottomEdgeOnTopSolver from './corner-on-bottom-edge-on-top'
-import cornerOnTopEdgeInMiddleSolver from './corner-on-top-edge-in-middle'
+import cornerOnBottomEdgeOnTopSolver from './corner-on-bottom-edge-on-top-solver'
+import cornerOnTopEdgeInMiddleSolver from './corner-on-top-edge-in-middle-solver'
 
 const R = (move) => rubiksCube.reverseMove(move)
 

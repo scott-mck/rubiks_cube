@@ -45,7 +45,7 @@ class cornerOnBottomEdgeOnTopSolver {
 		return this._case3And4Helper(corner, edge, data, false)
 	}
 
-	_case1And2Helper(corner, edge, data, isLeft) {
+	async _case1And2Helper(corner, edge, data, isLeft) {
 		let currentFace = data.edge.primary.face
 		let targetFace = getRelativeFace(data.corner[isLeft ? 'left' : 'right'].color, 'r')
 

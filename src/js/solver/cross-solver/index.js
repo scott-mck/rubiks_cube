@@ -1,18 +1,18 @@
 import THREE from 'three'
-import rubiksCube from '../rubiks-cube'
-import animator from '../animator'
-import grabber from '../grabber'
-import scene from '../scene'
-import g from '../globals'
-import keyMap from '../key-map'
-import { vectorFromString } from '../utils/vector'
-import { getColorString, getCubieColors } from '../utils/color'
+import rubiksCube from '../../rubiks-cube'
+import animator from '../../animator'
+import grabber from '../../grabber'
+import scene from '../../scene'
+import g from '../../globals'
+import keyMap from '../../key-map'
+import { vectorFromString } from '../../utils/vector'
+import { getColorString, getCubieColors } from '../../utils/color'
 import {
   getRelativeDirection,
   getRelativeFace,
   getRelativeFacesOfCubie,
   getCubeState
-} from '../utils/relative-finder'
+} from '../../utils/relative-finder'
 
 class CrossSolver {
   constructor() {}
@@ -33,7 +33,7 @@ class CrossSolver {
     return new THREE.Vector3().setFromMatrixPosition(matrixWorld)
   }
 
-	completeCross() {
+	async completeCross() {
     let whiteEdges = grabber.getAllEdges().filter((edge) => {
       return getCubieColors(edge).includes('white')
     })
