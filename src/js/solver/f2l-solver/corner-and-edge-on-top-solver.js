@@ -6,8 +6,8 @@ import { getRelativeFace } from '../../utils/relative-finder'
 const R = (move) => rubiksCube.reverseMove(move)
 
 // There are 10 cases: -- Tested!
-// 1) Corner's white is on top face and the right color equals edge's primary color
-// 2) Corner's white is on top face and the left color equals edge's primary color
+// 1) Corner's white is on yellow face and the right color equals edge's primary color
+// 2) Corner's white is on yellow face and the left color equals edge's primary color
 // 3) Corner's white face equals edge's primary face, and colors on the top face are equal
 // 4) Corner's white face equals edge's primary face, and colors on the top face are not equal
 // 5) Corner and edge are attached and matched
@@ -121,6 +121,7 @@ class cornerAndEdgeOnTopSolver {
 		let prepMove = f2lSolver.getDirectionToFace(data.corner.color.white, prepFace, 'u')
 		await rubiksCube.move(prepMove)
 		data = f2lSolver.getData(corner, edge)
+		otherSide = data.corner[isLeft ? 'right' : 'left']
 
 		let hideCornerMove = isLeft ? R(otherSide.face) : otherSide.face
 		let topLayerMove = isLeft ? 'u' : 'uPrime'
