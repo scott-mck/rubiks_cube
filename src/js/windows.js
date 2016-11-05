@@ -9,6 +9,7 @@ import renderer from './renderer'
 import solver from './solver'
 import crossSolver from './solver/cross-solver'
 import f2lSolver from './solver/f2l-solver'
+import ollSolver from './solver/oll-solver'
 
 window.THREE = THREE
 window.rubiksCube = rubiksCube
@@ -22,3 +23,4 @@ window.animator = animator
 window.solver = solver
 window.crossSolver = crossSolver
 window.f2lSolver = f2lSolver
+window.ollSolver = ollSolver
