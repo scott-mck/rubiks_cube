@@ -136,20 +136,22 @@ class F2LSolver {
 	 * @param {object} edge - The associated edge that matches the corner.
 	 */
 	solvePair(corner, edge) {
-		if (corner.position.x === edge.position.x && corner.position.z === edge.position.z) {
+		let gStartPos = ~~g.startPos
+
+		if (~~corner.position.x === ~~edge.position.x && ~~corner.position.z === ~~edge.position.z) {
 			return cornerAndEdgeInSlotSolver.solve(corner, edge)
 		}
-		if (corner.position.y === -g.startPos && edge.position.y === 0) {
+		if (~~corner.position.y === -gStartPos && ~~edge.position.y === 0) {
 			this.releaseEdge(edge)
 			return cornerOnBottomEdgeOnTopSolver.solve(corner, edge)
 		}
-		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
+		if (~~corner.position.y === -gStartPos && ~~edge.position.y === gStartPos) {
 			return cornerOnBottomEdgeOnTopSolver.solve(corner, edge)
 		}
-		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
+		if (~~corner.position.y === gStartPos && ~~edge.position.y === 0) {
 			return cornerOnTopEdgeInMiddleSolver.solve(corner, edge)
 		}
-		if (corner.position.y === g.startPos && edge.position.y === g.startPos) {
+		if (~~corner.position.y === gStartPos && ~~edge.position.y === gStartPos) {
 			return cornerAndEdgeOnTopSolver.solve(corner, edge)
 		}
 	}
