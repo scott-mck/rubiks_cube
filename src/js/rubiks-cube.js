@@ -91,7 +91,7 @@ class RubiksCube {
   moveFaceToTop(faceColor) {
     let cubeState = getCubeState()
 
-    let targetSide = cubeState[faceColor]
+    let targetSide = cubeState.color[faceColor]
     let moves
     if (targetSide === 'r') moves = 'y x'
     else if (targetSide === 'l') moves = 'y xPrime'
