@@ -29,16 +29,17 @@ class F2LSolver {
 			return !colors.includes('white') && !colors.includes('yellow')
 		})
 
+		let promise = Promise.resolve()
 		for (let corner of corners) {
 			let cornerColors = getCubieColors(corner).filter(color => color !== 'white')
 			let edge = edges.find((edge) => {
 				let edgeColors = getCubieColors(edge)
 				return edgeColors.includes(cornerColors[0]) && edgeColors.includes(cornerColors[1])
 			})
-			await this.solvePair(corner, edge)
+			promise = promise.then(() => this.solvePair(corner, edge))
 		}
 
-		return Promise.resolve()
+		return promise
   }
 
 	isMatched(corner, edge) {
@@ -135,14 +136,14 @@ class F2LSolver {
 	 * @param {object} corner - The corner to be solved.
 	 * @param {object} edge - The associated edge that matches the corner.
 	 */
-	solvePair(corner, edge) {
+	async solvePair(corner, edge) {
 		let gStartPos = ~~g.startPos
 
 		if (~~corner.position.x === ~~edge.position.x && ~~corner.position.z === ~~edge.position.z) {
 			return cornerAndEdgeInSlotSolver.solve(corner, edge)
 		}
 		if (~~corner.position.y === -gStartPos && ~~edge.position.y === 0) {
-			this.releaseEdge(edge)
+			await this.releaseEdge(edge)
 			return cornerOnBottomEdgeOnTopSolver.solve(corner, edge)
 		}
 		if (~~corner.position.y === -gStartPos && ~~edge.position.y === gStartPos) {
