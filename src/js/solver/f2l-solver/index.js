@@ -141,13 +141,13 @@ class F2LSolver {
 		}
 		if (corner.position.y === -g.startPos && edge.position.y === 0) {
 			this.releaseEdge(edge)
-			return cornerOnBottomEdgeOnTop.solve(corner, edge)
+			return cornerOnBottomEdgeOnTopSolver.solve(corner, edge)
 		}
 		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
-			return cornerOnBottomEdgeOnTop.solve(corner, edge)
+			return cornerOnBottomEdgeOnTopSolver.solve(corner, edge)
 		}
 		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
-			return cornerOnTopEdgeInMiddle.solve(corner, edge)
+			return cornerOnTopEdgeInMiddleSolver.solve(corner, edge)
 		}
 		if (corner.position.y === g.startPos && edge.position.y === g.startPos) {
 			return cornerAndEdgeOnTopSolver.solve(corner, edge)
