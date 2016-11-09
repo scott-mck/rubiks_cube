@@ -193,20 +193,28 @@ class RubiksCube {
     this._solveMoves = []
   }
 
-  reverseNotation(move) {
+  reverseNotation(moves) {
     let reverseMoves = []
-    let moves = move.split(' ')
+    moves = moves.split(' ')
 
     while (moves.length > 0) {
       let move = moves.shift()
 
       if (move === '') {
         reverseMoves.push('')
-      } else if (move.includes('Prime')) {
-        reverseMoves.push(`${move[0]}`)
-      } else {
-        reverseMoves.push(`${move[0]}Prime`)
+        continue
       }
+
+      let reversedMove = move[0]
+
+      if (move.includes('Double')) {
+        reversedMove += 'Double'
+      }
+      if (!move.includes('Prime')) {
+        reversedMove += 'Prime'
+      }
+
+      reverseMoves.push(reversedMove)
     }
 
     return reverseMoves.join(' ')
