@@ -6,8 +6,8 @@ import { getRelativeFace } from '../../utils/relative-finder'
 const R = (move) => rubiksCube.reverseMove(move)
 
 // There are 10 cases: -- Tested!
-// 1) Corner's white is on top face and the right color equals edge's primary color
-// 2) Corner's white is on top face and the left color equals edge's primary color
+// 1) Corner's white is on yellow face and the right color equals edge's primary color
+// 2) Corner's white is on yellow face and the left color equals edge's primary color
 // 3) Corner's white face equals edge's primary face, and colors on the top face are equal
 // 4) Corner's white face equals edge's primary face, and colors on the top face are not equal
 // 5) Corner and edge are attached and matched
@@ -16,11 +16,24 @@ const R = (move) => rubiksCube.reverseMove(move)
 // 8) Corner and edge are separated but not matching
 // 9) Corner and edge are "far apart" and corner color equals primary color
 // 10) Corner and edge are "far apart" and corner color does not equal primary color
+// 11) Corner is on yellow face, edge is next to corner, colors are equal
+// 12) Corner is on yellow face, edge is next to corner, colors are not equal
 class cornerAndEdgeOnTopSolver {
 	solve(corner, edge) {
 		let data = f2lSolver.getData(corner, edge)
 
 		if (data.corner.color.white === 'u') {
+			let sharedFace = Object.keys(data.corner.face).find((face) => {
+				return face === data.edge.primary.face
+			})
+			if (sharedFace) {
+				if (data.corner.face[sharedFace] === data.edge.face[sharedFace]) {
+					return this.case11(corner, edge, data)
+				} else {
+					return this.case12(corner, edge, data)
+				}
+			}
+
 			if (data.corner.right.color === data.edge.primary.color) {
 				return this.case1(corner, edge, data)
 			} else {
@@ -86,12 +99,12 @@ class cornerAndEdgeOnTopSolver {
 
 	// 1) Corner's white is on top face and the right color equals edge's primary color
 	async case1(corner, edge, data) {
-		this._case1And2Helper(corner, edge, data, false)
+		return this._case1And2Helper(corner, edge, data, false)
 	}
 
 	// 2) Corner's white is on top face and the left color equals edge's primary color
 	async case2(corner, edge, data) {
-		this._case1And2Helper(corner, edge, data, true)
+		return this._case1And2Helper(corner, edge, data, true)
 	}
 
 	// 3) Corner's white face equals edge's primary face, and colors on the top face are equal
@@ -121,6 +134,7 @@ class cornerAndEdgeOnTopSolver {
 		let prepMove = f2lSolver.getDirectionToFace(data.corner.color.white, prepFace, 'u')
 		await rubiksCube.move(prepMove)
 		data = f2lSolver.getData(corner, edge)
+		otherSide = data.corner[isLeft ? 'right' : 'left']
 
 		let hideCornerMove = isLeft ? R(otherSide.face) : otherSide.face
 		let topLayerMove = isLeft ? 'u' : 'uPrime'
@@ -204,6 +218,41 @@ class cornerAndEdgeOnTopSolver {
 		let topLayerMove = isLeft ? 'u' : 'uPrime'
 
 		let moves = `${hideCornerMove} ${topLayerMove} ${R(hideCornerMove)}`
+		await rubiksCube.move(moves)
+
+		return f2lSolver.solveSeparatedPair(corner, edge)
+	}
+
+	async case11(corner, edge, data) {
+		let onLeft = data.corner.left.face === data.edge.primary.face
+		let currentFace = data.edge.primary.face
+		let primaryCubeColor = data.cube.color[data.edge.primary.color]
+		let targetFace = getRelativeFace(primaryCubeColor, onLeft ? 'r' : 'l')
+
+
+		let prepMove = f2lSolver.getDirectionToFace(currentFace, targetFace, 'u')
+		await rubiksCube.move(prepMove)
+		data = f2lSolver.getData(corner, edge)
+
+		let slotMove = onLeft ? R(primaryCubeColor) : primaryCubeColor
+		let topLayerMove = onLeft ? 'uPrime' : 'u'
+		let moves = `${slotMove} ${slotMove} ${topLayerMove} ${topLayerMove}`
+		moves += ` ${slotMove} ${topLayerMove} ${R(slotMove)} ${topLayerMove}`
+		moves += ` ${slotMove} ${slotMove}`
+		return rubiksCube.move(moves)
+	}
+
+	async case12(corner, edge, data) {
+		let onLeft = data.corner.left.face === data.edge.primary.face
+		let currentFace = data.edge.primary.face
+		let targetFace = data.cube.color[data.edge.primary.color]
+
+		let prepMove = f2lSolver.getDirectionToFace(currentFace, targetFace, 'u')
+		await rubiksCube.move(prepMove)
+		data = f2lSolver.getData(corner, edge)
+
+		let setupCornerMove = onLeft ? R(data.edge.primary.face) : data.edge.primary.face
+		let moves = `${setupCornerMove} u u ${R(setupCornerMove)}`
 		await rubiksCube.move(moves)
 
 		return f2lSolver.solveSeparatedPair(corner, edge)

@@ -1,10 +1,11 @@
 import THREE from 'three'
 import f2lSolver from '../f2l-solver'
 import rubiksCube from '../../rubiks-cube'
+import { getRelativeFace } from '../../utils/relative-finder'
 
 const R = (move) => rubiksCube.reverseMove(move)
 
-// There 4 cases: -- Not tested!
+// There 4 cases: -- Tested!
 // 1) Corner's white face is on bottom and right face matches edge's primary color
 // 2) Corner's white face is on bottom and left face matches edge's primary color
 // 3) Setting up corner and edge will result in a matched pair
@@ -45,15 +46,16 @@ class cornerOnBottomEdgeOnTopSolver {
 		return this._case3And4Helper(corner, edge, data, false)
 	}
 
-	_case1And2Helper(corner, edge, data, isLeft) {
+	async _case1And2Helper(corner, edge, data, isLeft) {
 		let currentFace = data.edge.primary.face
-		let targetFace = getRelativeFace(data.corner[isLeft ? 'left' : 'right'].color, 'r')
+		let primaryFace = data.corner.color[data.edge.primary.color]
+		let targetFace = getRelativeFace(primaryFace, isLeft ? 'l' : 'r')
 
 		let prepMove = f2lSolver.getDirectionToFace(currentFace, targetFace, 'u')
 		await rubiksCube.move(prepMove)
 		data = f2lSolver.getData(corner, edge)
 
-		let cornerToTopMove = data.corner[isLeft ? 'left' : 'right'].face
+		let cornerToTopMove = data.corner[isLeft ? 'right' : 'left'].face
 		cornerToTopMove = isLeft ? cornerToTopMove : R(cornerToTopMove)
 		let topLayerMove = isLeft ? 'uPrime' : 'u'
 

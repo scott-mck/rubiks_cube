@@ -9,8 +9,8 @@ import {
 // import logic for each top-level f2l case
 import cornerAndEdgeInSlotSolver from './corner-and-edge-in-slot'
 import cornerAndEdgeOnTopSolver from './corner-and-edge-on-top-solver'
-import cornerOnBottomEdgeOnTopSolver from './corner-on-bottom-edge-on-top'
-import cornerOnTopEdgeInMiddleSolver from './corner-on-top-edge-in-middle'
+import cornerOnBottomEdgeOnTopSolver from './corner-on-bottom-edge-on-top-solver'
+import cornerOnTopEdgeInMiddleSolver from './corner-on-top-edge-in-middle-solver'
 
 const R = (move) => rubiksCube.reverseMove(move)
 
@@ -29,16 +29,18 @@ class F2LSolver {
 			return !colors.includes('white') && !colors.includes('yellow')
 		})
 
+		let promise = Promise.resolve()
 		for (let corner of corners) {
 			let cornerColors = getCubieColors(corner).filter(color => color !== 'white')
 			let edge = edges.find((edge) => {
 				let edgeColors = getCubieColors(edge)
 				return edgeColors.includes(cornerColors[0]) && edgeColors.includes(cornerColors[1])
 			})
-			await this.solvePair(corner, edge)
+
+			promise = promise.then(() => this.solvePair(corner, edge))
 		}
 
-		return Promise.resolve()
+		return promise
   }
 
 	isMatched(corner, edge) {
@@ -66,6 +68,9 @@ class F2LSolver {
 			return data.object !== corner
 		})
 
+		if (!intersects[0]) {
+			return false
+		}
 		return intersects[0].object === edge
 	}
 
@@ -135,21 +140,25 @@ class F2LSolver {
 	 * @param {object} corner - The corner to be solved.
 	 * @param {object} edge - The associated edge that matches the corner.
 	 */
-	solvePair(corner, edge) {
-		if (corner.position.x === edge.position.x && corner.position.z === edge.position.z) {
+	async solvePair(corner, edge) {
+		let gStartPos = ~~g.startPos
+
+		if (~~corner.position.x === ~~edge.position.x &&
+			  ~~corner.position.z === ~~edge.position.z &&
+				~~corner.position.y === -gStartPos) {
 			return cornerAndEdgeInSlotSolver.solve(corner, edge)
 		}
-		if (corner.position.y === -g.startPos && edge.position.y === 0) {
-			this.releaseEdge(edge)
-			return cornerOnBottomEdgeOnTop.solve(corner, edge)
+		if (~~corner.position.y === -gStartPos && ~~edge.position.y === 0) {
+			await this.releaseEdge(edge)
+			return cornerOnBottomEdgeOnTopSolver.solve(corner, edge)
 		}
-		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
-			return cornerOnBottomEdgeOnTop.solve(corner, edge)
+		if (~~corner.position.y === -gStartPos && ~~edge.position.y === gStartPos) {
+			return cornerOnBottomEdgeOnTopSolver.solve(corner, edge)
 		}
-		if (corner.position.y === -g.startPos && edge.position.y === g.startPos) {
-			return cornerOnTopEdgeInMiddle.solve(corner, edge)
+		if (~~corner.position.y === gStartPos && ~~edge.position.y === 0) {
+			return cornerOnTopEdgeInMiddleSolver.solve(corner, edge)
 		}
-		if (corner.position.y === g.startPos && edge.position.y === g.startPos) {
+		if (~~corner.position.y === gStartPos && ~~edge.position.y === gStartPos) {
 			return cornerAndEdgeOnTopSolver.solve(corner, edge)
 		}
 	}

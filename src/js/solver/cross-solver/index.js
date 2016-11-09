@@ -1,18 +1,18 @@
 import THREE from 'three'
-import rubiksCube from '../rubiks-cube'
-import animator from '../animator'
-import grabber from '../grabber'
-import scene from '../scene'
-import g from '../globals'
-import keyMap from '../key-map'
-import { vectorFromString } from '../utils/vector'
-import { getColorString, getCubieColors } from '../utils/color'
+import rubiksCube from '../../rubiks-cube'
+import animator from '../../animator'
+import grabber from '../../grabber'
+import scene from '../../scene'
+import g from '../../globals'
+import keyMap from '../../key-map'
+import { vectorFromString } from '../../utils/vector'
+import { getColorString, getCubieColors } from '../../utils/color'
 import {
   getRelativeDirection,
   getRelativeFace,
   getRelativeFacesOfCubie,
   getCubeState
-} from '../utils/relative-finder'
+} from '../../utils/relative-finder'
 
 class CrossSolver {
   constructor() {}
@@ -33,7 +33,7 @@ class CrossSolver {
     return new THREE.Vector3().setFromMatrixPosition(matrixWorld)
   }
 
-	completeCross() {
+	async completeCross() {
     let whiteEdges = grabber.getAllEdges().filter((edge) => {
       return getCubieColors(edge).includes('white')
     })
@@ -54,10 +54,10 @@ class CrossSolver {
       return this.solveWhiteEdgeOnYellowFace(cubie, relativeCubieFaces)
     }
 
-    let otherColor = Object.keys(relativeCubieFaces).find(color => color !== 'white')
+    let otherColor = Object.keys(relativeCubieFaces.color).find(color => color !== 'white')
 
-    if (relativeCubieFaces[otherColor] === 'u' ||
-        relativeCubieFaces[otherColor] === 'd') {
+    if (relativeCubieFaces.color[otherColor] === 'u' ||
+        relativeCubieFaces.color[otherColor] === 'd') {
       return this.solveWhiteEdgeFacingOut(cubie, relativeCubieFaces)
     } else {
       // do some error catching sometime
@@ -102,7 +102,7 @@ class CrossSolver {
     let edgeColor = getCubieColors(cubie).find(color => color !== 'white')
 
     let relativeCurrentFace = relativeCubieFaces.color[edgeColor]
-    let relativeTargetFace = this._cubeState[edgeColor]
+    let relativeTargetFace = this._cubeState.color[edgeColor]
     let targetDir = getRelativeDirection(relativeCurrentFace, relativeTargetFace)
 
     let targetMove
@@ -121,7 +121,7 @@ class CrossSolver {
     let edgeColor = getCubieColors(cubie).find(color => color !== 'white')
 
     let relativeCurrentFace = relativeCubieFaces.color.white
-    let relativeTargetFace = this._cubeState[edgeColor]
+    let relativeTargetFace = this._cubeState.color[edgeColor]
     let targetDir = getRelativeDirection(relativeCurrentFace, relativeTargetFace)
 
     // by default, the first move (the move that aligns it with a non-white and
@@ -161,7 +161,7 @@ class CrossSolver {
     let edgeColor = getCubieColors(cubie).find(color => color !== 'white')
 
     let relativeCurrentFace = relativeCubieFaces.color[edgeColor]
-    let relativeTargetFace = this._cubeState[edgeColor]
+    let relativeTargetFace = this._cubeState.color[edgeColor]
     let targetDir = getRelativeDirection(relativeCurrentFace, relativeTargetFace)
 
     let targetMove
