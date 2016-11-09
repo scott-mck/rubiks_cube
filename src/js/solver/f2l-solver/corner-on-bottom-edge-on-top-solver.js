@@ -48,7 +48,7 @@ class cornerOnBottomEdgeOnTopSolver {
 
 	async _case1And2Helper(corner, edge, data, isLeft) {
 		let currentFace = data.edge.primary.face
-		let primaryFace = data.cube.color[data.edge.primary.color]
+		let primaryFace = data.corner.color[data.edge.primary.color]
 		let targetFace = getRelativeFace(primaryFace, isLeft ? 'l' : 'r')
 
 		let prepMove = f2lSolver.getDirectionToFace(currentFace, targetFace, 'u')
