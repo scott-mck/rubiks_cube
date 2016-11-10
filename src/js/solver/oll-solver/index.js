@@ -44,24 +44,96 @@ class OllSolver {
 			'f r b u': 'e f d a d g e j d h e', // #56
 			'l f r u': 'j i j k ; k h i f k g i' // #57
 		}
-	}
 
-	// async test(num = 0) {
-	// 	let string = this.stuff[num]
-	// 	let reverse = string.split(' ').reverse()
-	// 	let moves = reverse.map((move) => {
-	// 		console.log(move)
-	// 		let notation = keyMap.getNotation(move)
-	// 		let reverseMove = rubiksCube.reverseMove(notation)
-	// 		return reverseMove
-	// 	})
-	//
-	// 	moves = moves.join(' ')
-	// 	moves += ` ${keyMap.getNotation(';')}`
-	// 	await rubiksCube.move(moves)
-	//
-	// 	return ollSolver.solve()
-	// }
+		// can be refactored
+		this._cornerPositionsForNone = {
+			'f r u l': '; c a i j k f ; r a j h i j k f g', // #10
+			'r u b l': 'f ; c a i j k f ; r a j h i j k f g', // #10 and a 'u'
+			'u r b l': 'f f ; c a i j k f ; r a j h i j k f g', // #10 and a 'u u'
+			'f r b u': 'j f ; c a i j k f ; r a j h i j k f g', // #10 and a 'uPrime'
+			'l u r b': '; c a i j k f ; r a f h i j k f g', // #11
+			'u f r b': 'f ; c a i j k f ; r a f h i j k f g', // #11 and a 'u'
+			'l f r u': 'f f ; c a i j k f ; r a f h i j k f g', // #11 and a 'u u'
+			'l r u b': 'j ; c a i j k f ; r a f h i j k f g', // #11 and a 'uPrime'
+			'l f b l': 'h i j k f g ; c a i j k f ; r a', // #12
+			'l r b b': 'f h i j k f g ; c a i j k f ; r a', // #12 and a 'u'
+			'f r r b': 'f f h i j k f g ; c a i j k f ; r a', // #12 and a 'u u'
+			'f f r l': 'j h i j k f g ; c a i j k f ; r a', // #12 and a 'uPrime'
+			'l r r l': 'i j j k k h i g j j k h i g', // #24
+			'f f b b': 'f i j j k k h i g j j k h i g', // #24 and a 'u'
+			'l r u u': 'm i j i j k f u k k h i g', // #26
+			'f u u b': 'f u k j i j k f m i k h i g', // #26 and a 'u'
+			'u u r l': 'f f u k j i j k f m i k h i g', // #26 and a 'u u'
+			'u f b u': 'j u k j i j k f m i k h i g', // #26 and a 'uPrime'
+			'l u b u': 'i j k j k h i g j j k h i g', // #31
+			'u r u b': 'f i j k j k h i g j j k h i g', // #31 and a 'u'
+			'f u r u': 'f fi j k j k h i g j j k h i g', // #31 and a 'u u'
+			'u f u l': 'j i j k j k h i g j j k h i g', // #31 and a 'uPrime'
+			'u u b b': 'h i j k j g a j j k h i g', // #32
+			'u r r u': 'f h i j k j g a j j k h i g', // #32 and a 'u'
+			'f f u u': 'f f h i j k j g a j j k h i g', // #32 and a 'u u'
+			'l u u l': 'j h i j k j g a j j k h i g' // #32 and a 'uPrime'
+		}
+
+		this._cornerPositionsForAll = {
+			'f f b b': 'i j j k f i j k f i f k', // #3
+			'l r r l': 'j i j j k f i j k f i f k', // #3 and a 'u'
+			'l f b l': 'i j j i i f i i f i i j j i', // #13
+			'l r b b': 'f i j j i i f i i f i i j j i', // #13 and a 'u'
+			'f r r b': 'f f i j j i i f i i f i i j j i', // #13 and a 'u u'
+			'f f r l': 'j i j j i i f i i f i i j j i', // #13 and a 'uPrime'
+			'f u u b': 'n e f i j d f k j y', // #21
+			'u u r l': 'f n e f i j d f k j', // #21 and a 'u'
+			'u f b u': 'f f n e f i j d f k j', // #21 and a 'u u'
+			'l r u u': 'j n e f i j d f k j', // #21 and a 'uPrime'
+			'l u b u': 'n j e f i j d f k', // #22
+			'u r u b': 'f n j e f i j d f k', // #22 and a 'u'
+			'f u r u': 'f f n j e f i j d f k', // #22 and a 'u u'
+			'u f u l': 'j n j e f i j d f k', // #22 and a 'uPrime'
+			'u f r b': 'i j k j i j j k', // #35
+			'l f r u': 'f i j k j i j j k', // #35 and a 'u'
+			'l f u b': 'f f i j k j i j j k', // #35 and a 'u u'
+			'l u r b': 'j i j k j i j j k', // #35 and a 'uPrime'
+			'f r b u': 'k f i f k j j i', // #36
+			'f r u l': 'f k f i f k j j i', // #36 and a 'u'
+			'f u b l': 'f f k f i f k j j i', // #36 and a 'u u'
+			'u r b l': 'j k f i f k j j i', // #36 and a 'uPrime'
+			'f f u u': 'i i s k j j i l k j j k f', // #48
+			'l u u l': 'f i i s k j j i l k j j k f', // #48 and a 'u'
+			'u u b b': 'f f i i s k j j i l k j j k f', // #48 and a 'u u'
+			'u r r u': 'j i i s k j j i l k j j k f' // #48 and a 'uPrime'
+		}
+
+		this._cornerPositionsForLine = {
+			'l u u l': 'h i j k f g', // #1
+			'u r r u': 'j j h i j k f g', // #1 and a 'u u'
+			'f r r b': 'h j i f k j i f k g', // #5
+			'l f b l': 'j j h j i f k j i f k g', // #5 and a 'u u'
+			'u r b l': 'n i j k y d j e f n i f k y', // #14
+			'f r u l': 'j j n i j k y d j e f n i f k y', // #14 and a 'u u'
+			'l u r b': 'n e f d y k f i j n e j d y', // #15
+			'l f r u': 'j j n e f d y k f i j n e j d y', // #15 and a 'u u'
+			'l u b u': 'k h i j k f g j i', // #16
+			'f u r u': 'j j k h i j k f g j i', // #16 and a 'u u'
+			'u u u u': 'i j k f u k j i f m', // #17
+			'l r r l': 'h i j k f i g u j k f m', // #19
+			'f u u b': 'i j k f k h i g', // #20
+			'u f b u': 'j j i j k f k h i g', // #20 and a 'u u'
+			'u u b b': 'j k f k h i g j i', // #23
+			'f f u u': 'f k f k h i g j i', // #23 and a 'u u'
+			'l r b b': 'j k f i f k y a u ; n k j c j y', // #30
+			'f f r l': 'f k f i f k y a u ; n k j c j y', // #30 and a 'u u'
+			'u u r l': 'i j k f p k h i g ; i', // #45
+			'l r u u': 'j j i j k f p k h i g ; i', // #45 and a 'u u'
+			'u f r b': 'd g e f d h e ; e j d', // #46
+			'l f u b': 'j j d g e f d h e ; e j d', // #46 and a 'u u'
+			'f u b l': 'k h i j k g i a i f k', // #47
+			'f r b u': 'j j k h i j k g i a i f k', // #47 and a 'u u'
+			'f f b b': 'k j j i i j k j i j j n f k j y', // #49
+			'u r u b': 'd g e f d j h f e', // #52
+			'u f u l': 'j j d g e f d j h f e' // #52 and a 'u u'
+		}
+	}
 
 	/**
 	 * Finds the edge orientations, then moves to the target face.
@@ -76,7 +148,6 @@ class OllSolver {
 
 		if (yellows.length === 0) {
 			return this.noEdges()
-			return this.r(yellows)
 		}
 		if (yellows.length === 4) {
 			return this.allEdges()
@@ -90,7 +161,7 @@ class OllSolver {
 
 			let relativeDir = getRelativeDirection(faces[0], faces[1])
 			if (relativeDir === 2) {
-				return this.line()
+				return this.line(yellows)
 			}
 			if (relativeDir === 1 || relativeDir === -1) {
 				return this.r(yellows)
@@ -98,11 +169,41 @@ class OllSolver {
 		}
 	}
 
+	async line(yellows) {
+		await this.setupLinePosition(yellows)
+		let cornerFormation = this.getCornerFormation()
+		let algorithm = keyMap.getNotation(this._cornerPositionsForLine[cornerFormation])
+		return rubiksCube.move(algorithm)
+	}
+
+	async allEdges() {
+		let cornerFormation = this.getCornerFormation()
+		let algorithm = keyMap.getNotation(this._cornerPositionsForAll[cornerFormation])
+		return rubiksCube.move(algorithm)
+	}
+
+	async noEdges() {
+		let cornerFormation = this.getCornerFormation()
+		let algorithm = keyMap.getNotation(this._cornerPositionsForNone[cornerFormation])
+		return rubiksCube.move(algorithm)
+	}
+
 	async r(yellows) {
 		await this.setupRPosition(yellows)
 		let cornerFormation = this.getCornerFormation()
 		let algorithm = keyMap.getNotation(this._cornerPositionsForR[cornerFormation])
 		return rubiksCube.move(algorithm)
+	}
+
+	setupLinePosition(yellows) {
+		// move yellow face so that the edges and middle form a line
+		let data = f2lSolver.getEdgeData(yellows[0])
+		let nonYellowFace = Object.keys(data.face).find(face => data.face[face] != 'yellow')
+
+		let targetFace = 'f'
+		let currentFace = getRelativeFace(nonYellowFace, 'r')
+		let setupMove = f2lSolver.getDirectionToFace(currentFace, targetFace, 'u')
+		return rubiksCube.move(setupMove)
 	}
 
 	setupRPosition(yellows) {
@@ -149,23 +250,3 @@ class OllSolver {
 }
 
 export default new OllSolver()
-
-
-/* ----- 57 cases! ----- */
-
-// 4 Edge possibilities:
-//   1) All are not on the yellow face
-//   2) Two are on the yellow face, in an "r" position
-//   3) Two are on the yellow face, in a straight line
-//   4) All four are on the yellow face
-
-// 6 Corner possibilities:
-//   1) All corners are on the yellow face
-//   2) One corner is on the yellow face, in a "fishy" position
-//   3) One corner is on the yellow face, in a "reverse fishy" position
-//   4) Two corners are on the yellow face, with the other two sharing a relative face
-//   5) Two corners are on the yellow face, with the other two not sharing a relative face
-//   6) All corners are on the yellow face
-
-// For case 2 of edge possibilities, there is no symmetry. Fuck
-// for case 1, 3, and 4 of edge possibilities, there is symmetry. Yay!
