@@ -1,252 +1,216 @@
-import THREE from 'three'
+import g from '../../globals'
 import rubiksCube from '../../rubiks-cube'
 import grabber from '../../grabber'
+import animator from '../../animator'
 import keyMap from '../../key-map'
-import f2LSolver from '../'
+import { getRelativeFacesOfCubie } from '../../utils/relative-finder'
 import { getCubieColors } from '../../utils/color'
-import {
-	getRelativeFace,
-	getRelativeDirection,
-	getRelativeFacesOfCubie
-} from '../../utils/relative-finder'
-
-const R = (move) => rubiksCube.reverseMove(move)
 
 class OllSolver {
-	constructor() {
-		// in order, based on http://badmephisto.com/oll.php
-		this._cornerPositionsForR = { // Tested!
-			'f r r b': 'j j h i j k f i j k f g', // #2
-			'l u u l': 'j j h j i f k g', // #4
-			'u u b b': 'f g f e j d h', // #6
-			'f f r l': 'f g e f d j e f d j h', // #7
-			'f r u l': 'j n i e e f d f e f f d f d k y', // #8
-			'u f r b': 'n e i i j k j i j j k j k d y', // #9
-			'f u r u': 'i j j i i h i g i j j k', // #25
-			'l r b b': 'j j h e j j d j j d h h e h', // #27
-			'u f u l': 'j j i j k j i f k f k h i g', // #28
-			'u r u b': 'j k f i f k j i j n i f k j y', // #29
-			'l u r b': 'j j r j j d j e j c', // #33
-			'l f u b': 'j j u j k j i j j m', // #34
-			'u r r u': 'f k j i j j k f g j h j i', // #37
-			'f f u u': 'j j i j k j i j j k h i j k f g', // #38
-			'f f b b': 'f u j k j i f k j i j j m', // #39
-			'l r r l': 'j j r f d f e j d f e j j c', // #40
-			'f u b l': 'f u j j k f i f m', // #41
-			'l u b u': 'j j h k g i j i f k', // #42
-			'u r b l': 'f r f d f e j j c', // #43
-			'u u u u': 'j j u j k f m i j i f k', // #44
-			'f u u b': 'i j n f y f k j i n j y k', // #50
-			'u u r l': 'f k f h j i f k g i', // #51
-			'l f b l': 'j j k h i i g ; j j e j j d g', // #53
-			'u f b u': 'j n f k j e f i i f k j j d y', // #54
-			'l r u u': 'n j d f i j e e j d j j r', // #55
-			'f r b u': 'e f d a d g e j d h e', // #56
-			'l f r u': 'j i j k ; k h i f k g i' // #57
-		}
-
-		// can be refactored
-		this._cornerPositionsForNone = {
-			'f r u l': '; c a i j k f ; r a j h i j k f g', // #10
-			'r u b l': 'f ; c a i j k f ; r a j h i j k f g', // #10 and a 'u'
-			'u r b l': 'f f ; c a i j k f ; r a j h i j k f g', // #10 and a 'u u'
-			'f r b u': 'j f ; c a i j k f ; r a j h i j k f g', // #10 and a 'uPrime'
-			'l u r b': '; c a i j k f ; r a f h i j k f g', // #11
-			'u f r b': 'f ; c a i j k f ; r a f h i j k f g', // #11 and a 'u'
-			'l f r u': 'f f ; c a i j k f ; r a f h i j k f g', // #11 and a 'u u'
-			'l r u b': 'j ; c a i j k f ; r a f h i j k f g', // #11 and a 'uPrime'
-			'l f b l': 'h i j k f g ; c a i j k f ; r a', // #12
-			'l r b b': 'f h i j k f g ; c a i j k f ; r a', // #12 and a 'u'
-			'f r r b': 'f f h i j k f g ; c a i j k f ; r a', // #12 and a 'u u'
-			'f f r l': 'j h i j k f g ; c a i j k f ; r a', // #12 and a 'uPrime'
-			'l r r l': 'i j j k k h i g j j k h i g', // #24
-			'f f b b': 'f i j j k k h i g j j k h i g', // #24 and a 'u'
-			'l r u u': 'm i j i j k f u k k h i g', // #26
-			'f u u b': 'f u k j i j k f m i k h i g', // #26 and a 'u'
-			'u u r l': 'f f u k j i j k f m i k h i g', // #26 and a 'u u'
-			'u f b u': 'j u k j i j k f m i k h i g', // #26 and a 'uPrime'
-			'l u b u': 'i j k j k h i g j j k h i g', // #31
-			'u r u b': 'f i j k j k h i g j j k h i g', // #31 and a 'u'
-			'f u r u': 'f fi j k j k h i g j j k h i g', // #31 and a 'u u'
-			'u f u l': 'j i j k j k h i g j j k h i g', // #31 and a 'uPrime'
-			'u u b b': 'h i j k j g a j j k h i g', // #32
-			'u r r u': 'f h i j k j g a j j k h i g', // #32 and a 'u'
-			'f f u u': 'f f h i j k j g a j j k h i g', // #32 and a 'u u'
-			'l u u l': 'j h i j k j g a j j k h i g' // #32 and a 'uPrime'
-		}
-
-		this._cornerPositionsForAll = {
-			'f f b b': 'i j j k f i j k f i f k', // #3
-			'l r r l': 'j i j j k f i j k f i f k', // #3 and a 'u'
-			'l f b l': 'i j j i i f i i f i i j j i', // #13
-			'l r b b': 'f i j j i i f i i f i i j j i', // #13 and a 'u'
-			'f r r b': 'f f i j j i i f i i f i i j j i', // #13 and a 'u u'
-			'f f r l': 'j i j j i i f i i f i i j j i', // #13 and a 'uPrime'
-			'f u u b': 'n e f i j d f k j y', // #21
-			'u u r l': 'f n e f i j d f k j', // #21 and a 'u'
-			'u f b u': 'f f n e f i j d f k j', // #21 and a 'u u'
-			'l r u u': 'j n e f i j d f k j', // #21 and a 'uPrime'
-			'l u b u': 'n j e f i j d f k', // #22
-			'u r u b': 'f n j e f i j d f k', // #22 and a 'u'
-			'f u r u': 'f f n j e f i j d f k', // #22 and a 'u u'
-			'u f u l': 'j n j e f i j d f k', // #22 and a 'uPrime'
-			'u f r b': 'i j k j i j j k', // #35
-			'l f r u': 'f i j k j i j j k', // #35 and a 'u'
-			'l f u b': 'f f i j k j i j j k', // #35 and a 'u u'
-			'l u r b': 'j i j k j i j j k', // #35 and a 'uPrime'
-			'f r b u': 'k f i f k j j i', // #36
-			'f r u l': 'f k f i f k j j i', // #36 and a 'u'
-			'f u b l': 'f f k f i f k j j i', // #36 and a 'u u'
-			'u r b l': 'j k f i f k j j i', // #36 and a 'uPrime'
-			'f f u u': 'i i s k j j i l k j j k f', // #48
-			'l u u l': 'f i i s k j j i l k j j k f', // #48 and a 'u'
-			'u u b b': 'f f i i s k j j i l k j j k f', // #48 and a 'u u'
-			'u r r u': 'j i i s k j j i l k j j k f' // #48 and a 'uPrime'
-		}
-
-		this._cornerPositionsForLine = {
-			'l u u l': 'h i j k f g', // #1
-			'u r r u': 'j j h i j k f g', // #1 and a 'u u'
-			'f r r b': 'h j i f k j i f k g', // #5
-			'l f b l': 'j j h j i f k j i f k g', // #5 and a 'u u'
-			'u r b l': 'n i j k y d j e f n i f k y', // #14
-			'f r u l': 'j j n i j k y d j e f n i f k y', // #14 and a 'u u'
-			'l u r b': 'n e f d y k f i j n e j d y', // #15
-			'l f r u': 'j j n e f d y k f i j n e j d y', // #15 and a 'u u'
-			'l u b u': 'k h i j k f g j i', // #16
-			'f u r u': 'j j k h i j k f g j i', // #16 and a 'u u'
-			'u u u u': 'i j k f u k j i f m', // #17
-			'l r r l': 'h i j k f i g u j k f m', // #19
-			'f u u b': 'i j k f k h i g', // #20
-			'u f b u': 'j j i j k f k h i g', // #20 and a 'u u'
-			'u u b b': 'j k f k h i g j i', // #23
-			'f f u u': 'f k f k h i g j i', // #23 and a 'u u'
-			'l r b b': 'j k f i f k y a u ; n k j c j y', // #30
-			'f f r l': 'f k f i f k y a u ; n k j c j y', // #30 and a 'u u'
-			'u u r l': 'i j k f p k h i g ; i', // #45
-			'l r u u': 'j j i j k f p k h i g ; i', // #45 and a 'u u'
-			'u f r b': 'd g e f d h e ; e j d', // #46
-			'l f u b': 'j j d g e f d h e ; e j d', // #46 and a 'u u'
-			'f u b l': 'k h i j k g i a i f k', // #47
-			'f r b u': 'j j k h i j k g i a i f k', // #47 and a 'u u'
-			'f f b b': 'k j j i i j k j i j j n f k j y', // #49
-			'u r u b': 'd g e f d j h f e', // #52
-			'u f u l': 'j j d g e f d j h f e' // #52 and a 'u u'
-		}
+	// in order, based on http://badmephisto.com/oll.php
+	algorithms = {
+		'210000012101': 'h i j k f g', // #1
+		'211212102101': 'h i j k f i j k f g', // #2
+		'101202101202': 'i j j k f i j k f i f k', // #3
+		'012111200000': 'h j i f k g', // #4
+		'112101211202': 'h j i f k j i f k g', // #5
+		'210000002111': 'g e f d j h', // #6
+		'112101201212': 'g f e j d f e j d h', // #7
+		'100012112102': 'c e e f d f e f f d f d r', // #8
+		'001201211210': 'm i i j k j i j j k j k u', // #9
+		'012112112110': 'h j i f k g a h i j k f g', // #10
+		'211211210011': 'h j i f k g ; h i j k f g', // #11
+		'211212112111': 'h i j k f g ; ; h j i f k g', // #12
+		'201202102101': 'i j j i i f i i f i i j j i', // #13
+		'012102112100': 'n i j k y d j e f n i f k y', // #14
+		'210001211201': 'n e f d y k f i j n e j d y', // #15
+		'210002110001': 'k h i j k f g j i', // #16
+		'010000010000': 'i j k f u k j i f m', // #17
+		'010010010010': 'm i j i j k f m m i i j i f m', // #18
+		'101212101212': 'h i j k f i j k f g ; ; h j i f k g', // #19
+		'110000011202': 'i j k f k h i g', // #20
+		'100000001202': 'n e f i j d f k j y', // #21
+		'200002100001': 'n j e f i j d f k y', // #22
+		'002111200010': 'k f k h i g j i', // #23
+		'212111212111': 'i j j k k h i g j j k h i g', // #24
+		'100001210012': 'i j j i i h i g i j j k', // #25
+		'212110010011': 'm i j i j k f u k k h i g', // #26
+		'111211202102': 'h e j j d j j d h h e h', // #27
+		'012110001200': 'i j k j i f k f k h i g', // #28
+		'100011210002': 'k f i f k j i j n i f k j y', // #29
+		'102111201212': 'k f i f k y a u ; n k j i n j y', // #30
+		'012110011210': 'h j i f k g a i j k f k h i g', // #31
+		'012111210010': 'h j i f k g f i j k f u k j i f m', // #32
+		'211211200001': 'r j j d j e j c', // #33
+		'011211201200': 'u j k j i j j m', // #34
+		'001201201200': 'i j k j i j j k', // #35
+		'102102100002': 'k f i f k j j i', // #36
+		'010002101210': 'k j i j j k f ; e j d j h', // #37
+		'101200010012': 'i f k j j i j ; i f k f g', // #38
+		'212101202111': 'u j k j i f k j i j j m', // #39
+		'212111202101': 'r f d f e j d f e j j c', // #40
+		'112100002112': 'u j j k f i f m', // #41
+		'110011200002': 'h k g i j i f k', // #42
+		'110002102112': 'r f d f e j j c', // #43
+		'010010000000': 'u j k f m i j i f k', // #44
+		'010001212100': 'i j k f p k h i g q', // #45
+		'011201211200': 'd g e f d h e a k j i', // #46
+		'110002112102': 'k h i j k g i a i f k', // #47
+		'101200000002': 'i i s k j j i l k j j k', // #48
+		'202111202111': 'k j j i i j k j i j j n f k j y', // #49
+		'100000011212': 'i j n f y f k j i n j y k', // #50
+		'110000001212': 'k f h j i f k g i', // #51
+		'012100011200': 'd g e f d j h f e', // #52
+		'112111201202': 'k h i i g ; j j e j j d g', // #53
+		'202110010001': 'n f k j e f i i f k j j u', // #54
+		'202100010011': 'n j d f i j e e j d j j r', // #55
+		'110012102102': 'k f i ; d g e j d h e', // #56
+		'201210011201': 'i j k ; k h i f k g i' // #57
 	}
 
-	/**
-	 * Finds the edge orientations, then moves to the target face.
-	 * Then finds the corner orientations and outputs them as a string. Then
-	 * executes the correct algorithm to solve OLL.
-	 */
-	async solve() {
-		let yellows = grabber.getAllEdges().filter((edge) => {
-			let data = getRelativeFacesOfCubie(edge)
-			return data.color.yellow === 'u'
+	async test(caseNum = 0, fast) {
+		if (fast) animator.duration(0.01)
+		let orientations = Object.keys(this.algorithms)
+		let algorithms = Object.values(this.algorithms)
+
+		for (let i = caseNum - 1; i < orientations.length; i++) {
+			let orientation = orientations[i]
+			let algorithm = algorithms[i]
+
+			// reverse the algorithm, then call #solve()
+			let notation = keyMap.getNotation(algorithm)
+			let reverse = rubiksCube.reverseMove(notation.split(' ').reverse().join(' '))
+
+			try {
+				await rubiksCube.move(reverse)
+				await rubiksCube.move('u')
+
+				await this.solve()
+				if (!this.isSolved()) {
+					console.log('Failed OLL test case.')
+					console.log()
+					console.log(`Orientation: [${orientation}]`)
+					console.log(`Algorithm: [${algorithm}]`)
+					console.log(`notation: [${notation}]`)
+					console.log(`reverse: [${reverse}]`)
+					console.log(`case number: [${i + 1}]`)
+					return
+				}
+			} catch (e) {
+				console.log()
+				console.log(`Orientation: [${orientation}]`)
+				console.log(`Algorithm: [${algorithm}]`)
+				console.log(`notation: [${notation}]`)
+				console.log(`reverse: [${reverse}]`)
+				console.log(`case number: [${i + 1}]`)
+				throw e
+				return
+			}
+		}
+		if (fast) animator.duration(0.1)
+		console.log()
+		console.log('Done!')
+		console.log()
+	}
+
+	isSolved() {
+		let yellows = g.allCubes.filter(cube => {
+			return getCubieColors(cube).includes('yellow')
 		})
-
-		if (yellows.length === 0) {
-			return this.noEdges()
-		}
-		if (yellows.length === 4) {
-			return this.allEdges()
-		}
-		if (yellows.length === 2) {
-			let faces = yellows.map((edge) => {
-				let data = getRelativeFacesOfCubie(edge)
-				let otherColor = getCubieColors(edge).filter(color => color !== 'yellow')
-				return data.color[otherColor]
-			})
-
-			let relativeDir = getRelativeDirection(faces[0], faces[1])
-			if (relativeDir === 2) {
-				return this.line(yellows)
-			}
-			if (relativeDir === 1 || relativeDir === -1) {
-				return this.r(yellows)
+		for (let yellow of yellows) {
+			let data = getRelativeFacesOfCubie(yellow)
+			if (data.face.u !== 'yellow') {
+				return false
 			}
 		}
+		return true
 	}
 
-	async line(yellows) {
-		await this.setupLinePosition(yellows)
-		let cornerFormation = this.getCornerFormation()
-		let algorithm = keyMap.getNotation(this._cornerPositionsForLine[cornerFormation])
+	async solve() {
+		let ollString = this.getOllString()
+		let { direction, algorithm } = this._getDirectionToAlgorithm(ollString)
+
+		let positioningMove
+		if (direction === 1) positioningMove = 'y'
+		if (direction === -1) positioningMove = 'yPrime'
+		if (direction === 2) positioningMove = 'y y'
+		if (direction === 0) positioningMove = ''
+		await rubiksCube.move(positioningMove)
+
+		algorithm = keyMap.getNotation(algorithm)
 		return rubiksCube.move(algorithm)
 	}
 
-	async allEdges() {
-		let cornerFormation = this.getCornerFormation()
-		let algorithm = keyMap.getNotation(this._cornerPositionsForAll[cornerFormation])
-		return rubiksCube.move(algorithm)
-	}
+	getOllString() {
+		let ollArray = []
 
-	async noEdges() {
-		let cornerFormation = this.getCornerFormation()
-		let algorithm = keyMap.getNotation(this._cornerPositionsForNone[cornerFormation])
-		return rubiksCube.move(algorithm)
-	}
+    let positions = [
+      new THREE.Vector3(-g.startPos, g.startPos, g.startPos),
+      new THREE.Vector3(0, g.startPos, g.startPos),
+      new THREE.Vector3(g.startPos, g.startPos, g.startPos),
+      new THREE.Vector3(g.startPos, g.startPos, g.startPos),
+      new THREE.Vector3(g.startPos, g.startPos, 0),
+      new THREE.Vector3(g.startPos, g.startPos, -g.startPos),
+      new THREE.Vector3(g.startPos, g.startPos, -g.startPos),
+      new THREE.Vector3(0, g.startPos, -g.startPos),
+      new THREE.Vector3(-g.startPos, g.startPos, -g.startPos),
+      new THREE.Vector3(-g.startPos, g.startPos, -g.startPos),
+      new THREE.Vector3(-g.startPos, g.startPos, 0),
+			new THREE.Vector3(-g.startPos, g.startPos, g.startPos)
+    ]
 
-	async r(yellows) {
-		await this.setupRPosition(yellows)
-		let cornerFormation = this.getCornerFormation()
-		let algorithm = keyMap.getNotation(this._cornerPositionsForR[cornerFormation])
-		return rubiksCube.move(algorithm)
-	}
+    let cubies = []
+    for (let position of positions) {
+      cubies.push(grabber.getObjectByPosition(position))
+    }
 
-	setupLinePosition(yellows) {
-		// move yellow face so that the edges and middle form a line
-		let data = f2lSolver.getEdgeData(yellows[0])
-		let nonYellowFace = Object.keys(data.face).find(face => data.face[face] != 'yellow')
-
-		let targetFace = 'f'
-		let currentFace = getRelativeFace(nonYellowFace, 'r')
-		let setupMove = f2lSolver.getDirectionToFace(currentFace, targetFace, 'u')
-		return rubiksCube.move(setupMove)
-	}
-
-	setupRPosition(yellows) {
-		// move yellow face so that the edges and middle form an "r"
-		let data0 = f2lSolver.getEdgeData(yellows[0])
-		let data1 = f2lSolver.getEdgeData(yellows[1])
-
-		let nonYellowFace0 = Object.keys(data0.face).find(face => data0.face[face] != 'yellow')
-		let nonYellowFace1 = Object.keys(data1.face).find(face => data1.face[face] != 'yellow')
-
-		let targetFace = 'f'
-		let currentFace
-		if (getRelativeFace(nonYellowFace0, 'r') === nonYellowFace1) {
-			currentFace = nonYellowFace0
-		} else {
-			currentFace = nonYellowFace1
+		let faces = ['f', 'r', 'b', 'l']
+		for (let i = 0; i < cubies.length; i++) {
+			let face = faces[~~(i / 3)]
+			let cubie = cubies[i]
+			let orientation = this._getOrientation(cubie, face)
+			ollArray.push(orientation)
 		}
-		let setupMove = f2lSolver.getDirectionToFace(currentFace, targetFace, 'u')
-		return rubiksCube.move(setupMove)
+
+    return ollArray.join('')
 	}
 
 	/**
-	 * Grabs each yellow-face corner in the order of front left, front right,
-	 * back right, back left, and returns a string of the relative face that
-	 * the yellow face points to.
+	 * return {string} - A string representing the orientation from solved state.
+	 *                   0 for solved, 1 for yellow facing out, 2 for other color facing out.
+	 * ex: '112000011212'
 	 */
-	getCornerFormation() {
-		let cornerPositions = [
-			new THREE.Vector3(-g.startPos, g.startPos, g.startPos),
-			new THREE.Vector3(g.startPos, g.startPos, g.startPos),
-			new THREE.Vector3(g.startPos, g.startPos, -g.startPos),
-			new THREE.Vector3(-g.startPos, g.startPos, -g.startPos)
-		]
-
-		let relativeFaces = []
-		for (let position of cornerPositions) {
-			let corner = grabber.getObjectByPosition(position)
-			let data = getRelativeFacesOfCubie(corner)
-			relativeFaces.push(data.color.yellow)
+	_getOrientation(cubie, face) {
+		let isCorner = getCubieColors(cubie).length === 3
+    let data = getRelativeFacesOfCubie(cubie)
+		if (isCorner) {
+			if (data.face.u === 'yellow') return 0
+			if (data.face[face] === 'yellow') return 1
+			else return 2
+		} else {
+			return data.face.u === 'yellow' ? 0 : 1
 		}
-
-		return relativeFaces.join(' ')
 	}
+
+	_getDirectionToAlgorithm(ollString) {
+		for (let i = 0; i < 4; i++) {
+      if (this.algorithms[ollString]) {
+        return {
+          direction: i === 3 ? -1 : i,
+          algorithm: this.algorithms[ollString]
+        }
+      }
+
+      ollString = this._rotateMapLeft(ollString)
+    }
+	}
+
+	_rotateMapLeft(directionMap) {
+    // ex: '2 -1 0 0 2 0 0 0 1'
+    let firstThree = directionMap.split('') // becomes first three items later
+    let rest = firstThree.splice(3)
+    return [...rest, ...firstThree].join('')
+  }
 }
 
 export default new OllSolver()
