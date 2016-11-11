@@ -5,7 +5,7 @@ import camera from './camera'
 import renderer from './renderer'
 import rubiksCube from './rubiks-cube'
 
-const DURATION = 0.1
+let DURATION = 0.1
 const EASE = 'linear'
 const SNAP_DURATION = 0.3
 
@@ -24,6 +24,14 @@ class Animator {
 
   init() {
     TweenMax.ticker.addEventListener('tick', () => this.render())
+  }
+
+  duration(dur) {
+    if (dur) {
+      DURATION = dur
+    } else {
+      return DURATION
+    }
   }
 
   _ready(callback) {
