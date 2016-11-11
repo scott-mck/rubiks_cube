@@ -68,7 +68,14 @@ class OllSolver {
 		'201210011201': 'i j k ; k h i f k g i' // #57
 	}
 
-	async test(caseNum = 0, fast) {
+	/**
+	 * Goes through each algorithm, reverses the moves, moves the rubiksCube, and
+	 * attempts to solve.
+	 *
+	 * @param {integer} [caseNum] - Skip to a specific case number, and continue on.
+	 * @param {boolean} [fast] - If true, sets animation duration to near-zero.
+	 */
+	async test(caseNum = 0, fast = false) {
 		if (fast) animator.duration(0.01)
 		let orientations = Object.keys(this.algorithms)
 		let algorithms = Object.values(this.algorithms)
@@ -83,7 +90,6 @@ class OllSolver {
 
 			try {
 				await rubiksCube.move(reverse)
-				await rubiksCube.move('u')
 
 				await this.solve()
 				if (!this.isSolved()) {
@@ -113,17 +119,12 @@ class OllSolver {
 		console.log()
 	}
 
+	/**
+	 * Detects whether all yellow cubies are oriented correctly on the yellow face.
+	 * @return {boolean}
+	 */
 	isSolved() {
-		let yellows = g.allCubes.filter(cube => {
-			return getCubieColors(cube).includes('yellow')
-		})
-		for (let yellow of yellows) {
-			let data = getRelativeFacesOfCubie(yellow)
-			if (data.face.u !== 'yellow') {
-				return false
-			}
-		}
-		return true
+		return this.getOllString() === '000000000000'
 	}
 
 	async solve() {
@@ -141,6 +142,17 @@ class OllSolver {
 		return rubiksCube.move(algorithm)
 	}
 
+	/**
+	 * @return {string} - A string representing the state of oll. Starts with the
+	 * front left cubie, then wraps around to the right. Reads the three colors on
+	 * each face, for a total of (3 colors * 4 faces) = 12. TODO: Shorten this to 8
+	 *
+	 * examples:
+	 * A random state: '002111200010'
+	 * A perfectly solved state would be '000000000000'
+	 * A state where the front left cubie needs a counter-clockwise rotation to be
+	 * solved, and all other cubies are solved, would be '100000000002'
+	 */
 	getOllString() {
 		let ollArray = []
 
@@ -176,9 +188,8 @@ class OllSolver {
 	}
 
 	/**
-	 * return {string} - A string representing the orientation from solved state.
-	 *                   0 for solved, 1 for yellow facing out, 2 for other color facing out.
-	 * ex: '112000011212'
+	 * @return {string} - A string representing the orientation from solved state.
+	 * 0 for solved, 1 for yellow facing out, 2 for another color facing out.
 	 */
 	_getOrientation(cubie, face) {
 		let isCorner = getCubieColors(cubie).length === 3
@@ -192,6 +203,16 @@ class OllSolver {
 		}
 	}
 
+	/**
+	 * Attempts to find a documented orientation pattern for a given ollString.
+	 * If none is found, rotates the ollString left (see _rotateOllStringLeft)
+	 * and checks for a documented patter. Continues for 3 rotations.
+	 *
+	 * @param {string} ollString - The string-ified orientation representation.
+	 * @return {object} data
+	 * @prop {integer} data.direction - The direction to move toward to set up the cube for the found algorithm.
+	 * @prop {string} data.algorithm - The algorithm that solves the found orientation.
+	 */
 	_getDirectionToAlgorithm(ollString) {
 		for (let i = 0; i < 4; i++) {
       if (this.algorithms[ollString]) {
@@ -201,13 +222,20 @@ class OllSolver {
         }
       }
 
-      ollString = this._rotateMapLeft(ollString)
+      ollString = this._rotateOllStringLeft(ollString)
     }
+
+		throw `No pattern found for [${ollString}]`
 	}
 
-	_rotateMapLeft(directionMap) {
-    // ex: '2 -1 0 0 2 0 0 0 1'
-    let firstThree = directionMap.split('') // becomes first three items later
+	/**
+	 * Basically performs a rubiksCube.move('u') on the ollString, without the
+	 * unnecessary animation.
+	 *
+	 * @param {string} ollString - The string-ified orientation representation.
+	 */
+	_rotateOllStringLeft(ollString) {
+    let firstThree = ollString.split('')
     let rest = firstThree.splice(3)
     return [...rest, ...firstThree].join('')
   }
