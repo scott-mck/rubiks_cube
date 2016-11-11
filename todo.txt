@@ -17,3 +17,4 @@
 -- de-complexify storing and returning move data in rubiks-cube.js
 -- demos don't loop
 -- cache result in RubiksCube#solve, maybe?
+-- use @typedef
