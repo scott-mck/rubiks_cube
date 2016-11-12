@@ -5,7 +5,7 @@ import grabber from './grabber'
 import animator from './animator'
 import g from './globals'
 import { vectorFromString, cross } from './utils/vector'
-import { getCubeState } from './utils/relative-finder'
+import { getCubeState, getRelativeFacesOfCubie } from './utils/relative-finder'
 
 class RubiksCube {
   _moves = []
@@ -156,7 +156,6 @@ class RubiksCube {
   }
 
   isSolved() {
-    return false
     return this._isFaceSolved('r') && this._isFaceSolved('u') && this._isFaceSolved('f')
   }
 
@@ -217,25 +216,20 @@ class RubiksCube {
   }
 
   _isFaceSolved(face) {
-    let cubes = grabber.grabFace(face)
-    let axis = this._rotateMap[face].axis
-    let normal = vectorFromString(axis)
+    let cubies = grabber.grabFace(face)
 
-    let color
-    let isSolved = true
+    let faceColor
+    for (let cubie of cubies) {
+      let cubieColor = getRelativeFacesOfCubie(cubie).face[face]
 
-    cubes.forEach((cube, idx) => {
-      let raycaster = new THREE.Raycaster(cube.position.clone(), normal)
-      let cubeColor = raycaster.intersectObjects(scene.children)[0].face.color
-
-      if (!color) {
-        color = cubeColor
-      } else if (!cubeColor.equals(color)) {
-        isSolved = false
+      if (!faceColor) {
+        faceColor = cubieColor
+      } else if (cubieColor !== faceColor) {
+        return false
       }
-    })
+    }
 
-    return isSolved
+    return true
   }
 
   _getAnimationData(move) {
