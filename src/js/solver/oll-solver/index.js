@@ -1,3 +1,4 @@
+import THREE from 'three'
 import g from '../../globals'
 import rubiksCube from '../../rubiks-cube'
 import grabber from '../../grabber'

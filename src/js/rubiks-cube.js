@@ -4,6 +4,7 @@ import scene from './scene'
 import grabber from './grabber'
 import animator from './animator'
 import g from './globals'
+import solver from './solver'
 import { vectorFromString, cross } from './utils/vector'
 import { getCubeState, getRelativeFacesOfCubie } from './utils/relative-finder'
 
@@ -175,6 +176,10 @@ class RubiksCube {
   }
 
   solve() {
+    if (g.dimensions === 3) {
+      return solver.solve()
+    }
+
     this._moves = []
     while (this._solveMoves.length > 0) {
       let reverseMove = this.reverseMove(this._solveMoves.pop())

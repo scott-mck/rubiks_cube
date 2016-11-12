@@ -1,5 +1,6 @@
 import THREE from 'three'
 import scene from '../scene'
+import grabber from '../grabber'
 import g from '../globals'
 import { vectorFromString } from './vector'
 import { getColorString } from './color'

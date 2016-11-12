@@ -1,6 +1,8 @@
+import THREE from 'three'
 import rubiksCube from '../../rubiks-cube'
 import f2lSolver from '../f2l-solver'
 import grabber from '../../grabber'
+import g from '../../globals'
 import keyMap from '../../key-map'
 import { getCubieColors } from '../../utils/color'
 import {
