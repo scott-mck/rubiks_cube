@@ -4,10 +4,8 @@ const DEFAULT_COLOR = 'rgb(0, 0, 0)'
 const SUCCESS_COLOR = 'rgb(0, 200, 0)'
 
 class Timer {
-  constructor() {
-    this._elapsedTime = 0
-    this._timeline = new TimelineMax({ paused : true })
-  }
+	_elapsedTime = 0
+	_timeline = new TimelineMax({ paused : true })
 
   init() {
     this.el = document.querySelector('#timer')

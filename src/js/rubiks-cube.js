@@ -8,22 +8,18 @@ import { vectorFromString, cross } from './utils/vector'
 import { getCubeState } from './utils/relative-finder'
 
 class RubiksCube {
-  constructor() {
-    this._rotateMap = {
-      r: { axis: 'x', dir: -1 },
-      l: { axis: 'x', dir: 1 },
-      u: { axis: 'y', dir: -1 },
-      d: { axis: 'y', dir: 1 },
-      f: { axis: 'z', dir: -1 },
-      b: { axis: 'z', dir: 1 }
-    }
-
-    this._rotateMap.x = this._rotateMap.r
-    this._rotateMap.y = this._rotateMap.u
-
-    this._moves = []
-    this._solveMoves = []
-    this._callbacks = []
+  _moves = []
+  _solveMoves = []
+  _callbacks = []
+  _rotateMap = {
+    r: { axis: 'x', dir: -1 },
+    l: { axis: 'x', dir: 1 },
+    u: { axis: 'y', dir: -1 },
+    d: { axis: 'y', dir: 1 },
+    f: { axis: 'z', dir: -1 },
+    b: { axis: 'z', dir: 1 },
+    x: { axis: 'x', dir: -1 },
+    y: { axis: 'y', dir: -1 },
   }
 
   move(move) {
