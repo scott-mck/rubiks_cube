@@ -4,6 +4,10 @@ import grabber from '../../grabber'
 import keyMap from '../../key-map'
 import { getCubieColors } from '../../utils/color'
 import {
+  getConsecutivelyAppearingLetters,
+  getMostCommonLetter
+} from '../../utils/string'
+import {
   getCubeState,
   getRelativeDirection
 } from '../../utils/relative-finder'
@@ -171,78 +175,3 @@ class PllSolver {
 }
 
 export default new PllSolver()
-
-// Solution: Read last layer as a string of relative faces.
-// - get a string of the last layer cubie relative positions
-// - find the "base" letter -- letters (or cubies) that don't need to move
-//   --> What letter is the base letter?
-//       The most common letter?
-//       The only letter that appears consecutively?
-//       Combination of the two? I think so!
-//   --> There are (a) case(s) where there is no base letter.
-//       I think two. Where all corners are opposite, and where two sets of
-//       two corners need to switch.
-// - generate an array of directions the cubies need to go based on the base letter
-// - still need to recognize the same algorithm from different positions.
-// - "rotate" the generated array until it matches an algorithm
-// - peform those "rotations" on the cube, then do the algorithm
-// - then a last step (I think?) of a top layer move to finish
-//
-// llf rb ll rl
-// [0, 0, 1, 2, -1, 0, 0, 2, 0]
-//
-// frr ll ff ff
-// [0, 1, 1, -1, -1, 0, 0, 0, 0]
-//
-
-/**
- * Finds all letters that appear twice in a row in a given input string.
- *
- * @param {string} string - The input string.
- * @param {boolean} wrap - Whether to test the last letter to the first.
- * @return {array} - An array of all consecutive letters
- */
-function getConsecutivelyAppearingLetters(string, wrap) {
-  let letters = []
-  for (let i = 0; i < string.length; i++) {
-    let nextLetter = string[i + 1]
-    if (!nextLetter && wrap) {
-      nextLetter = string[0]
-    }
-
-    if (string[i] === nextLetter && !letters.includes(string[i])) {
-      letters.push(string[i])
-    }
-  }
-  return letters
-}
-
-/**
- * Finds the most common letter in an input string.
- *
- * @param {string} string - The input string.
- * @param {array} restraints - The possible outcomes.
- * @return {string} - The most common letter.
- */
-function getMostCommonLetter(string, restraints = []) {
-  let counters = {}
-  if (restraints.length === 0) {
-    restraints = string.split('')
-  }
-  for (let restraint of restraints) {
-    counters[restraint] = 0
-  }
-
-  for (let i = 0; i < string.length; i++) {
-    if (typeof counters[string[i]] === 'undefined') {
-      continue
-    }
-    counters[string[i]] += 1
-  }
-
-  let highestCount = Object.values(counters).sort().reverse()[0]
-  let mostCommonLetter = Object.keys(counters).find(str => counters[str] === highestCount)
-  return mostCommonLetter
-}
-
-window.thing = getMostCommonLetter;
