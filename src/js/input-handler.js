@@ -13,28 +13,25 @@ import { cross } from './utils/vector'
 const DRAG_COEFFICIENT = 1 / 200
 
 class inputHandler {
-  constructor() {
-    this._normalMap = {
-      // "normal of clicked face": { "drag direction": "axis of rotation" }
-      // e.x.: Clicking on the right face returns a normal 'x'
-      // Dragging vertically ('y') will "fill out" the face in the 'y' direction
-      x: { x: 'z', y: 'y'},
-      y: { x: 'x', y: 'z'},
-      z: { x: 'x', y: 'y'}
-    }
-
-    this._rotationMap = {
-      x: 1,
-      y: 1,
-      z: -1
-    }
-
-    this._moveRecord = {}
-
-    this._mousedown = this._mousedown.bind(this)
-    this._mousemove = this._mousemove.bind(this)
-    this._mouseup = this._mouseup.bind(this)
+  // "normal of clicked face": { "drag direction": "axis of rotation" }
+  // e.x.: Clicking on the right face returns a normal 'x'
+  // Dragging vertically ('y') will "fill out" the face in the 'y' direction
+  _normalMap = {
+    x: { x: 'z', y: 'y'},
+    y: { x: 'x', y: 'z'},
+    z: { x: 'x', y: 'y'}
   }
+
+  _rotationMap = {
+    x: 1,
+    y: 1,
+    z: -1
+  }
+
+  _moveRecord = {}
+  _mousedown = this._mousedown.bind(this)
+  _mousemove = this._mousemove.bind(this)
+  _mouseup = this._mouseup.bind(this)
 
   init() {
     this.canvas = document.querySelector('#canvas')

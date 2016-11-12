@@ -5,39 +5,45 @@ import grabber from './grabber'
 import animator from './animator'
 import g from './globals'
 import { vectorFromString, cross } from './utils/vector'
+import { getCubeState, getRelativeFacesOfCubie } from './utils/relative-finder'
 
 class RubiksCube {
-  constructor() {
-    this._rotateMap = {
-      r: { axis: 'x', dir: -1 },
-      l: { axis: 'x', dir: -1 },
-      u: { axis: 'y', dir: -1 },
-      d: { axis: 'y', dir: 1 },
-      f: { axis: 'z', dir: -1 },
-      b: { axis: 'z', dir: 1 }
-    }
-
-    this._rotateMap.x = this._rotateMap.r
-    this._rotateMap.y = this._rotateMap.u
-
-    this._moves = []
-    this._solveMoves = []
-    this._callbacks = []
+  _moves = []
+  _solveMoves = []
+  _callbacks = []
+  _rotateMap = {
+    r: { axis: 'x', dir: -1 },
+    l: { axis: 'x', dir: 1 },
+    u: { axis: 'y', dir: -1 },
+    d: { axis: 'y', dir: 1 },
+    f: { axis: 'z', dir: -1 },
+    b: { axis: 'z', dir: 1 },
+    x: { axis: 'x', dir: -1 },
+    y: { axis: 'y', dir: -1 },
   }
 
   move(move) {
-    this._queueMove(move)
-    this._recordMove(move)
+    return new Promise((resolve) => {
+      let moves = move.split(' ').filter(move => !!move)
+      while (moves.length > 0) {
+        let currentMove = moves.shift()
+        this._queueMove(currentMove)
+        this._recordMove(currentMove)
+      }
 
-    // When animator is ready, start animating through the move chain
-    // Make sure to `await animator.ready()` only once, otherwise #_nextMove
-    // gets called multiple times
-    if (this._isWaiting) {
-      return
-    }
-    this._isWaiting = true
-    this.afterMovesCompletion().then(() => this._isWaiting = false)
-    animator.ready().then(() => this._nextMove())
+      // When animator is ready, start animating through the move chain
+      // Make sure to `await animator.ready()` only once, otherwise #_nextMove
+      // gets called multiple times
+      if (this._isWaiting) {
+        return
+      }
+      this._isWaiting = true
+      this.afterMovesCompletion().then(() => {
+        this._isWaiting = false
+        animator.ready().then(resolve)
+      })
+      animator.ready().then(() => this._nextMove())
+    })
   }
 
   // @param {string|object} move - A notation string or instructions to grab the correct face
@@ -50,7 +56,6 @@ class RubiksCube {
   }
 
   async _nextMove() {
-
     let isSolved = this.isSolved()
 
     if (isSolved && this._moves.length === 0) {
@@ -77,6 +82,21 @@ class RubiksCube {
 
     await animator.rotate(animationData)
     this._nextMove()
+  }
+
+  moveFaceToTop(faceColor) {
+    let cubeState = getCubeState()
+
+    let targetSide = cubeState.color[faceColor]
+    let moves
+    if (targetSide === 'r') moves = 'y x'
+    else if (targetSide === 'l') moves = 'y xPrime'
+    else if (targetSide === 'f') moves = 'x'
+    else if (targetSide === 'b') moves = 'xPrime'
+    else if (targetSide === 'd') moves = 'x x'
+    else return
+
+    return this.move(moves)
   }
 
   scramble() {
@@ -168,34 +188,48 @@ class RubiksCube {
     this._solveMoves = []
   }
 
-  reverseNotation(move) {
-    if (move.indexOf('Prime') > -1) {
-      return move[0]
-    } else {
-      return `${move[0]}Prime`
+  reverseNotation(moves) {
+    let reverseMoves = []
+    moves = moves.split(' ')
+
+    while (moves.length > 0) {
+      let move = moves.shift()
+
+      if (move === '') {
+        reverseMoves.push('')
+        continue
+      }
+
+      let reversedMove = move[0]
+
+      if (move.includes('Double')) {
+        reversedMove += 'Double'
+      }
+      if (!move.includes('Prime')) {
+        reversedMove += 'Prime'
+      }
+
+      reverseMoves.push(reversedMove)
     }
+
+    return reverseMoves.join(' ')
   }
 
   _isFaceSolved(face) {
-    let cubes = grabber.grabFace(face)
-    let axis = this._rotateMap[face].axis
-    let normal = vectorFromString(axis)
+    let cubies = grabber.grabFace(face)
 
-    let color
-    let isSolved = true
+    let faceColor
+    for (let cubie of cubies) {
+      let cubieColor = getRelativeFacesOfCubie(cubie).face[face]
 
-    cubes.forEach((cube, idx) => {
-      let raycaster = new THREE.Raycaster(cube.position.clone(), normal)
-      let cubeColor = raycaster.intersectObjects(scene.children)[0].face.color
-
-      if (!color) {
-        color = cubeColor
-      } else if (!cubeColor.equals(color)) {
-        isSolved = false
+      if (!faceColor) {
+        faceColor = cubieColor
+      } else if (cubieColor !== faceColor) {
+        return false
       }
-    })
+    }
 
-    return isSolved
+    return true
   }
 
   _getAnimationData(move) {

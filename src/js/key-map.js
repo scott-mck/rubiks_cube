@@ -11,10 +11,10 @@ class KeyMap {
       g: 'fPrime',
       s: 'd',
       l: 'dPrime',
-      e: 'l',
-      d: 'lPrime',
-      r: 'lDouble',
-      c: 'lDoublePrime',
+      e: 'lPrime',
+      d: 'l',
+      r: 'lDoublePrime',
+      c: 'lDouble',
       q: 'b',
       p: 'bPrime',
       ';': 'y',
@@ -25,8 +25,9 @@ class KeyMap {
     }
   }
 
-  getNotation(letter) {
-    return this.keyMap[letter]
+  getNotation(letters) {
+		let notations = letters.split(' ').map(letter => this.keyMap[letter])
+		return notations.join(' ')
   }
 }
 

@@ -6,8 +6,6 @@ import g from './globals'
 import { vectorFromString, stringFromVector, cross } from './utils/vector'
 
 class Grabber {
-  constructor() {}
-
   init() {
     this.anchor1 = new THREE.Vector3(g.startPos, g.startPos, g.startPos)
     this.anchor2 = new THREE.Vector3(-g.startPos, -g.startPos, -g.startPos)
@@ -20,6 +18,23 @@ class Grabber {
       d: { anchor: this.anchor2, shoot: 'z', fill: 'x', dir: 1 },
       b: { anchor: this.anchor2, shoot: 'x', fill: 'y', dir: 1 }
     }
+  }
+
+  getObjectByPosition(position) {
+    let pos = position.clone()
+    let axes = ['x', 'y', 'z']
+    let rayStartCoord, dir, rayShootDir
+    for (let axis of axes) {
+      if (~~Math.abs(pos[axis]) > 0) {
+        dir = pos[axis] > 0 ? 1 : -1
+        rayStartCoord = position.clone()[`set${axis.toUpperCase()}`]((g.startPos + g.cubieSize) * dir)
+        rayShootDir = vectorFromString(axis, -dir)
+        break
+      }
+    }
+
+    let raycaster = new THREE.Raycaster(rayStartCoord, rayShootDir)
+    return this.raycast(raycaster)[0]
   }
 
   grabFace(move) {
@@ -155,6 +170,18 @@ class Grabber {
     })
 
     return this.filterIntersects(intersects)
+  }
+
+  getAllMiddles() {
+		return g.allCubes.filter(cube => cube.children.length === 1)
+  }
+
+  getAllEdges() {
+		return g.allCubes.filter(cube => cube.children.length === 2)
+  }
+
+  getAllCorners() {
+    return g.allCubes.filter(cube => cube.children.length === 3)
   }
 }
 
