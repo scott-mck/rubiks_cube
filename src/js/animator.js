@@ -10,16 +10,16 @@ const EASE = 'linear'
 const SNAP_DURATION = 0.3
 
 class Animator {
+  _rotater1 = new THREE.Object3D()
+  _rotater2 = new THREE.Object3D()
+  _emptyRotaters = [this._rotater1, this._rotater2]
+  _callbacks = []
+
   constructor() {
-    this._rotater1 = new THREE.Object3D()
-    this._rotater2 = new THREE.Object3D()
     this._rotater1.name = 'rotater'
     this._rotater2.name = 'rotater'
     scene.add(this._rotater1)
     scene.add(this._rotater2)
-
-    this._emptyRotaters = [this._rotater1, this._rotater2]
-    this._callbacks = []
   }
 
   init() {
