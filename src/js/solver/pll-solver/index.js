@@ -1,6 +1,7 @@
 import rubiksCube from '../../rubiks-cube'
 import f2lSolver from '../f2l-solver'
 import grabber from '../../grabber'
+import keyMap from '../../key-map'
 import { getCubieColors } from '../../utils/color'
 import {
   getCubeState,
@@ -8,34 +9,73 @@ import {
 } from '../../utils/relative-finder'
 
 class PllSolver {
-  async solve() {
-    this.algorithms = {
-      '0 0 0 0 0 0 0 0 0': '',
-      '0 0 1 2 -1 0 0 2 0': 'i j k f k h i i f k f i j k g'
-    }
+  // in order, based on http://badmephisto.com/oll.php
+  algorithms = {
+    '0 0 0 0 0 0 0 0': ' ', // last-layer turns
+    '1 1 1 1 1 1 1 1': 'f', // last-layer turns
+    '2 2 2 2 2 2 2 2': 'j j', // last-layer turns
+    '-1 -1 -1 -1 -1 -1 -1 -1': 'j', // last-layer turns
+    '2 0 -1 0 -1 0 0 0': 'n i i l l k f i l l k j k y', // #1
+    '1 0 1 0 2 0 0 0': 'n i f i l l k j i l l k k y', // #2
+    '0 1 0 2 0 0 0 1': 'i f i j i j i f k f k k', // #3
+    '0 -1 0 -1 0 0 0 2': 'i i j i j k f k f k j k', // #4
+    '0 2 0 2 0 2 0 2': 'd i j j e k a e k j j d i', // #5
+    '0 0 1 2 -1 0 0 2': 'i j k f k h i i f k f i j k g', // #6
+    '0 1 1 -1 -1 0 0 0': 'i j j k f i j j e j k f d', // #7
+    '0 0 2 0 0 1 2 -1': 'h i f k f i j k g i j k f k h i g', // #8
+    '0 1 0 -1 1 0 -1 0': 'k j j i f f k h i j k f k g i i f', // #9
+    '0 0 1 0 -1 1 0 -1': 'i f k f i j i s k f i l k j j k f', // #10
+    '0 0 2 1 0 -1 2 0': 'k j k f ; k s k l a n j j k f i j i y', // #11
+    '0 2 1 0 -1 2 0 0': 'k f g i j k f k h i i f k f i j k j i', // #12
+    '2 1 -1 1 -1 2 0 0': 'd j e a e e a l d f e j e s h h', // #13
+    '1 -1 2 0 0 2 1 -1': 'k f i ; i i ; s k j i f i l h h', // #14
+    '0 0 1 2 1 -1 2 -1': 'e e a l d f d j e s  h h i f k', // #15
+    '-1 0 0 1 2 1 -1 2': 'i i s ; k j k f i l h h e j d', // #16
+    '0 1 0 -1 0 1 0 -1': 'j k f i f i j i f k j i j i i f k j', // #17
+    '-1 -1 0 0 0 0 1 1': 'e j j d j e j j i f d j k', // #18
+    '-1 0 1 0 -1 0 1 0': 'n i f k s i j k l i j k s i f k l', // #19
+    '0 0 2 2 0 0 2 2': 'f k j e j j i f d k j e j j i f d', // #20
+    '2 0 0 2 2 0 0 2': 'j d f i j j e j k d f i j j e j k', // #21
+  }
+  lastLayerTurns = {
+    'ffffffff': ' ',
+    'llllllll': 'j',
+    'rrrrrrrr': 'f',
+    'bbbbbbbb': 'j j'
+  }
 
-    let lastLayerString = this.getLastLayerString()
-    let directionMap = this.getDirectionMap(lastLayerString)
+  async solve() {
+    let pllString = this.getPllString()
+    let directionMap = this._getDirectionMap(pllString)
 
     let { direction, algorithm } = this._getDirectionToAlgorithm(directionMap)
+
     let positioningMove
-    if (direction === 1) positioningMove = ';'
-    if (direction === -1) positioningMove = 'a'
-    if (direction === 2) positioningMove = '; ;'
+    if (direction === 1) positioningMove = 'y'
+    if (direction === -1) positioningMove = 'yPrime'
+    if (direction === 2) positioningMove = 'y y'
     if (direction === 0) positioningMove = ''
     await rubiksCube.move(positioningMove)
 
-    await rubiksCube.move(algorithm)
-    return this.lastLayerMove()
+    let algorithmNotation = keyMap.getNotation(algorithm)
+    await rubiksCube.move(algorithmNotation)
+
+    return this.lastLayerTurn()
+  }
+
+  lastLayerTurn() {
+    let pllString = this.getPllString()
+    let lastLayerTurn = this.lastLayerTurns[pllString]
+    return rubiksCube.move(keyMap.getNotation(lastLayerTurn))
   }
 
   /**
    * @return {string} - A string of solving directions for each cubie, with
-   *                    spaces in between
+   * spaces in between.
    */
-  getDirectionMap(lastLayerString) {
-    let baseLetter = this._getBaseLetter(lastLayerString)
-    return lastLayerString
+  _getDirectionMap(pllString) {
+    let baseLetter = this._getBaseLetter(pllString)
+    return pllString
       .split('')
       .map(letter => getRelativeDirection(baseLetter, letter))
       .join(' ')
@@ -44,12 +84,11 @@ class PllSolver {
   /**
    * Determines the "base" letter for the last layer string. 2 requirements:
    * 1) It is the most common letter in the string.
-   * 2) It appears consecutively.
-   * There are 2 cases where there is no base letter. Additional logic needed.
+   * 2) It appears consecutively. (Only necessary if there's a tie) (I think.)
    */
-  _getBaseLetter(lastLayerString) {
-    let consecutives = getConsecutivelyAppearingLetters(lastLayerString)
-    let baseLetter = getMostCommonLetter(lastLayerString, consectives)
+  _getBaseLetter(pllString) {
+    let consecutives = getConsecutivelyAppearingLetters(pllString)
+    let baseLetter = getMostCommonLetter(pllString, consecutives)
     return baseLetter
   }
 
@@ -58,7 +97,7 @@ class PllSolver {
    * the top layer moving right.
    * @return {string} - A string of the relative solving face of each cubie.
    */
-  getLastLayerString() {
+  getPllString() {
     let lastLayerStringArray = []
 
     let positions = [
@@ -95,12 +134,10 @@ class PllSolver {
     let isCorner = getCubieColors(cubie).length === 3
     let data = f2lSolver[`get${isCorner ? 'Corner' : 'Edge'}Data`](cubie)
 
-    let cubieFace = data[isCorner ? 'left' : 'secondary']
+    let cubieFace = data[isCorner ? 'left' : 'primary']
     let currentFace = cubieFace.face
     let targetFace = cubeState.color[cubieFace.color]
 
-    console.log(currentFace)
-    console.log(targetFace)
     let direction = getRelativeDirection(currentFace, targetFace)
     if (direction === 1) return 'r'
     if (direction === -1) return 'l'
@@ -123,15 +160,13 @@ class PllSolver {
       directionMap = this._rotateMapLeft(directionMap)
     }
 
-    console.log('Could not find correct algorithm for direction map:')
-    console.log(directionMap)
+    throw `Could not find correct algorithm for direction map: ${directionMap}`
   }
 
   _rotateMapLeft(directionMap) {
-    // ex: '2 -1 0 0 2 0 0 0 1'
-    let firstThree = directionMap.split(' ') // becomes first three items later
-    let rest = firstThree.splice(3)
-    return [...rest, ...firstThree].join(' ')
+    let firstTwo = directionMap.split(' ')
+    let rest = firstTwo.splice(2)
+    return [...rest, ...firstTwo].join(' ')
   }
 }
 
@@ -176,7 +211,7 @@ function getConsecutivelyAppearingLetters(string, wrap) {
     }
 
     if (string[i] === nextLetter && !letters.includes(string[i])) {
-      letters.push(i)
+      letters.push(string[i])
     }
   }
   return letters
@@ -189,17 +224,17 @@ function getConsecutivelyAppearingLetters(string, wrap) {
  * @param {array} restraints - The possible outcomes.
  * @return {string} - The most common letter.
  */
-function getMostCommonLetter(string, restraints) {
+function getMostCommonLetter(string, restraints = []) {
   let counters = {}
-  if (restraints && restraints.length === 0) {
-    restraints = string.split()
+  if (restraints.length === 0) {
+    restraints = string.split('')
   }
   for (let restraint of restraints) {
     counters[restraint] = 0
   }
 
   for (let i = 0; i < string.length; i++) {
-    if (!counters[string[i]]) {
+    if (typeof counters[string[i]] === 'undefined') {
       continue
     }
     counters[string[i]] += 1
@@ -209,3 +244,5 @@ function getMostCommonLetter(string, restraints) {
   let mostCommonLetter = Object.keys(counters).find(str => counters[str] === highestCount)
   return mostCommonLetter
 }
+
+window.thing = getMostCommonLetter;
