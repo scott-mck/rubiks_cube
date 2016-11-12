@@ -10,6 +10,7 @@ import solver from './solver'
 import crossSolver from './solver/cross-solver'
 import f2lSolver from './solver/f2l-solver'
 import ollSolver from './solver/oll-solver'
+import pllSolver from './solver/pll-solver'
 
 window.THREE = THREE
 window.rubiksCube = rubiksCube
@@ -24,3 +25,4 @@ window.solver = solver
 window.crossSolver = crossSolver
 window.f2lSolver = f2lSolver
 window.ollSolver = ollSolver
+window.pllSolver = pllSolver
