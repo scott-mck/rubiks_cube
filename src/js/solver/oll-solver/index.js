@@ -76,7 +76,7 @@ class OllSolver {
 	 * @param {integer} [caseNum] - Skip to a specific case number, and continue on.
 	 * @param {boolean} [fast] - If true, sets animation duration to near-zero.
 	 */
-	async test(caseNum = 0, fast = false) {
+	async test(caseNum = 1, fast = false) {
 		if (fast) animator.duration(0.01)
 		let orientations = Object.keys(this.algorithms)
 		let algorithms = Object.values(this.algorithms)
