@@ -1,5 +1,5 @@
 import crossSolver from './cross-solver'
-import F2LSolver from './f2l-solver'
+import f2lSolver from './f2l-solver'
 import ollSolver from './oll-solver'
 import pllSolver from './pll-solver'
 
@@ -16,7 +16,7 @@ class Solver {
 	}
 
 	solveF2L() {
-		return F2LSolver.solve()
+		return f2lSolver.solve()
 	}
 
 	solveOll() {
