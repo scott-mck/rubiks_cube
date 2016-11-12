@@ -9,7 +9,7 @@ import { getCubieColors } from '../../utils/color'
 class OllSolver {
 	// in order, based on http://badmephisto.com/oll.php
 	algorithms = {
-		'000000000000': '', // already solved
+		'000000000000': ' ', // already solved
 		'210000012101': 'h i j k f g', // #1
 		'211212102101': 'h i j k f i j k f g', // #2
 		'101202101202': 'i j j k f i j k f i f k', // #3
