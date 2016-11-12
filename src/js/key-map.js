@@ -26,7 +26,6 @@ class KeyMap {
   }
 
   getNotation(letters) {
-    // return this.keyMap[letter]
 		let notations = letters.split(' ').map(letter => this.keyMap[letter])
 		return notations.join(' ')
   }
