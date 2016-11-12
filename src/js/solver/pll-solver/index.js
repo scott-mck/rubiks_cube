@@ -15,10 +15,7 @@ import {
 class PllSolver {
   // in order, based on http://badmephisto.com/oll.php
   algorithms = {
-    '0 0 0 0 0 0 0 0': ' ', // last-layer turns
-    '1 1 1 1 1 1 1 1': 'f', // last-layer turns
-    '2 2 2 2 2 2 2 2': 'j j', // last-layer turns
-    '-1 -1 -1 -1 -1 -1 -1 -1': 'j', // last-layer turns
+    '0 0 0 0 0 0 0 0': ' ', // already solved
     '2 0 -1 0 -1 0 0 0': 'n i i l l k f i l l k j k y', // #1
     '1 0 1 0 2 0 0 0': 'n i f i l l k j i l l k k y', // #2
     '0 1 0 2 0 0 0 1': 'i f i j i j i f k f k k', // #3
@@ -48,6 +45,57 @@ class PllSolver {
     'bbbbbbbb': 'j j'
   }
 
+  /**
+	 * Goes through each algorithm, reverses the moves, moves the rubiksCube, and
+	 * attempts to solve.
+	 *
+	 * @param {integer} [caseNum] - Skip to a specific case number, and continue on.
+	 * @param {boolean} [fast] - If true, sets animation duration to near-zero.
+	 */
+	async test(caseNum = 1, fast = false) {
+		if (fast) animator.duration(0.01)
+		let permutations = Object.keys(this.algorithms)
+		let algorithms = Object.values(this.algorithms)
+
+		for (let i = caseNum - 1; i < permutations.length; i++) {
+			let permutation = permutations[i]
+			let algorithm = algorithms[i]
+
+			// reverse the algorithm, then call #solve()
+			let notation = keyMap.getNotation(algorithm)
+			let reverse = rubiksCube.reverseMove(notation.split(' ').reverse().join(' '))
+
+			try {
+				await rubiksCube.move(reverse)
+
+				await this.solve()
+				if (!this.isSolved()) {
+					console.log('Failed OLL test case.')
+					console.log()
+					console.log(`Permutation: [${permutation}]`)
+					console.log(`Algorithm: [${algorithm}]`)
+					console.log(`notation: [${notation}]`)
+					console.log(`reverse: [${reverse}]`)
+					console.log(`case number: [${i + 1}]`)
+					return
+				}
+			} catch (e) {
+				console.log()
+				console.log(`Permutation: [${permutation}]`)
+				console.log(`Algorithm: [${algorithm}]`)
+				console.log(`notation: [${notation}]`)
+				console.log(`reverse: [${reverse}]`)
+				console.log(`case number: [${i + 1}]`)
+				throw e
+				return
+			}
+		}
+		if (fast) animator.duration(0.1)
+		console.log()
+		console.log('Done!')
+		console.log()
+	}
+
   async solve() {
     let pllString = this.getPllString()
     let directionMap = this._getDirectionMap(pllString)
@@ -71,6 +119,10 @@ class PllSolver {
     let pllString = this.getPllString()
     let lastLayerTurn = this.lastLayerTurns[pllString]
     return rubiksCube.move(keyMap.getNotation(lastLayerTurn))
+  }
+
+  isSolved() {
+    return rubiksCube.isSolved()
   }
 
   /**
