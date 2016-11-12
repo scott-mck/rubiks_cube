@@ -176,6 +176,10 @@ class RubiksCube {
   }
 
   solve() {
+    if (this.isSolved()) {
+      return
+    }
+
     if (g.dimensions === 3) {
       return solver.solve()
     }
