@@ -145,7 +145,7 @@ class OllSolver {
 	/**
 	 * @return {string} - A string representing the state of oll. Starts with the
 	 * front left cubie, then wraps around to the right. Reads the three colors on
-	 * each face, for a total of (3 colors * 4 faces) = 12. TODO: Shorten this to 8
+	 * each face, for a total of (3 colors * 4 faces) = 12. TODO: Shorten this to 8.
 	 *
 	 * examples:
 	 * A random state: '002111200010'

@@ -15,8 +15,6 @@ import {
 } from '../../utils/relative-finder'
 
 class CrossSolver {
-  constructor() {}
-
 	async solve() {
     this._cubeState = getCubeState()
     await rubiksCube.moveFaceToTop('white')

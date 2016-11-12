@@ -1,5 +1,11 @@
 import rubiksCube from '../../rubiks-cube'
 import f2lSolver from '../f2l-solver'
+import grabber from '../../grabber'
+import { getCubieColors } from '../../utils/color'
+import {
+  getCubeState,
+  getRelativeDirection
+} from '../../utils/relative-finder'
 
 class PllSolver {
   async solve() {
@@ -30,7 +36,7 @@ class PllSolver {
   getDirectionMap(lastLayerString) {
     let baseLetter = this._getBaseLetter(lastLayerString)
     return lastLayerString
-      .split()
+      .split('')
       .map(letter => getRelativeDirection(baseLetter, letter))
       .join(' ')
   }
@@ -63,8 +69,7 @@ class PllSolver {
       new THREE.Vector3(g.startPos, g.startPos, -g.startPos),
       new THREE.Vector3(0, g.startPos, -g.startPos),
       new THREE.Vector3(-g.startPos, g.startPos, -g.startPos),
-      new THREE.Vector3(-g.startPos, g.startPos, 0),
-      new THREE.Vector3(-g.startPos, g.startPos, g.startPos)
+      new THREE.Vector3(-g.startPos, g.startPos, 0)
     ]
 
     let cubies = []
@@ -77,7 +82,7 @@ class PllSolver {
       lastLayerStringArray.push(direction)
     }
 
-    lastLayerStringArray.join()
+    return lastLayerStringArray.join('')
   }
 
   /**
@@ -87,14 +92,16 @@ class PllSolver {
    */
   _getDirectionToSolvedPosition(cubie) {
     let cubeState = getCubeState()
-    isCorner = getCubieColors(cubie).length === 3
-    let data = f2LSolver[`get${isCorner ? 'Corner' : 'Edge'}Data`]
+    let isCorner = getCubieColors(cubie).length === 3
+    let data = f2lSolver[`get${isCorner ? 'Corner' : 'Edge'}Data`](cubie)
 
-    let cubeFace = data[isCorner ? 'left' : 'secondary']
-    let currentFace = cubeFace.face
-    let targetFace = cubeState.color[cubeFace].color
+    let cubieFace = data[isCorner ? 'left' : 'secondary']
+    let currentFace = cubieFace.face
+    let targetFace = cubeState.color[cubieFace.color]
 
-    let direction = f2lSolver.getDirectionToFace(currentFace, targetFace)
+    console.log(currentFace)
+    console.log(targetFace)
+    let direction = getRelativeDirection(currentFace, targetFace)
     if (direction === 1) return 'r'
     if (direction === -1) return 'l'
     if (direction === 0) return 'f'

@@ -6,8 +6,6 @@ import g from './globals'
 import { vectorFromString, stringFromVector, cross } from './utils/vector'
 
 class Grabber {
-  constructor() {}
-
   init() {
     this.anchor1 = new THREE.Vector3(g.startPos, g.startPos, g.startPos)
     this.anchor2 = new THREE.Vector3(-g.startPos, -g.startPos, -g.startPos)
