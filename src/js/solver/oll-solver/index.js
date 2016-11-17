@@ -16,7 +16,7 @@ class OllSolver {
 		'101202101202': 'i j j k f i j k f i f k', // #3
 		'012111200000': 'h j i f k g', // #4
 		'112101211202': 'h j i f k j i f k g', // #5
-		'210000002111': 'g e f d j h', // #6
+		'210000002111': 'g f e j d h', // #6
 		'112101201212': 'g f e j d f e j d h', // #7
 		'100012112102': 'c e e f d f e f f d f d r', // #8
 		'001201211210': 'm i i j k j i j j k j k u', // #9
