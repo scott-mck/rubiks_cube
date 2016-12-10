@@ -1,4 +1,4 @@
 {
-  "presets": ["es2015-rollup", "babel-polyfill", "stage-2"],
+  "presets": [["es2015", { "modules": false }], "babel-polyfill", "stage-2"],
   "plugins": ["transform-runtime", "external-helpers"]
 }
