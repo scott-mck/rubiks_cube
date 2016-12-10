@@ -176,6 +176,9 @@ class inputHandler {
 
   type(e) {
     let letter = String.fromCharCode(e.keyCode).toLowerCase()
+    if (letter === ' ') {
+      return rubiksCube.isSolved() ? rubiksCube.scramble() : rubiksCube.solve()
+    }
 
     // this is pretty annoying.
     if (e.keyCode === 186) letter = ';'
@@ -183,8 +186,6 @@ class inputHandler {
     let move = keyMap.getNotation(letter)
     if (!move) {
       return
-    } else if (move === 'scramble') {
-      rubiksCube.scramble()
     } else {
       rubiksCube.move(move)
     }
