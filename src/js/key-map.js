@@ -20,8 +20,7 @@ class KeyMap {
       ';': 'y',
       a: 'yPrime',
       y: 'x',
-      n: 'xPrime',
-      ' ': 'scramble'
+      n: 'xPrime'
     }
   }
 
