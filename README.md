@@ -12,7 +12,7 @@ _Inspired by the original game at http://hi-games.net/cube/_
 ## The Original!
 The old, crappy version can be viewed as well!
 ```shell
-$ git clone https://github.com/slammayjammay/rubiks_cube.git
+$ git clone https://github.com/slammayjammay/rubiks_cube.git && cd rubiks_cube
 $ git checkout 2ed117fa83407b10b247bfd027f2f0be4d8c60fe
 $ open index.html
 ```
