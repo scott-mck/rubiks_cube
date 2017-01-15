@@ -43,7 +43,7 @@ let colorSize
 
 let createMeshes = () => {
   material = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
+    color: g.dimensions > 5 ? 0xffffff : 0x000000,
     vertexColors: THREE.FaceColors,
     side: THREE.DoubleSide
   })
